@@ -12,13 +12,15 @@ namespace EduWork.DataAccessLayer.Entites
         [Key]
         public int Id { get; set; }
         [Required]
-        public DateOnly Year { get; set; } //UPITNO
+        public int Year { get; set; }
         [Required]
         public int TotalLeaveDays { get; set; }
         [Required]
         public int LeftLeaveDays { get; set; }
 
+        [Required]
         public int UserId { get; set; }
+        [Required]
         public User User { get; set; }
     }
 }

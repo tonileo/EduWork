@@ -13,11 +13,17 @@ namespace EduWork.DataAccessLayer.Entites
         public int Id { get; set; }
 
 
+        [Required]
         public int UserId { get; set; }
+        [Required]
         public int ProjectId { get; set; }
+        [Required]
         public int ProjectRoleId { get; set; }
+        [Required]
         public User User { get; set; }
+        [Required]
         public Project Project { get; set; }
+        [Required]
         public ProjectRole ProjectRole { get; set; }
     }
 }

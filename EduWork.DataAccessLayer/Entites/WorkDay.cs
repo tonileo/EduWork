@@ -13,7 +13,9 @@ namespace EduWork.DataAccessLayer.Entites
         public int Id { get; set; }
         public DateOnly WorkDate { get; set; }
 
+        [Required]
         public int UserId { get; set; }
+        [Required]
         public User User { get; set; }
     }
 }

@@ -23,7 +23,9 @@ namespace EduWork.DataAccessLayer.Entites
         public string EntraObjectId { get; set; }
 
 
+        [Required]
         public int AppRoleId { get; set; }
+        [Required]
         public AppRole AppRole { get; set; }
     }
 }
