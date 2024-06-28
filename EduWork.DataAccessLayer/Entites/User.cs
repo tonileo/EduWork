@@ -16,7 +16,14 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         [StringLength(50)]
         public string Username { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
         public string EntraObjectId { get; set; }
+
+
+        public int AppRoleId { get; set; }
+        public AppRole AppRole { get; set; }
     }
 }

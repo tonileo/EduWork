@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class AppRole
+    public class ProjectRole
     {
         [Key]
         public int Id { get; set; }
