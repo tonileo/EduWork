@@ -11,10 +11,12 @@ namespace EduWork.DataAccessLayer
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
+        
 
-        }
+        //public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        //{
+
+        //}
 
         public DbSet<NonWorkingDay> NonWorkingDays { get; set; }
         public DbSet<AnnualLeave> AnnualLeaves { get; set; }
@@ -29,15 +31,14 @@ namespace EduWork.DataAccessLayer
         public DbSet<WorkDay> WorkDays { get; set; }
         public DbSet<WorkDayTime> WorkDayTimes { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=localhost\\MSSQLSERVER01;Database=EduWorkDb;Trusted_Connection=True;TrustServerCertificate=True");
+        }
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.UseSqlServer();
-    //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
-    //protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-
-    //}
-}
+        }
+    }
 }
