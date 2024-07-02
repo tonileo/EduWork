@@ -16,5 +16,7 @@ namespace EduWork.DataAccessLayer.Entites
         public string Title { get; set; }
         [StringLength(200)]
         public string Description { get; set; }
+
+        public virtual ICollection<User> Users { get; set; }
     }
 }

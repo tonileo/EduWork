@@ -32,5 +32,11 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         [StringLength(200)]
         public string DevOpsProjectId { get; set; }
+
+
+        [Required]
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
+        [Required]
+        public virtual ICollection<ProjectTime> ProjectTimes { get; set; }
     }
 }

@@ -16,5 +16,9 @@ namespace EduWork.DataAccessLayer.Entites
         public string Title { get; set; }
         [StringLength(200)]
         public string Description { get; set; }
+
+
+        [Required]
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
     }
 }

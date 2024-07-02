@@ -26,6 +26,18 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public int AppRoleId { get; set; }
         [Required]
-        public AppRole AppRole { get; set; }
+        public virtual AppRole AppRole { get; set; }
+
+
+        [Required]
+        public virtual ICollection<AnnualLeave> AnnualLeaves { get; set; }
+        [Required]
+        public virtual ICollection<WorkDay> WorkDays { get; set; }
+        [Required]
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
+        [Required]
+        public virtual ICollection<SickLeaveRecord> SickLeaveRecords { get; set; }
+        [Required]
+        public virtual ICollection<AnnualLeaveRecord> AnnualLeaveRecords { get; set;}
     }
 }

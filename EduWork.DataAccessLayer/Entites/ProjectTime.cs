@@ -22,8 +22,8 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public int ProjectId { get; set; }
         [Required]
-        public WorkDay WorkDay { get; set; }
+        public virtual WorkDay WorkDay { get; set; }
         [Required]
-        public Project Project { get; set; }
+        public virtual Project Project { get; set; }
     }
 }
