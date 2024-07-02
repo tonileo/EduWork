@@ -1,3 +1,4 @@
+using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,8 @@ builder.Services.AddSwaggerGen(c =>
             }
     });
 });
+
+builder.Services.AddScoped<UserProfileService>();
 
 builder.Services.AddDbContext<AppDbContext>();
 
