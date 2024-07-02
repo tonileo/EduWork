@@ -28,10 +28,10 @@ builder.Services.AddSwaggerGen(c => {
             Implicit = new OpenApiOAuthFlow()
             {
                 AuthorizationUrl = new Uri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize"),
-                TokenUrl = new Uri("https://login.microsoftonline.com/common/common/v2.0/token"),
+                TokenUrl = new Uri("https://login.microsoftonline.com/common/oauth2/v2.0/token"),
                 Scopes = new Dictionary<string, string> {
                     {
-                        "api://8b03d060-4468-4911-a806-ce0b15f5dfb7/access_as_user", "API permission description"
+                        "api://8b03d060-4468-4911-a806-ce0b15f5dfb7/access_as_user", "Access as user"
                     }
                 }
             }
@@ -62,7 +62,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.OAuthClientId(builder.Configuration["AzureAd:ClientId"]);
+    });
 }
 
 app.UseHttpsRedirection();
