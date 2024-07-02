@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduWork.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240628190001_init migration with all tables")]
-    partial class initmigrationwithalltables
+    [Migration("20240702133105_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,8 +42,8 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("Year")
-                        .HasColumnType("date");
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -361,7 +361,7 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.AnnualLeave", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
-                        .WithMany()
+                        .WithMany("AnnualLeaves")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -372,7 +372,7 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.AnnualLeaveRecord", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
-                        .WithMany()
+                        .WithMany("AnnualLeaveRecords")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -383,13 +383,13 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.ProjectTime", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.Project", "Project")
-                        .WithMany()
+                        .WithMany("ProjectTimes")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EduWork.DataAccessLayer.Entites.WorkDay", "WorkDay")
-                        .WithMany()
+                        .WithMany("ProjectTimes")
                         .HasForeignKey("WorkDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -402,7 +402,7 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.SickLeaveRecord", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
-                        .WithMany()
+                        .WithMany("SickLeaveRecords")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -413,7 +413,7 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.User", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.AppRole", "AppRole")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("AppRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -424,19 +424,19 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.UserProjectRole", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.Project", "Project")
-                        .WithMany()
+                        .WithMany("UserProjectRoles")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EduWork.DataAccessLayer.Entites.ProjectRole", "ProjectRole")
-                        .WithMany()
+                        .WithMany("UserProjectRoles")
                         .HasForeignKey("ProjectRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
-                        .WithMany()
+                        .WithMany("UserProjectRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -451,7 +451,7 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDay", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
-                        .WithMany()
+                        .WithMany("WorkDays")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -462,12 +462,49 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDayTime", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.WorkDay", "WorkDay")
-                        .WithMany()
+                        .WithMany("WorkDayTimes")
                         .HasForeignKey("WorkDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("WorkDay");
+                });
+
+            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.AppRole", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.Project", b =>
+                {
+                    b.Navigation("ProjectTimes");
+
+                    b.Navigation("UserProjectRoles");
+                });
+
+            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.ProjectRole", b =>
+                {
+                    b.Navigation("UserProjectRoles");
+                });
+
+            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.User", b =>
+                {
+                    b.Navigation("AnnualLeaveRecords");
+
+                    b.Navigation("AnnualLeaves");
+
+                    b.Navigation("SickLeaveRecords");
+
+                    b.Navigation("UserProjectRoles");
+
+                    b.Navigation("WorkDays");
+                });
+
+            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDay", b =>
+                {
+                    b.Navigation("ProjectTimes");
+
+                    b.Navigation("WorkDayTimes");
                 });
 #pragma warning restore 612, 618
         }

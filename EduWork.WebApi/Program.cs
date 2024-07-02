@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.OAuth2,
         Flows = new OpenApiOAuthFlows
         {
-            AuthorizationCode = new OpenApiOAuthFlow()
+            AuthorizationCode = new OpenApiOAuthFlow
             {
                 AuthorizationUrl = new Uri(builder.Configuration["SwaggerAzureAd:AuthorizationUrl"]),
                 TokenUrl = new Uri(builder.Configuration["SwaggerAzureAd:TokenUrl"]),
@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen(c =>
             }
         }
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
         {
                 new OpenApiSecurityScheme
                 {
@@ -50,8 +50,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//options.UseSqlServer(builder.Configuration.GetConnectionString("EduWorkConnectionString")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EduWorkConnectionString"));
+});
 
 var app = builder.Build();
 

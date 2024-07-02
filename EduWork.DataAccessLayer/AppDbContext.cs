@@ -11,12 +11,12 @@ namespace EduWork.DataAccessLayer
 {
     public class AppDbContext : DbContext
     {
-        
 
-        //public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        //{
 
-        //}
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+
+        }
 
         public DbSet<NonWorkingDay> NonWorkingDays { get; set; }
         public DbSet<AnnualLeave> AnnualLeaves { get; set; }
