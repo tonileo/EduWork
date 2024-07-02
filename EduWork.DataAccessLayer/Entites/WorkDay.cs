@@ -19,9 +19,7 @@ namespace EduWork.DataAccessLayer.Entites
         public virtual User User { get; set; }
 
 
-        [Required]
         public virtual ICollection<WorkDayTime> WorkDayTimes { get; set; }
-        [Required]
         public virtual ICollection<ProjectTime> ProjectTimes { get; set; }
     }
 }

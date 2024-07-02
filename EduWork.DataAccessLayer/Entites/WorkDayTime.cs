@@ -16,9 +16,7 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public TimeOnly EndTime { get; set; }
 
-        [Required]
         public int WorkDayId { get; set; }
-        [Required]
         public virtual WorkDay WorkDay { get; set; }
     }
 }
