@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web.Resource;
 
 namespace EduWork.WebApi.Controllers
 {
+    [Authorize]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
