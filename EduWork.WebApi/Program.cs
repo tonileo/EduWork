@@ -18,38 +18,35 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "EduWork", Version = "v1" });
     c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
+        Description = "Oauth2.0 which uses AuthorizationCode flow",
+        Name = "oauth2.0",
         Type = SecuritySchemeType.OAuth2,
         Flows = new OpenApiOAuthFlows
         {
-            Implicit = new OpenApiOAuthFlow()
+            AuthorizationCode = new OpenApiOAuthFlow()
             {
-                AuthorizationUrl = new Uri("https://login.microsoftonline.com/common/oauth2/v2.0/authorize"),
-                TokenUrl = new Uri("https://login.microsoftonline.com/common/oauth2/v2.0/token"),
-                Scopes = new Dictionary<string, string> {
-                    {
-                        "api://8b03d060-4468-4911-a806-ce0b15f5dfb7/access_as_user", "Access as user"
-                    }
+                AuthorizationUrl = new Uri(builder.Configuration["SwaggerAzureAd:AuthorizationUrl"]),
+                TokenUrl = new Uri(builder.Configuration["SwaggerAzureAd:TokenUrl"]),
+                Scopes = new Dictionary<string, string>
+                {
+                    {builder.Configuration["SwaggerAzureAd:Scope"], "Access API as User" }
                 }
             }
         }
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
         {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "oauth2"
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference{Type = ReferenceType.SecurityScheme, Id = "oauth2"}
                 },
-                Scheme = "oauth2",
-                Name = "oauth2",
-                In = ParameterLocation.Header
-            },
-            new List <string> ()
-        }
+                new[]{ builder.Configuration["SwaggerAzureAd:Scope"] }
+            }
     });
 });
 
@@ -64,7 +61,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.OAuthClientId(builder.Configuration["AzureAd:ClientId"]);
+        c.OAuthClientId(builder.Configuration["SwaggerAzureAd:ClientId"]);
+        c.OAuthUsePkce();
     });
 }
 
