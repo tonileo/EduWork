@@ -50,10 +50,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EduWorkConnectionString"));
-});
+builder.Services.AddDbContext<AppDbContext>();
 
 var app = builder.Build();
 
