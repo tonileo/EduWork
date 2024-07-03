@@ -40,18 +40,20 @@ builder.Services.AddSwaggerGen(c =>
             }
         }
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+    {
         {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference{Type = ReferenceType.SecurityScheme, Id = "oauth2"}
-                },
-                new[]{ builder.Configuration["SwaggerAzureAd:Scope"] }
-            }
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference{Type = ReferenceType.SecurityScheme, Id = "oauth2"}
+            },
+            new[]{ builder.Configuration["SwaggerAzureAd:Scope"] }
+        }
     });
 });
 
 builder.Services.AddScoped<UserProfileService>();
+builder.Services.AddScoped<UserProjectTimeService>();
 
 builder.Services.AddDbContext<AppDbContext>();
 

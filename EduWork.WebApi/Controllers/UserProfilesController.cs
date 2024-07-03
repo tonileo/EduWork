@@ -24,13 +24,13 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfile>>> GetAllUserProfiles()
+        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllUserProfiles()
         {
             return await _userProfileService.GetAllUserProfiles();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserProfile>> GetUserProfile(int id)
+        public async Task<ActionResult<UserProfileDto>> GetUserProfile(int id)
         {
             var user = await _userProfileService.GetUserProfile(id);
 
@@ -67,19 +67,6 @@ namespace EduWork.WebApi.Controllers
 
             return userAnnualLeave;
         }
-
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<IEnumerable<ProjectDto>>> GetAllUserProjects(int id)
-        //{
-        //    var user = await _userProfileService.GetAllUserProjects(id);
-
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return user;
-        //}
 
         //// PUT: api/UserProfiles/5
         //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.DTO
 {
-    public record UserProjects
+    public record UserProjectsDto
     {
         public int Id { get; set; }
         public string Title { get; set; }

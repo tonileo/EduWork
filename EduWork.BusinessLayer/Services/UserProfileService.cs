@@ -13,14 +13,14 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProfileService(AppDbContext context) : IUserProfileService
     {
-        public async Task<List<UserProfile>> GetAllUserProfiles()
+        public async Task<List<UserProfileDto>> GetAllUserProfiles()
         {
             var users = await context.Users.ToListAsync();
 
-            var userProfiles = new List<UserProfile>();
+            var userProfiles = new List<UserProfileDto>();
             foreach (var user in users)
             {
-                userProfiles.Add(new UserProfile()
+                userProfiles.Add(new UserProfileDto()
                 {
                     Id = user.Id,
                     Username = user.Username,
@@ -30,11 +30,11 @@ namespace EduWork.BusinessLayer.Services
             return userProfiles;
         }
 
-        public async Task<UserProfile> GetUserProfile(int id)
+        public async Task<UserProfileDto> GetUserProfile(int id)
         {
             var user = await context.Users.FindAsync(id);
 
-            var userProfile = new UserProfile()
+            var userProfile = new UserProfileDto()
             {
                 Id = user.Id,
                 Username = user.Username,
@@ -81,19 +81,5 @@ namespace EduWork.BusinessLayer.Services
 
             return userAnnualLeave;
         }
-
-        //public async Task<List<ProjectDto>> GetAllUserProjects(int id)
-        //{
-        //    var user = await context.Users.FindAsync(id);
-
-        //    var userProfile = new UserProfile()
-        //    {
-        //        Id = user.Id,
-        //        Username = user.Username,
-        //        Email = user.Email
-        //    };
-
-        //    return userProfile;
-        //}
     }
 }

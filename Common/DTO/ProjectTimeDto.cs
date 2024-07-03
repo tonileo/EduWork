@@ -10,7 +10,10 @@ namespace Common.DTO
     public record ProjectTimeDto
     {
         public int Id { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
         public int TimeSpentMinutes { get; set; }
+
+        public int ProjectId { get; set; }
+        //public bool ProjectIsPayable { get; set; }
     }
 }

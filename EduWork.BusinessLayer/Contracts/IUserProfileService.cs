@@ -9,10 +9,9 @@ namespace EduWork.BusinessLayer.Contracts
 {
     public interface IUserProfileService
     {
-        public Task<List<UserProfile>> GetAllUserProfiles();
-        public Task<UserProfile> GetUserProfile(int id);
+        public Task<List<UserProfileDto>> GetAllUserProfiles();
+        public Task<UserProfileDto> GetUserProfile(int id);
         public Task<List<SickLeaveRecordDto>> GetUserSickLeaveRecords(int id);
         public Task<List<AnnualLeaveDto>> GetUserAnnualLeave(int id);
-        //public Task<List<UserProjects>> GetAllUserProjects(int id);
     }
 }
