@@ -8,11 +8,8 @@ using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class AppRole
+    public class AppRole : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
         public string Title { get; set; } = string.Empty;

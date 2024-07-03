@@ -10,11 +10,8 @@ using EduWork.DataAccessLayer.Entites.Abstractions;
 namespace EduWork.DataAccessLayer.Entites
 {
     [Table("Users")]
-    public class User
+    public class User : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
         public string Username { get; set; } = string.Empty;

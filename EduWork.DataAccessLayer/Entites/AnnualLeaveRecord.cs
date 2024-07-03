@@ -4,14 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class AnnualLeaveRecord
+    public class AnnualLeaveRecord : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public DateOnly StartDate { get; set; }
 

@@ -8,10 +8,8 @@ using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class SickLeaveRecord
+    public class SickLeaveRecord : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         public DateOnly StartDate { get; set; }
         [Required]

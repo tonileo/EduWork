@@ -8,11 +8,8 @@ using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class NonWorkingDay
+    public class NonWorkingDay : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public DateOnly NonWorkingDate { get; set; }
 

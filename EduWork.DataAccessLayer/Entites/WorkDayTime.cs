@@ -4,14 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class WorkDayTime
+    public class WorkDayTime : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public TimeOnly StartTime { get; set; }
 
