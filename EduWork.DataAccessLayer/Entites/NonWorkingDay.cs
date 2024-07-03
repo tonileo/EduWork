@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
@@ -11,10 +12,12 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public DateOnly NonWorkingDate { get; set; }
+
         [Required]
-        [StringLength(50)]
-        public string Title { get; set; }
+        [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
+        public string Title { get; set; } = string.Empty;
     }
 }

@@ -15,15 +15,20 @@ namespace EduWork.DataAccessLayer.Entites
 
         [Required]
         public int UserId { get; set; }
+
         [Required]
         public int ProjectId { get; set; }
+
         [Required]
         public int ProjectRoleId { get; set; }
+
         [Required]
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = new();
+
         [Required]
-        public virtual Project Project { get; set; }
+        public virtual Project Project { get; set; } = new();
+
         [Required]
-        public virtual ProjectRole ProjectRole { get; set; }
+        public virtual ProjectRole ProjectRole { get; set; } = new();
     }
 }

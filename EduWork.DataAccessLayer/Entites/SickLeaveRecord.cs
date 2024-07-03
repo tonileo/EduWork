@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
@@ -16,13 +17,13 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public DateOnly EndDate { get; set; }
         [Required]
-        [StringLength(200)]
-        public string Comment { get; set; }
+        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
+        public string? Comment { get; set; }
 
 
         [Required]
         public int UserId { get; set; }
         [Required]
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = new();
     }
 }

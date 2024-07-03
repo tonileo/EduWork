@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
@@ -11,30 +12,39 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
-        [StringLength(50)]
-        public string Title { get; set; }
+        [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
+        public string Title { get; set; } = string.Empty;
+
         [Required]
         public DateOnly StartDate { get; set; }
+
         [Required]
         public DateOnly EndDate { get; set; }
+
         [Required]
-        [StringLength(200)]
-        public string Description { get; set; }
+        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
+        public string? Description { get; set; }
+
         [Required]
         public bool IsFinished { get; set; }
+
         [Required]
         public bool IsPrivate { get; set; }
+
         [Required]
         public bool IsEducation { get; set; }
+
         [Required]
         public bool IsPayable { get; set; }
+
         [Required]
-        [StringLength(200)]
-        public string DevOpsProjectId { get; set; }
+        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
+        public string DevOpsProjectId { get; set; } = string.Empty;
 
 
-        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
-        public virtual ICollection<ProjectTime> ProjectTimes { get; set; }
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; } = [];
+        public virtual ICollection<ProjectTime> ProjectTimes { get; set; } = [];
     }
 }

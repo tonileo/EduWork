@@ -11,12 +11,17 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public TimeOnly StartTime { get; set; }
+
         [Required]
         public TimeOnly EndTime { get; set; }
 
+        [Required]
         public int WorkDayId { get; set; }
-        public virtual WorkDay WorkDay { get; set; }
+
+        [Required]
+        public virtual WorkDay WorkDay { get; set; } = new();
     }
 }

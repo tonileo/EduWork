@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
@@ -13,26 +14,31 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
-        [StringLength(50)]
-        public string Username { get; set; }
+        [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
+        public string Username { get; set; } = string.Empty;
+
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
+        public string Email { get; set; } = string.Empty;
+
         [Required]
-        public string EntraObjectId { get; set; }
+        public string EntraObjectId { get; set; } = string.Empty;
 
 
         [Required]
         public int AppRoleId { get; set; }
+
         [Required]
-        public virtual AppRole AppRole { get; set; }
+        public virtual AppRole AppRole { get; set; } = new();
 
 
-        public virtual ICollection<AnnualLeave> AnnualLeaves { get; set; }
-        public virtual ICollection<WorkDay> WorkDays { get; set; }
-        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; }
-        public virtual ICollection<SickLeaveRecord> SickLeaveRecords { get; set; }
-        public virtual ICollection<AnnualLeaveRecord> AnnualLeaveRecords { get; set;}
+        public virtual ICollection<AnnualLeave> AnnualLeaves { get; set; } = [];
+        public virtual ICollection<WorkDay> WorkDays { get; set; } = [];
+        public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; } = [];
+        public virtual ICollection<SickLeaveRecord> SickLeaveRecords { get; set; } = [];
+        public virtual ICollection<AnnualLeaveRecord> AnnualLeaveRecords { get; set; } = [];
     }
 }

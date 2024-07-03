@@ -11,18 +11,23 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public DateOnly StartDate { get; set; }
+
         [Required]
         public DateOnly EndDate { get; set; }
+
         [Required]
         [StringLength(200)]
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
+
 
 
         [Required]
         public int UserId { get; set; }
+
         [Required]
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = new();
     }
 }

@@ -11,16 +11,19 @@ namespace EduWork.DataAccessLayer.Entites
     {
         [Key]
         public int Id { get; set; }
+
+        [Required]
         public DateOnly WorkDate { get; set; }
 
 
         [Required]
         public int UserId { get; set; }
+
         [Required]
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = new();
 
 
-        public virtual ICollection<WorkDayTime> WorkDayTimes { get; set; }
-        public virtual ICollection<ProjectTime> ProjectTimes { get; set; }
+        public virtual ICollection<WorkDayTime> WorkDayTimes { get; set; } = [];
+        public virtual ICollection<ProjectTime> ProjectTimes { get; set; } = [];
     }
 }
