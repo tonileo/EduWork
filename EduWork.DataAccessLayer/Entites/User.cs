@@ -22,6 +22,7 @@ namespace EduWork.DataAccessLayer.Entites
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
         public string EntraObjectId { get; set; } = string.Empty;
 
 
@@ -29,7 +30,7 @@ namespace EduWork.DataAccessLayer.Entites
         public int AppRoleId { get; set; }
 
         [Required]
-        public virtual AppRole AppRole { get; set; } = new();
+        public virtual AppRole AppRole { get; set; }
 
 
         public virtual ICollection<AnnualLeave> AnnualLeaves { get; set; } = [];

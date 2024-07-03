@@ -20,9 +20,8 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public DateOnly EndDate { get; set; }
 
-        [Required]
         [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
-        public string? Description { get; set; }
+        public string? Description { get; set; } = string.Empty;
 
         [Required]
         public bool IsFinished { get; set; }

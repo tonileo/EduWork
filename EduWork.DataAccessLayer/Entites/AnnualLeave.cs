@@ -20,6 +20,6 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public int UserId { get; set; }
         [Required]
-        public virtual User User { get; set; } = new();
+        public virtual User User { get; set; }
     }
 }

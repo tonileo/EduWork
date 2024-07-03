@@ -20,6 +20,6 @@ namespace EduWork.DataAccessLayer.Entites
         public int WorkDayId { get; set; }
 
         [Required]
-        public virtual WorkDay WorkDay { get; set; } = new();
+        public virtual WorkDay WorkDay { get; set; }
     }
 }

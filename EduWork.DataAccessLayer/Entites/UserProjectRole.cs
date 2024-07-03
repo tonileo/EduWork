@@ -20,12 +20,12 @@ namespace EduWork.DataAccessLayer.Entites
         public int ProjectRoleId { get; set; }
 
         [Required]
-        public virtual User User { get; set; } = new();
+        public virtual User User { get; set; }
 
         [Required]
-        public virtual Project Project { get; set; } = new();
+        public virtual Project Project { get; set; }
 
         [Required]
-        public virtual ProjectRole ProjectRole { get; set; } = new();
+        public virtual ProjectRole ProjectRole { get; set; }
     }
 }
