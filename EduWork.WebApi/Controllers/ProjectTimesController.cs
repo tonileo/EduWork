@@ -29,23 +29,41 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProjectTimeDto>> PostProjectTime(ProjectTimeDto projectTime)
+        public async Task<ActionResult<ProjectTimeResponseDto>> InputProjectTime(ProjectTimeDto projectTime)
         {
-            return await _userProjectTimeService.AddProjectTime(projectTime) ?? (ActionResult<ProjectTimeDto>)NotFound();
+            //return await _userProjectTimeService.InputProjectTime(projectTime) ?? (ActionResult<ProjectTimeDto>)NotFound();
+
+            var response = await _userProjectTimeService.InputProjectTime(projectTime);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
         }
 
-        // GET: api/ProjectTimes
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<ProjectTime>>> GetProjectTimes()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimes()
+        {
+            return await _userProjectTimeService.GetProjectTimes();
+        }
+
+        [HttpGet]
+        [Route("filter")]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimesFilter([FromQuery] string? username, [FromQuery] string? projectTile)
+        {
+            return await _userProjectTimeService.GetProjectTimesFilter(username, projectTile);
+        }
+
+        //[HttpGet("{username}")]
+        //public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetUserProjectTimes(string username)
         //{
-        //    return await _context.ProjectTimes.ToListAsync();
+        //    return await _userProjectTimeService.GetUserProjectTimes(username) ?? (ActionResult<IEnumerable<ProjectTimeDto>>)NotFound();
         //}
 
-        //// GET: api/ProjectTimes/5
         //[HttpGet("{id}")]
-        //public async Task<ActionResult<ProjectTime>> GetProjectTime(int id)
+        //public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetUserProjectTimes(int id)
         //{
-        //    var projectTime = await _context.ProjectTimes.FindAsync(id);
+        //    var projectTime = await _userProjectTimeService.GetUserProjectTimes(id);
 
         //    if (projectTime == null)
         //    {
