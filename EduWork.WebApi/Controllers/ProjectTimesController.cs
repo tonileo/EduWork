@@ -29,16 +29,10 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProjectTimeResponseDto>> InputProjectTime(ProjectTimeDto projectTime)
+        public async Task<ActionResult> InputProjectTime(ProjectTimeRequestDto projectTime)
         {
-            //return await _userProjectTimeService.InputProjectTime(projectTime) ?? (ActionResult<ProjectTimeDto>)NotFound();
-
-            var response = await _userProjectTimeService.InputProjectTime(projectTime);
-            if (response.Success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
+            await _userProjectTimeService.InputProjectTime(projectTime);
+            return Ok();
         }
 
         [HttpGet]

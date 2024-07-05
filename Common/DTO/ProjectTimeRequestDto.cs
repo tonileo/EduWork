@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Common.DTO
 {
-    public record ProjectTimeGraphDto
+    public record ProjectTimeRequestDto
     {
-        public int Id { get; set; }
+        public string? Comment { get; set; }
         public int TimeSpentMinutes { get; set; }
+
         public int ProjectId { get; set; }
-        public int UserId { get; set; }
     }
 }

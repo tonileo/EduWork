@@ -14,17 +14,13 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context) : IUserProjectTimeService
     {
-        public async Task<ProjectTimeResponseDto> InputProjectTime(ProjectTimeDto projectTime)
+        public async Task InputProjectTime(ProjectTimeRequestDto projectTime)
         {
-            var response = new ProjectTimeResponseDto();
-
             try
             {
                 if (projectTime.TimeSpentMinutes == 0)
                 {
-                    response.Success = false;
-                    response.Message = "TimeSpentMinutes can't be 0";
-                    return response;
+                    throw new ArgumentException("TimeSpentMinutes can't be 0");
                 }
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
@@ -32,26 +28,17 @@ namespace EduWork.BusinessLayer.Services
                 var userWorkDayId = await context.WorkDays.Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
                 if (userWorkDayId == 0)
                 {
-                    response.Success = false;
-                    response.Message = "Work day is not generated for today";
-                    return response;
-                    //return null;
-                    //throw new ArgumentException("Work day is not generated for today");
+                    throw new ArgumentException("Work day is not generated for today");
                 }
 
                 var projectIsPayable = await context.Projects.Where(d => d.Id == projectTime.ProjectId).Select(s => s.IsPayable).FirstOrDefaultAsync();
                 if (!projectIsPayable)
                 {
-                    response.Success = false;
-                    response.Message = "Project with that Id doesn't exist";
-                    return response;
-                    //return null;
-                    //throw new ArgumentException("Project with that Id doesn't exist");
+                    throw new ArgumentException("Project with that Id doesn't exist");
                 }
 
                 var userProjectTime = new ProjectTime()
                 {
-                    Id = projectTime.Id,
                     Comment = projectTime.Comment,
                     TimeSpentMinutes = projectTime.TimeSpentMinutes,
                     WorkDayId = userWorkDayId,
@@ -60,13 +47,6 @@ namespace EduWork.BusinessLayer.Services
 
                 await context.ProjectTimes.AddAsync(userProjectTime);
                 await context.SaveChangesAsync();
-
-                //return userProjectTime;
-
-                response.Success = true;
-                response.ProjectTimeDto = projectTime;
-                response.ProjectIsPayable = projectIsPayable;
-                return response;
             }
             catch (Exception ex)
             {

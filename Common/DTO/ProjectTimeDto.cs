@@ -14,6 +14,5 @@ namespace Common.DTO
         public int TimeSpentMinutes { get; set; }
 
         public int ProjectId { get; set; }
-        //public bool ProjectIsPayable { get; set; }
     }
 }

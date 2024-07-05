@@ -10,7 +10,7 @@ namespace EduWork.BusinessLayer.Contracts
 {
     public interface IUserProjectTimeService
     {
-        public Task<ProjectTimeResponseDto> InputProjectTime(ProjectTimeDto projectTime);
+        public Task InputProjectTime(ProjectTimeRequestDto projectTime);
         public Task<List<ProjectTimeDto>> GetProjectTimes();
         public Task<List<ProjectTimeDto>> GetProjectTimesFilter(string username, string projectTitle);
         //public Task<List<ProjectTimeDto>> GetUserProjectTimes(string username);
