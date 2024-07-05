@@ -12,15 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EduWork.BusinessLayer.Services
 {
-    public class UserProjectTimeService : IUserProjectTimeService
+    public class UserProjectTimeService(AppDbContext context) : IUserProjectTimeService
     {
-        private readonly AppDbContext _context;
-
-        public UserProjectTimeService(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<ProjectTimeResponseDto> InputProjectTime(ProjectTimeDto projectTime)
         {
             var response = new ProjectTimeResponseDto();
@@ -36,7 +29,7 @@ namespace EduWork.BusinessLayer.Services
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
 
-                var userWorkDayId = await _context.WorkDays.Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
+                var userWorkDayId = await context.WorkDays.Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
                 if (userWorkDayId == 0)
                 {
                     response.Success = false;
@@ -46,7 +39,7 @@ namespace EduWork.BusinessLayer.Services
                     //throw new ArgumentException("Work day is not generated for today");
                 }
 
-                var projectIsPayable = await _context.Projects.Where(d => d.Id == projectTime.ProjectId).Select(s => s.IsPayable).FirstOrDefaultAsync();
+                var projectIsPayable = await context.Projects.Where(d => d.Id == projectTime.ProjectId).Select(s => s.IsPayable).FirstOrDefaultAsync();
                 if (!projectIsPayable)
                 {
                     response.Success = false;
@@ -65,8 +58,8 @@ namespace EduWork.BusinessLayer.Services
                     ProjectId = projectTime.ProjectId
                 };
 
-                await _context.ProjectTimes.AddAsync(userProjectTime);
-                await _context.SaveChangesAsync();
+                await context.ProjectTimes.AddAsync(userProjectTime);
+                await context.SaveChangesAsync();
 
                 //return userProjectTime;
 
@@ -83,7 +76,7 @@ namespace EduWork.BusinessLayer.Services
 
         public async Task<List<ProjectTimeDto>> GetProjectTimes()
         {
-            var userprojectTimes = await _context.ProjectTimes.ToListAsync();
+            var userprojectTimes = await context.ProjectTimes.ToListAsync();
 
             var userProfiles = new List<ProjectTimeDto>();
             foreach (var userprojectTime in userprojectTimes)
@@ -103,7 +96,7 @@ namespace EduWork.BusinessLayer.Services
             List<ProjectTime> projectTimes = new List<ProjectTime>();
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(projectTitle))
             {
-                projectTimes = await _context.Users
+                projectTimes = await context.Users
                     .Where(u => u.Username == username)
                     .SelectMany(u => u.WorkDays)
                     .SelectMany(wd => wd.ProjectTimes)
@@ -112,14 +105,14 @@ namespace EduWork.BusinessLayer.Services
             }
             else if (string.IsNullOrEmpty(username))
             {
-                projectTimes = await _context.Projects
+                projectTimes = await context.Projects
                     .Where(s => s.Title == projectTitle)
                     .SelectMany(a => a.ProjectTimes)
                     .ToListAsync();
             }
             else if (string.IsNullOrEmpty(projectTitle))
             {
-                projectTimes = await _context.Users
+                projectTimes = await context.Users
                     .Where(s => s.Username == username)
                     .SelectMany(wd => wd.WorkDays)
                     .SelectMany(a => a.ProjectTimes)
@@ -143,7 +136,7 @@ namespace EduWork.BusinessLayer.Services
         //        return null;
         //    }
 
-        //    var userWorkDays = await _context.Users.Where(s => s.Username == username)
+        //    var userWorkDays = await context.Users.Where(s => s.Username == username)
         //        .SelectMany(wd => wd.WorkDays).SelectMany(a => a.ProjectTimes).ToListAsync();
 
         //    var userProjectTimes = userWorkDays.Select(pt => new ProjectTimeDto
@@ -158,7 +151,7 @@ namespace EduWork.BusinessLayer.Services
 
         //public async Task<List<ProjectTimeDto>> GetUserProjectTimes(int id)
         //{
-        //    var userWorkDays = await _context.WorkDays.Where(s => s.UserId == id).SelectMany(wd => wd.ProjectTimes).ToListAsync();
+        //    var userWorkDays = await context.WorkDays.Where(s => s.UserId == id).SelectMany(wd => wd.ProjectTimes).ToListAsync();
 
         //    var userProjectTimes = userWorkDays.Select(pt => new ProjectTimeDto
         //    {
