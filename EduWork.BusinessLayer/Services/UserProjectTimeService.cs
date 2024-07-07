@@ -15,10 +15,15 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
-        public async Task InputProjectTime(ProjectTimeRequestDto projectTime)
+        public async Task InputProjectTime(string email, ProjectTimeRequestDto projectTime)
         {
             try
             {
+                if (email == null)
+                {
+                    throw new ArgumentException("User not logged in");
+                }
+
                 if (projectTime.TimeSpentMinutes == 0)
                 {
                     throw new ArgumentException("TimeSpentMinutes can't be 0");
@@ -26,12 +31,12 @@ namespace EduWork.BusinessLayer.Services
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
 
-                var userWorkDayId = await context.WorkDays
-                    .Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
+                var userWorkDayId = await context.WorkDays.Include(g => g.User)
+                    .Where(d => d.WorkDate == dateToday && d.User.Email == email).Select(s => s.Id).SingleOrDefaultAsync();
 
                 if (userWorkDayId == 0)
                 {
-                    throw new ArgumentException("Work day is not generated for today");
+                    throw new ArgumentException("Work day for logged in user is not generated for today");
                 }
 
                 var projectIsPayable = await context.Projects.Where(d => d.Id == projectTime.ProjectId).Select(s => s.IsPayable).FirstOrDefaultAsync();
@@ -91,7 +96,7 @@ namespace EduWork.BusinessLayer.Services
             return userProjectTimes;
         }
 
-        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string? email, string? fromDate, string? toDate, string? projectTitle)
+        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string email, string? fromDate, string? toDate, string? projectTitle)
         {
             IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
                 .Where(pt => pt.WorkDay.User.Email == email).AsNoTracking().AsQueryable();
