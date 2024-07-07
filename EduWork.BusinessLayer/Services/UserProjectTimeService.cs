@@ -26,7 +26,9 @@ namespace EduWork.BusinessLayer.Services
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
 
-                var userWorkDayId = await context.WorkDays.Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
+                var userWorkDayId = await context.WorkDays
+                    .Where(d => d.WorkDate == dateToday).Select(s => s.Id).FirstOrDefaultAsync();
+
                 if (userWorkDayId == 0)
                 {
                     throw new ArgumentException("Work day is not generated for today");
@@ -59,9 +61,10 @@ namespace EduWork.BusinessLayer.Services
             return userProfiles;
         }
 
-        public async Task<List<ProjectTimeDto>> GetProjectTimesFilter(string? fromDate, string? toDate, string username, string projectTitle)
+        public async Task<List<ProjectTimeDto>> GetProjectTimesFilter(string? fromDate, string? toDate, string? username, string? projectTitle)
         {
-            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project).AsQueryable();
+            IQueryable<ProjectTime> query = context.ProjectTimes
+                .Include(k => k.Project).AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
@@ -88,9 +91,10 @@ namespace EduWork.BusinessLayer.Services
             return userProjectTimes;
         }
 
-        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string? email, string? fromDate, string? toDate, string projectTitle)
+        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string? email, string? fromDate, string? toDate, string? projectTitle)
         {
-            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project).Where(pt => pt.WorkDay.User.Email == email).AsQueryable();
+            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
+                .Where(pt => pt.WorkDay.User.Email == email).AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
