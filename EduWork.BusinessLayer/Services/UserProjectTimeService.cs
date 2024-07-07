@@ -38,14 +38,6 @@ namespace EduWork.BusinessLayer.Services
                     throw new ArgumentException("Project with that Id doesn't exist");
                 }
 
-                //var userProjectTime = new ProjectTime()
-                //{
-                //    Comment = projectTime.Comment,
-                //    TimeSpentMinutes = projectTime.TimeSpentMinutes,
-                //    WorkDayId = userWorkDayId,
-                //    ProjectId = projectTime.ProjectId
-                //};
-
                 var userProjectTime = mapper.Map<ProjectTime>(projectTime);
                 userProjectTime.WorkDayId = userWorkDayId;
 
@@ -91,14 +83,6 @@ namespace EduWork.BusinessLayer.Services
 
             var projectTimes = await query.ToListAsync();
 
-            //var userProjectTimes = projectTimes.Select(pt => new ProjectTimeDto
-            //{
-            //    Id = pt.Id,
-            //    Comment = pt.Comment,
-            //    TimeSpentMinutes = pt.TimeSpentMinutes,
-            //    TitleProject = pt.Project.Title
-            //}).ToList();
-
             var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
 
             return userProjectTimes;
@@ -122,14 +106,6 @@ namespace EduWork.BusinessLayer.Services
             }
 
             var projectTimes = await query.ToListAsync();
-
-            //var userProjectTimes = projectTimes.Select(pt => new ProjectTimeDto
-            //{
-            //    Id = pt.Id,
-            //    Comment = pt.Comment,
-            //    TimeSpentMinutes = pt.TimeSpentMinutes,
-            //    TitleProject = pt.Project.Title
-            //}).ToList();
 
             var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
 
