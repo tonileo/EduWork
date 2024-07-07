@@ -12,11 +12,12 @@ using Microsoft.Identity.Web.Resource;
 using EduWork.BusinessLayer.Services;
 using EduWork.BusinessLayer.Contracts;
 using Common.DTO;
+using EduWork.WebApi.Authentication;
 
 namespace EduWork.WebApi.Controllers
 {
-    //[Authorize]
-    //[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
+    [Authorize]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectTimesController : ControllerBase
@@ -36,16 +37,26 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimes()
+        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes()
         {
-            return await _userProjectTimeService.GetProjectTimes();
+            var result = await _userProjectTimeService.GetProjectTimes();
+            return Ok(result);
         }
 
         [HttpGet]
-        [Route("filter")]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimesFilter([FromQuery] string? username, [FromQuery] string? projectTile)
+        [Route("adminFilter")]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimesFilter([FromQuery] string? fromDate, [FromQuery] string? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)
         {
-            return await _userProjectTimeService.GetProjectTimesFilter(username, projectTile);
+            var result = await _userProjectTimeService.GetProjectTimesFilter(fromDate, toDate, username, projectTitle);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("userFilter")]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetMyProjectTimesFilter([FromServices] IIdentity currentUser,[FromQuery] string? fromDate, [FromQuery] string? toDate, [FromQuery] string? projectTitle)
+        {
+            var result = await _userProjectTimeService.GetMyProjectTimesFilter(currentUser.Email, fromDate, toDate, projectTitle);
+            return Ok(result);
         }
 
         //[HttpGet("{username}")]

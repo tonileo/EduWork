@@ -8,8 +8,11 @@ using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
-    public class ProjectTime : BaseEntity
+    public class ProjectTime
     {
+        [Key]
+        public int Id { get; set; }
+
         [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
         public string? Comment { get; set; }
 

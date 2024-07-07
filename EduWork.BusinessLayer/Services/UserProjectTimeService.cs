@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Common.DTO;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
@@ -12,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EduWork.BusinessLayer.Services
 {
-    public class UserProjectTimeService(AppDbContext context) : IUserProjectTimeService
+    public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
         public async Task InputProjectTime(ProjectTimeRequestDto projectTime)
         {
@@ -37,13 +38,16 @@ namespace EduWork.BusinessLayer.Services
                     throw new ArgumentException("Project with that Id doesn't exist");
                 }
 
-                var userProjectTime = new ProjectTime()
-                {
-                    Comment = projectTime.Comment,
-                    TimeSpentMinutes = projectTime.TimeSpentMinutes,
-                    WorkDayId = userWorkDayId,
-                    ProjectId = projectTime.ProjectId
-                };
+                //var userProjectTime = new ProjectTime()
+                //{
+                //    Comment = projectTime.Comment,
+                //    TimeSpentMinutes = projectTime.TimeSpentMinutes,
+                //    WorkDayId = userWorkDayId,
+                //    ProjectId = projectTime.ProjectId
+                //};
+
+                var userProjectTime = mapper.Map<ProjectTime>(projectTime);
+                userProjectTime.WorkDayId = userWorkDayId;
 
                 await context.ProjectTimes.AddAsync(userProjectTime);
                 await context.SaveChangesAsync();
@@ -54,93 +58,82 @@ namespace EduWork.BusinessLayer.Services
             }
         }
 
-        public async Task<List<ProjectTimeDto>> GetProjectTimes()
+        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes() //only for testing, will remove later
         {
-            var userprojectTimes = await context.ProjectTimes.ToListAsync();
+            var userprojectTimes = await context.ProjectTimes.AsNoTracking().ToListAsync();
 
-            var userProfiles = new List<ProjectTimeDto>();
-            foreach (var userprojectTime in userprojectTimes)
-            {
-                userProfiles.Add(new ProjectTimeDto()
-                {
-                    Id = userprojectTime.Id,
-                    Comment = userprojectTime.Comment,
-                    TimeSpentMinutes = userprojectTime.TimeSpentMinutes
-                });
-            }
+            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+
             return userProfiles;
         }
 
-        public async Task<List<ProjectTimeDto>> GetProjectTimesFilter(string username, string projectTitle)
+        public async Task<List<ProjectTimeDto>> GetProjectTimesFilter(string? fromDate, string? toDate, string username, string projectTitle)
         {
-            List<ProjectTime> projectTimes = new List<ProjectTime>();
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(projectTitle))
+            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project).AsQueryable();
+
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
-                projectTimes = await context.Users
-                    .Where(u => u.Username == username)
-                    .SelectMany(u => u.WorkDays)
-                    .SelectMany(wd => wd.ProjectTimes)
-                    .Where(pt => pt.Project.Title == projectTitle)
-                    .ToListAsync();
-            }
-            else if (string.IsNullOrEmpty(username))
-            {
-                projectTimes = await context.Projects
-                    .Where(s => s.Title == projectTitle)
-                    .SelectMany(a => a.ProjectTimes)
-                    .ToListAsync();
-            }
-            else if (string.IsNullOrEmpty(projectTitle))
-            {
-                projectTimes = await context.Users
-                    .Where(s => s.Username == username)
-                    .SelectMany(wd => wd.WorkDays)
-                    .SelectMany(a => a.ProjectTimes)
-                    .ToListAsync();
+                if (DateOnly.TryParse(fromDate, out DateOnly parsedFromDate) && DateOnly.TryParse(toDate, out DateOnly parsedToDate))
+                {
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= parsedFromDate && pt.WorkDay.WorkDate <= parsedToDate);
+                }
             }
 
-            var userProjectTimes = projectTimes.Select(pt => new ProjectTimeDto
+            if (!string.IsNullOrEmpty(username))
             {
-                Id = pt.Id,
-                Comment = pt.Comment,
-                TimeSpentMinutes = pt.TimeSpentMinutes
-            }).ToList();
+                query = query.Where(pt => pt.WorkDay.User.Username == username);
+            }
+
+            if (!string.IsNullOrEmpty(projectTitle))
+            {
+                query = query.Where(pt => pt.Project.Title == projectTitle);
+            }
+
+            var projectTimes = await query.ToListAsync();
+
+            //var userProjectTimes = projectTimes.Select(pt => new ProjectTimeDto
+            //{
+            //    Id = pt.Id,
+            //    Comment = pt.Comment,
+            //    TimeSpentMinutes = pt.TimeSpentMinutes,
+            //    TitleProject = pt.Project.Title
+            //}).ToList();
+
+            var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
 
             return userProjectTimes;
         }
 
-        //public async Task<List<ProjectTimeDto>> GetUserProjectTimes(string username)
-        //{
-        //    if (string.IsNullOrEmpty(username))
-        //    {
-        //        return null;
-        //    }
+        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string? email, string? fromDate, string? toDate, string projectTitle)
+        {
+            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project).Where(pt => pt.WorkDay.User.Email == email).AsQueryable();
 
-        //    var userWorkDays = await context.Users.Where(s => s.Username == username)
-        //        .SelectMany(wd => wd.WorkDays).SelectMany(a => a.ProjectTimes).ToListAsync();
+            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
+            {
+                if (DateOnly.TryParse(fromDate, out DateOnly parsedFromDate) && DateOnly.TryParse(toDate, out DateOnly parsedToDate))
+                {
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= parsedFromDate && pt.WorkDay.WorkDate <= parsedToDate);
+                }
+            }
 
-        //    var userProjectTimes = userWorkDays.Select(pt => new ProjectTimeDto
-        //    {
-        //        Id = pt.Id,
-        //        Comment = pt.Comment,
-        //        TimeSpentMinutes = pt.TimeSpentMinutes
-        //    }).ToList();
+            if (!string.IsNullOrEmpty(projectTitle))
+            {
+                query = query.Where(pt => pt.Project.Title == projectTitle);
+            }
 
-        //    return userProjectTimes;
-        //}
+            var projectTimes = await query.ToListAsync();
 
-        //public async Task<List<ProjectTimeDto>> GetUserProjectTimes(int id)
-        //{
-        //    var userWorkDays = await context.WorkDays.Where(s => s.UserId == id).SelectMany(wd => wd.ProjectTimes).ToListAsync();
+            //var userProjectTimes = projectTimes.Select(pt => new ProjectTimeDto
+            //{
+            //    Id = pt.Id,
+            //    Comment = pt.Comment,
+            //    TimeSpentMinutes = pt.TimeSpentMinutes,
+            //    TitleProject = pt.Project.Title
+            //}).ToList();
 
-        //    var userProjectTimes = userWorkDays.Select(pt => new ProjectTimeDto
-        //    {
-        //        Id = pt.Id,
-        //        Comment = pt.Comment,
-        //        TimeSpentMinutes = pt.TimeSpentMinutes
-        //    }).ToList();
+            var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
 
-        //    return userProjectTimes;
-        //}
+            return userProjectTimes;
+        }
     }
 }

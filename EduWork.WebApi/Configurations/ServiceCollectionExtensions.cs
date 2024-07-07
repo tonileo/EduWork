@@ -1,5 +1,8 @@
-﻿using EduWork.BusinessLayer.Services;
+﻿using System.Reflection;
+using System.Security.Principal;
+using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
+using EduWork.WebApi.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -59,6 +62,10 @@ namespace EduWork.WebApi.Configuration
                         }
                     });
                 });
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddHttpContextAccessor();
+            services.AddTransient<Authentication.IIdentity, Identity>();
 
             services.AddScoped<UserProfileService>();
             services.AddScoped<UserProjectTimeService>();
