@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.DataAccessLayer", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.BusinessLayer", "EduWork.BusinessLayer\EduWork.BusinessLayer.csproj", "{8C3B3BBF-90B1-4FBA-A536-8F8D7E9C004C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{07F5FFFB-03C2-456F-A48C-D9539F3CE399}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{07F5FFFB-03C2-456F-A48C-D9539F3CE399}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.UI", "EduWork.UI\EduWork.UI.csproj", "{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{07F5FFFB-03C2-456F-A48C-D9539F3CE399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07F5FFFB-03C2-456F-A48C-D9539F3CE399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07F5FFFB-03C2-456F-A48C-D9539F3CE399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
