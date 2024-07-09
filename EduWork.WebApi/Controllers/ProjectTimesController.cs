@@ -32,9 +32,47 @@ namespace EduWork.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> InputProjectTime([FromServices] IIdentity currentUser, ProjectTimeRequestDto projectTime)
         {
-            await _userProjectTimeService.InputProjectTime(currentUser.Email ,projectTime);
+            await _userProjectTimeService.InputProjectTime(currentUser.Email, projectTime);
             return Ok();
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentity currentUser, int id, ProjectTimeUpdateRequestDto projectTime)
+        {
+            await _userProjectTimeService.UpdateProjectTime(currentUser.Email, id, projectTime);
+            return Ok();
+        }
+
+        //// PUT: api/ProjectTimes/5
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutProjectTime(int id, ProjectTime projectTime)
+        //{
+        //    if (id != projectTime.Id)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    _context.Entry(projectTime).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ProjectTimeExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes()
@@ -45,15 +83,17 @@ namespace EduWork.WebApi.Controllers
 
         [HttpGet]
         [Route("adminFilter")]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetProjectTimesFilter([FromQuery] string? fromDate, [FromQuery] string? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)
+        public async Task<ActionResult<ProjectTimeResponseDto>> GetProjectTimesFilter([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)
         {
+            Console.WriteLine($"fromDate: {fromDate}, toDate: {toDate}, username: {username}, projectTitle: {projectTitle}");
+
             var result = await _userProjectTimeService.GetProjectTimesFilter(fromDate, toDate, username, projectTitle);
             return Ok(result);
         }
 
         [HttpGet]
         [Route("userFilter")]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDto>>> GetMyProjectTimesFilter([FromServices] IIdentity currentUser,[FromQuery] string? fromDate, [FromQuery] string? toDate, [FromQuery] string? projectTitle)
+        public async Task<ActionResult<ProjectTimeResponseDto>> GetMyProjectTimesFilter([FromServices] IIdentity currentUser, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? projectTitle)
         {
             var result = await _userProjectTimeService.GetMyProjectTimesFilter(currentUser.Email, fromDate, toDate, projectTitle);
             return Ok(result);

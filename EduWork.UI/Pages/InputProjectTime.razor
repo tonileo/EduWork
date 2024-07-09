@@ -1,0 +1,83 @@
+﻿@page "/inputProjectTime"
+@inject HttpClient Http
+
+<PageTitle>Input Project Time</PageTitle>
+
+<h1>Input Project Time</h1>
+
+<br />
+
+<EditForm Model="@projectTimeRequestDto" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="titleProject">Projekt:</label>
+        <select id="titleProject" @bind="projectTimeRequestDto.TitleProject" class="form-control" required>
+            @if (projects == null)
+            {
+                <option>Loading...</option>
+            }
+            else
+            {
+                <option value="">-- Odaberi projekt --</option>
+                @foreach (var project in projects)
+                {
+                    <option value="@project.TitleProject">@project.TitleProject</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="comment">Komentar:</label>
+        <textarea id="comment" @bind="projectTimeRequestDto.Comment" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="timeSpentMinutes">Vrijeme provedeno na projektu (minute):</label>
+        <input type="number" id="timeSpentMinutes" @bind="projectTimeRequestDto.TimeSpentMinutes" class="form-control" min="0" required>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary" @onclick="ClearForm">Clear Form</button>
+    </div>
+</EditForm>
+
+@code {
+    private Project[]? projects;
+    private ProjectTimeRequestDto projectTimeRequestDto = new ProjectTimeRequestDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await Http.GetFromJsonAsync<Project[]>("sample-data/project.json");
+    }
+
+    private void ClearForm()
+    {
+        projectTimeRequestDto = new ProjectTimeRequestDto();
+    }
+
+    private async Task Submit()
+    {
+        Console.WriteLine($"Project Title: {projectTimeRequestDto.TitleProject}");
+        Console.WriteLine($"Comment: {projectTimeRequestDto.Comment}");
+        Console.WriteLine($"Time Spent (minutes): {projectTimeRequestDto.TimeSpentMinutes}");
+    }
+
+    public class Project
+    {
+        public int Id { get; set; }
+        public string? TitleProject { get; set; }
+    }
+
+    public class ProjectTimeRequestDto
+    {
+        public string TitleProject { get; set; } = string.Empty;
+        public string Comment { get; set; } = string.Empty;
+        public int TimeSpentMinutes { get; set; }
+    }
+}

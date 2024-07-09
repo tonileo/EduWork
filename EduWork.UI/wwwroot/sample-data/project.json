@@ -1,17 +1,14 @@
 [
   {
     "id": 1,
-    "comment": "ssad",
-    "timeSpentMinutes": 44
+    "titleProject": "project1"
   },
   {
     "id": 2,
-    "comment": "14",
-    "timeSpentMinutes": 333
+    "titleProject": "project2"
   },
   {
     "id": 3,
-    "comment": "cocmms",
-    "timeSpentMinutes": 22
+    "titleProject": "project3"
   }
 ]

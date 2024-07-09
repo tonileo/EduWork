@@ -18,7 +18,14 @@ namespace EduWork.BusinessLayer
             CreateMap<ProjectTime, ProjectTimeDto>()
            .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title));
 
+            CreateMap<List<ProjectTime>, ProjectTimeResponseDto>()
+            .ForMember(dest => dest.ProjectTimes, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.ProjectTimeSums, opt => opt.Ignore())
+            .ForMember(dest => dest.SumAllProjectTimes, opt => opt.MapFrom(src => src.Sum(pt => pt.TimeSpentMinutes)));
+
             CreateMap<ProjectTimeRequestDto, ProjectTime>();
+
+            CreateMap<ProjectTimeUpdateRequestDto, ProjectTime>();
         }
     }
 }

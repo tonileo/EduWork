@@ -1,0 +1,59 @@
+﻿@page "/adminStatsProjectTime"
+@using Common.DTO
+@using System.Linq;
+@inject HttpClient Http
+
+<PageTitle>Admin Project Statistics</PageTitle>
+
+<h1>Admin Project Statistics</h1>
+
+<br />
+
+<div class="row">
+    <div class="col-md-6">
+        @if (projectTimeResponse == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Projekt</th>
+                        <th style="text-align: right;">Trajanje (minute)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sum in projectTimeResponse.ProjectTimeSums)
+                    {
+                        <tr>
+                            <td>@sum.TitleProject</td>
+                            <td style="text-align: right;">@sum.SumTimeSpent</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td><strong>Ukupno</strong></td>
+                        <td style="text-align: right;">@projectTimeResponse.SumAllProjectTimes</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <div class="col-md-6" style="background-color: lightcyan; padding: 20px;">
+        <div>
+            <h3>Grafički prikaz</h3>
+            <p>Ukupni broj projekata: @projectTimeResponse?.ProjectTimeSums.Count()</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ProjectTimeResponseDto projectTimeResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>("api/ProjectTimes/adminFilter");
+    }
+}

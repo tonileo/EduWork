@@ -15,7 +15,7 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
-        public async Task InputProjectTime(string email, ProjectTimeRequestDto projectTime)
+        public async Task InputProjectTime(string? email, ProjectTimeRequestDto projectTime)
         {
             try
             {
@@ -31,15 +31,22 @@ namespace EduWork.BusinessLayer.Services
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
 
-                var userWorkDayId = await context.WorkDays.Include(g => g.User)
-                    .Where(d => d.WorkDate == dateToday && d.User.Email == email).Select(s => s.Id).SingleOrDefaultAsync();
+                var userWorkDayId = await context.WorkDays
+                    .Include(g => g.User)
+                    .Where(d => d.WorkDate == dateToday && d.User.Email == email)
+                    .Select(s => s.Id)
+                    .SingleOrDefaultAsync();
 
                 if (userWorkDayId == 0)
                 {
                     throw new ArgumentException("Work day for logged in user is not generated for today");
                 }
 
-                var projectIsPayable = await context.Projects.Where(d => d.Id == projectTime.ProjectId).Select(s => s.IsPayable).FirstOrDefaultAsync();
+                var projectIsPayable = await context.Projects
+                    .Where(d => d.Id == projectTime.ProjectId)
+                    .Select(s => s.IsPayable)
+                    .FirstOrDefaultAsync();
+
                 if (!projectIsPayable)
                 {
                     throw new ArgumentException("Project with that Id doesn't exist");
@@ -53,7 +60,58 @@ namespace EduWork.BusinessLayer.Services
             }
             catch (Exception ex)
             {
-                throw new ArgumentException("Problem with inputting project time" + ex);
+                throw new InvalidOperationException("Problem with inputting project time" + ex);
+            }
+        }
+
+        public async Task UpdateProjectTime(string? email, int id, ProjectTimeUpdateRequestDto projectTime)
+        {
+            try
+            {
+                if (email == null)
+                {
+                    throw new ArgumentException("User not logged in");
+                }
+
+                if (projectTime.TimeSpentMinutes <= 0)
+                {
+                    throw new ArgumentException("TimeSpentMinutes can't be 0 or less then 0");
+                }
+
+                var existingProjectTime = await context.ProjectTimes.FindAsync(id);
+                if (existingProjectTime == null)
+                {
+                    throw new ArgumentException("Project time entry not found");
+                }
+
+                var projectExist = await context.Projects
+                    .Where(d => d.Id == projectTime.ProjectId)
+                    .FirstOrDefaultAsync();
+
+                if (projectExist == null)
+                {
+                    throw new ArgumentException("Project with that Id doesn't exist");
+                }
+
+                var wordDayExist = await context.WorkDays
+                    .Where(s => s.Id == projectTime.WordDayId)
+                    .FirstOrDefaultAsync();
+
+                if (wordDayExist == null)
+                {
+                    throw new ArgumentException("Work day with that Id doesn't exist");
+                }
+
+                existingProjectTime.ProjectId = projectTime.ProjectId;
+                existingProjectTime.TimeSpentMinutes = projectTime.TimeSpentMinutes;
+                existingProjectTime.Comment = projectTime.Comment;
+                existingProjectTime.WorkDayId = projectTime.WordDayId;
+
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with updating project time" + ex);
             }
         }
 
@@ -66,59 +124,130 @@ namespace EduWork.BusinessLayer.Services
             return userProfiles;
         }
 
-        public async Task<List<ProjectTimeDto>> GetProjectTimesFilter(string? fromDate, string? toDate, string? username, string? projectTitle)
+        public async Task<ProjectTimeResponseDto> GetProjectTimesFilter(DateTime? fromDate, DateTime? toDate, string? username, string? projectTitle)
         {
-            IQueryable<ProjectTime> query = context.ProjectTimes
+            try
+            {
+                IQueryable<ProjectTime> query = context.ProjectTimes
                 .Include(k => k.Project).AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
-            {
-                if (DateOnly.TryParse(fromDate, out DateOnly parsedFromDate) && DateOnly.TryParse(toDate, out DateOnly parsedToDate))
+                if (fromDate != null && toDate != null)
                 {
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= parsedFromDate && pt.WorkDay.WorkDate <= parsedToDate);
+                    DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
+                    DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
+
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
                 }
-            }
+                else if (fromDate != null)
+                {
+                    DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
 
-            if (!string.IsNullOrEmpty(username))
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly);
+                }
+                else if (toDate != null)
+                {
+                    DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
+
+                    query = query.Where(pt => pt.WorkDay.WorkDate <= toDateOnly);
+                }
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    query = query.Where(pt => pt.WorkDay.User.Username == username);
+                }
+
+                if (!string.IsNullOrEmpty(projectTitle))
+                {
+                    query = query.Where(pt => pt.Project.Title == projectTitle);
+                }
+
+                var projectTimes = await query.ToListAsync();
+
+                var projectTimeSums = projectTimes
+                    .GroupBy(pt => pt.Project.Title)
+                    .Select(g => new ProjectTimeSumDto
+                    {
+                        TitleProject = g.Key,
+                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes)
+
+                    }).ToList();
+
+                var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
+
+                projectTimeResponseDto.ProjectTimeSums = projectTimeSums;
+
+                return projectTimeResponseDto;
+
+                //int sumAllProjectTimes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
+
+                //var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
+
+                //return new ProjectTimeResponseDto
+                //{
+                //    ProjectTimes = userProjectTimes,
+                //    ProjectTimeSums = projectTimeSums,
+                //    SumAllProjectTimes = sumAllProjectTimes
+                //};
+            }
+            catch (Exception ex)
             {
-                query = query.Where(pt => pt.WorkDay.User.Username == username);
+                throw new InvalidOperationException("Problem with GetProjectTimesFilter" + ex);
             }
-
-            if (!string.IsNullOrEmpty(projectTitle))
-            {
-                query = query.Where(pt => pt.Project.Title == projectTitle);
-            }
-
-            var projectTimes = await query.ToListAsync();
-
-            var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
-
-            return userProjectTimes;
         }
 
-        public async Task<List<ProjectTimeDto>> GetMyProjectTimesFilter(string email, string? fromDate, string? toDate, string? projectTitle)
+        public async Task<ProjectTimeResponseDto> GetMyProjectTimesFilter(string? email, DateTime? fromDate, DateTime? toDate, string? projectTitle)
         {
-            IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
+            try
+            {
+                IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
                 .Where(pt => pt.WorkDay.User.Email == email).AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
-            {
-                if (DateOnly.TryParse(fromDate, out DateOnly parsedFromDate) && DateOnly.TryParse(toDate, out DateOnly parsedToDate))
+                if (fromDate != null && toDate != null)
                 {
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= parsedFromDate && pt.WorkDay.WorkDate <= parsedToDate);
+                    DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
+                    DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
+
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
                 }
-            }
+                else if (fromDate != null)
+                {
+                    DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
 
-            if (!string.IsNullOrEmpty(projectTitle))
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly);
+                }
+                else if (toDate != null)
+                {
+                    DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
+
+                    query = query.Where(pt => pt.WorkDay.WorkDate <= toDateOnly);
+                }
+
+                if (!string.IsNullOrEmpty(projectTitle))
+                {
+                    query = query.Where(pt => pt.Project.Title == projectTitle);
+                }
+
+                var projectTimes = await query.ToListAsync();
+
+                var projectTimeSums = projectTimes
+                    .GroupBy(pt => pt.Project.Title)
+                    .Select(g => new ProjectTimeSumDto
+                    {
+                        TitleProject = g.Key,
+                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes)
+
+                    }).ToList();
+
+                var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
+
+                projectTimeResponseDto.ProjectTimeSums = projectTimeSums;
+
+                return projectTimeResponseDto;
+            }
+            catch (Exception ex)
             {
-                query = query.Where(pt => pt.Project.Title == projectTitle);
+                throw new InvalidOperationException("Problem with GetMyProjectTimesFilter" + ex);
             }
-
-            var projectTimes = await query.ToListAsync();
-
-            var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
-
-            return userProjectTimes;
         }
     }
 }
