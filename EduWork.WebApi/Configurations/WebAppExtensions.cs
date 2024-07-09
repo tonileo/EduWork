@@ -20,8 +20,12 @@ namespace EduWork.WebApi.Configuration
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
             return app;
         }
 

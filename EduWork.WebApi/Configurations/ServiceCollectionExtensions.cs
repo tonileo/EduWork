@@ -72,6 +72,16 @@ namespace EduWork.WebApi.Configuration
 
             services.AddDbContext<AppDbContext>();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
             return services;
         }
     }
