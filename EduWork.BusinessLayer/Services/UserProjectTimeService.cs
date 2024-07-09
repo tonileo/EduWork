@@ -24,9 +24,9 @@ namespace EduWork.BusinessLayer.Services
                     throw new ArgumentException("User not logged in");
                 }
 
-                if (projectTime.TimeSpentMinutes == 0)
+                if (projectTime.TimeSpentMinutes <= 0)
                 {
-                    throw new ArgumentException("TimeSpentMinutes can't be 0");
+                    throw new ArgumentException("TimeSpentMinutes can't be 0 or less then 0");
                 }
 
                 var dateToday = DateOnly.FromDateTime(DateTime.Now);
@@ -177,17 +177,6 @@ namespace EduWork.BusinessLayer.Services
                 projectTimeResponseDto.ProjectTimeSums = projectTimeSums;
 
                 return projectTimeResponseDto;
-
-                //int sumAllProjectTimes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
-
-                //var userProjectTimes = mapper.Map<List<ProjectTimeDto>>(projectTimes);
-
-                //return new ProjectTimeResponseDto
-                //{
-                //    ProjectTimes = userProjectTimes,
-                //    ProjectTimeSums = projectTimeSums,
-                //    SumAllProjectTimes = sumAllProjectTimes
-                //};
             }
             catch (Exception ex)
             {
