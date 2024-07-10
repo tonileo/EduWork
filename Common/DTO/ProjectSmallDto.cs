@@ -10,9 +10,5 @@ namespace Common.DTO
     {
         public int Id { get; set; }
         public string? Title { get; set; }
-        public bool IsFinished { get; set; }
-        public bool IsPrivate { get; set; }
-        public bool IsEducation { get; set; }
-        public bool IsPayable { get; set; }
     }
 }
