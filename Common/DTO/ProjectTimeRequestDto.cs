@@ -11,6 +11,8 @@ namespace Common.DTO
         public string? Comment { get; set; }
         public int TimeSpentMinutes { get; set; }
 
-        public int ProjectId { get; set; }
+        public string? TitleProject { get; set; }
+
+        public DateTime DateWorkDay { get; set; }
     }
 }

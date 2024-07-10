@@ -29,31 +29,32 @@ namespace EduWork.BusinessLayer.Services
                     throw new ArgumentException("TimeSpentMinutes can't be 0 or less then 0");
                 }
 
-                var dateToday = DateOnly.FromDateTime(DateTime.Now);
+                DateOnly projectTimeDateOnly = DateOnly.FromDateTime(projectTime.DateWorkDay);
 
                 var userWorkDayId = await context.WorkDays
                     .Include(g => g.User)
-                    .Where(d => d.WorkDate == dateToday && d.User.Email == email)
+                    .Where(d => d.WorkDate == projectTimeDateOnly && d.User.Email == email)
                     .Select(s => s.Id)
                     .SingleOrDefaultAsync();
 
-                if (userWorkDayId == 0)
+                if (userWorkDayId <= 0)
                 {
-                    throw new ArgumentException("Work day for logged in user is not generated for today");
+                    throw new ArgumentException("Work day for logged in user is not generated");
                 }
 
-                var projectIsPayable = await context.Projects
-                    .Where(d => d.Id == projectTime.ProjectId)
-                    .Select(s => s.IsPayable)
+                var projectExist = await context.Projects
+                    .Where(d => d.Title == projectTime.TitleProject)
+                    .Select(s => s.Id)
                     .FirstOrDefaultAsync();
 
-                if (!projectIsPayable)
+                if (projectExist <= 0)
                 {
                     throw new ArgumentException("Project with that Id doesn't exist");
                 }
 
                 var userProjectTime = mapper.Map<ProjectTime>(projectTime);
                 userProjectTime.WorkDayId = userWorkDayId;
+                userProjectTime.ProjectId = projectExist;
 
                 await context.ProjectTimes.AddAsync(userProjectTime);
                 await context.SaveChangesAsync();
@@ -161,6 +162,13 @@ namespace EduWork.BusinessLayer.Services
                     query = query.Where(pt => pt.Project.Title == projectTitle);
                 }
 
+                //TO DO
+
+                //var projectIsPayable = await context.Projects
+                //    .Where(d => d.Id == projectTime.ProjectId)
+                //    .Select(s => s.IsPayable)
+                //    .FirstOrDefaultAsync();
+
                 var projectTimes = await query.ToListAsync();
 
                 var projectTimeSums = projectTimes
@@ -215,6 +223,13 @@ namespace EduWork.BusinessLayer.Services
                 {
                     query = query.Where(pt => pt.Project.Title == projectTitle);
                 }
+
+                //TO DO
+
+                //var projectIsPayable = await context.Projects
+                //    .Where(d => d.Id == projectTime.ProjectId)
+                //    .Select(s => s.IsPayable)
+                //    .FirstOrDefaultAsync();
 
                 var projectTimes = await query.ToListAsync();
 
