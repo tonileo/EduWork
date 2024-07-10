@@ -15,6 +15,24 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
+        public async Task<List<ProjectSmallDto>> GetProjects() //will switch to differnet controller later
+        {
+            var projects = await context.Projects.AsNoTracking().ToListAsync();
+
+            var userprojects = mapper.Map<List<ProjectSmallDto>>(projects);
+
+            return userprojects;
+        }
+
+        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes() //only for testing, will remove later
+        {
+            var userprojectTimes = await context.ProjectTimes.AsNoTracking().ToListAsync();
+
+            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+
+            return userProfiles;
+        }
+
         public async Task InputProjectTime(string? email, ProjectTimeRequestDto projectTime)
         {
             try
@@ -37,7 +55,7 @@ namespace EduWork.BusinessLayer.Services
                     .Select(s => s.Id)
                     .SingleOrDefaultAsync();
 
-                if (userWorkDayId <= 0)
+                if (userWorkDayId == 0)
                 {
                     throw new ArgumentException("Work day for logged in user is not generated");
                 }
@@ -47,7 +65,7 @@ namespace EduWork.BusinessLayer.Services
                     .Select(s => s.Id)
                     .FirstOrDefaultAsync();
 
-                if (projectExist <= 0)
+                if (projectExist == 0)
                 {
                     throw new ArgumentException("Project with that Id doesn't exist");
                 }
@@ -61,11 +79,11 @@ namespace EduWork.BusinessLayer.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Problem with inputting project time" + ex);
+                throw new InvalidOperationException("Problem with inputting project time" + ex.Message);
             }
         }
 
-        public async Task UpdateProjectTime(string? email, int id, ProjectTimeUpdateRequestDto projectTime)
+        public async Task UpdateProjectTime(string? email, int id, ProjectTimeRequestDto projectTime)
         {
             try
             {
@@ -86,43 +104,38 @@ namespace EduWork.BusinessLayer.Services
                 }
 
                 var projectExist = await context.Projects
-                    .Where(d => d.Id == projectTime.ProjectId)
+                    .Where(d => d.Title == projectTime.TitleProject)
+                    .Select(s => s.Id)
                     .FirstOrDefaultAsync();
 
-                if (projectExist == null)
+                if (projectExist == 0)
                 {
                     throw new ArgumentException("Project with that Id doesn't exist");
                 }
 
+                DateOnly projectTimeDateOnly = DateOnly.FromDateTime(projectTime.DateWorkDay);
+
                 var wordDayExist = await context.WorkDays
-                    .Where(s => s.Id == projectTime.WordDayId)
+                    .Where(s => s.WorkDate == projectTimeDateOnly)
+                    .Select(f=> f.Id)
                     .FirstOrDefaultAsync();
 
-                if (wordDayExist == null)
+                if (wordDayExist == 0)
                 {
                     throw new ArgumentException("Work day with that Id doesn't exist");
                 }
 
-                existingProjectTime.ProjectId = projectTime.ProjectId;
+                existingProjectTime.ProjectId = projectExist;
                 existingProjectTime.TimeSpentMinutes = projectTime.TimeSpentMinutes;
                 existingProjectTime.Comment = projectTime.Comment;
-                existingProjectTime.WorkDayId = projectTime.WordDayId;
+                existingProjectTime.WorkDayId = wordDayExist;
 
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Problem with updating project time" + ex);
+                throw new InvalidOperationException("Problem with updating project time" + ex.Message);
             }
-        }
-
-        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes() //only for testing, will remove later
-        {
-            var userprojectTimes = await context.ProjectTimes.AsNoTracking().ToListAsync();
-
-            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
-
-            return userProfiles;
         }
 
         public async Task<ProjectTimeResponseDto> GetProjectTimesFilter(DateTime? fromDate, DateTime? toDate, string? username, string? projectTitle)
@@ -162,33 +175,56 @@ namespace EduWork.BusinessLayer.Services
                     query = query.Where(pt => pt.Project.Title == projectTitle);
                 }
 
-                //TO DO
-
-                //var projectIsPayable = await context.Projects
-                //    .Where(d => d.Id == projectTime.ProjectId)
-                //    .Select(s => s.IsPayable)
-                //    .FirstOrDefaultAsync();
-
                 var projectTimes = await query.ToListAsync();
 
-                var projectTimeSums = projectTimes
+                //var projectTimeSumsTasks = projectTimes
+                //    .GroupBy(pt => pt.Project.Title)
+                //    .Select(async g => new ProjectTimeSumDto
+                //    {
+                //        TitleProject = g.Key,
+                //        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
+                //        IsEducation = await context.Projects
+                //        .Where(p => p.Title == g.Key)
+                //        .Select(g => g.IsEducation)
+                //        .FirstOrDefaultAsync(),
+                //    });
+
+                var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
+                var projectProperties = await context.Projects
+                    .Where(p => projectTitles.Contains(p.Title))
+                    .Select(p => new
+                    {
+                        p.Title,
+                        p.IsEducation,
+                        p.IsFinished,
+                        p.IsPayable,
+                        p.IsPrivate
+                    })
+                    .ToDictionaryAsync(p => p.Title);
+
+                var projectTimeSumsTasks = projectTimes
                     .GroupBy(pt => pt.Project.Title)
-                    .Select(g => new ProjectTimeSumDto
+                    .Select(async g => new ProjectTimeSumDto
                     {
                         TitleProject = g.Key,
-                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes)
+                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
+                        IsEducation = projectProperties[g.Key].IsEducation,
+                        IsFinished = projectProperties[g.Key].IsFinished,
+                        IsPayable = projectProperties[g.Key].IsPayable,
+                        IsPrivate = projectProperties[g.Key].IsPrivate
+                    });
 
-                    }).ToList();
+                var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
 
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 
-                projectTimeResponseDto.ProjectTimeSums = projectTimeSums;
+                projectTimeResponseDto.ProjectTimeSums = projectTimeSums.ToList();
 
                 return projectTimeResponseDto;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Problem with GetProjectTimesFilter" + ex);
+                throw new InvalidOperationException("Problem with GetProjectTimesFilter" + ex.Message);
             }
         }
 
@@ -224,33 +260,44 @@ namespace EduWork.BusinessLayer.Services
                     query = query.Where(pt => pt.Project.Title == projectTitle);
                 }
 
-                //TO DO
-
-                //var projectIsPayable = await context.Projects
-                //    .Where(d => d.Id == projectTime.ProjectId)
-                //    .Select(s => s.IsPayable)
-                //    .FirstOrDefaultAsync();
-
                 var projectTimes = await query.ToListAsync();
 
-                var projectTimeSums = projectTimes
+                var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
+                var projectProperties = await context.Projects
+                    .Where(p => projectTitles.Contains(p.Title))
+                    .Select(p => new
+                    {
+                        p.Title,
+                        p.IsEducation,
+                        p.IsFinished,
+                        p.IsPayable,
+                        p.IsPrivate
+                    })
+                    .ToDictionaryAsync(p => p.Title);
+
+                var projectTimeSumsTasks = projectTimes
                     .GroupBy(pt => pt.Project.Title)
-                    .Select(g => new ProjectTimeSumDto
+                    .Select(async g => new ProjectTimeSumDto
                     {
                         TitleProject = g.Key,
-                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes)
+                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
+                        IsEducation = projectProperties[g.Key].IsEducation,
+                        IsFinished = projectProperties[g.Key].IsFinished,
+                        IsPayable = projectProperties[g.Key].IsPayable,
+                        IsPrivate = projectProperties[g.Key].IsPrivate
+                    });
 
-                    }).ToList();
+                var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
 
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 
-                projectTimeResponseDto.ProjectTimeSums = projectTimeSums;
+                projectTimeResponseDto.ProjectTimeSums = projectTimeSums.ToList();
 
                 return projectTimeResponseDto;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Problem with GetMyProjectTimesFilter" + ex);
+                throw new InvalidOperationException("Problem with GetMyProjectTimesFilter" + ex.Message);
             }
         }
     }

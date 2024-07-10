@@ -1,4 +1,7 @@
 ﻿@page "/inputProjectTime"
+
+@using Common.DTO
+
 @inject HttpClient Http
 
 <PageTitle>Input Project Time</PageTitle>
@@ -10,6 +13,7 @@
 <EditForm Model="@projectTimeRequestDto" OnValidSubmit="@Submit">
     <DataAnnotationsValidator />
     <ValidationSummary />
+
 
     <div class="form-group">
         <label for="titleProject">Projekt:</label>
@@ -23,10 +27,16 @@
                 <option value="">-- Odaberi projekt --</option>
                 @foreach (var project in projects)
                 {
-                    <option value="@project.TitleProject">@project.TitleProject</option>
+                    <option value="@project.Title">@project.Title</option>
                 }
             }
         </select>
+    </div>
+
+    <div class="form-group">
+        <label for="date">Datum:</label>
+        @* <InputDate TValue="DateTime"  @bind-Value="date3" EnableMinMax="true" Min="@min3" Max="@max3" /> *@
+        <InputDate Type="InputDateType.Date" @bind-Value="projectTimeRequestDto.DateWorkDay" />
     </div>
 
     <div class="form-group">
@@ -48,12 +58,25 @@
 </EditForm>
 
 @code {
-    private Project[]? projects;
+
+    // private DateTime date = DateTime.Now.AddMonths(3);
+    // private DateTime min = DateTime.Now.AddMonths(-1);
+    // private DateTime max = DateTime.Now.AddYears(1);
+    // private DateTime date3, min3, max3;
+
+
+    private List<ProjectSmallDto> projects;
     private ProjectTimeRequestDto projectTimeRequestDto = new ProjectTimeRequestDto();
 
     protected override async Task OnInitializedAsync()
     {
-        projects = await Http.GetFromJsonAsync<Project[]>("sample-data/project.json");
+        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>("api/ProjectTimes/projects");
+
+        projectTimeRequestDto.DateWorkDay = DateTime.Today;
+
+        // date3 = DateTime.Now.AddMonths(3);
+        // min3 = min;
+        // max3 = max;
     }
 
     private void ClearForm()
@@ -63,21 +86,24 @@
 
     private async Task Submit()
     {
-        Console.WriteLine($"Project Title: {projectTimeRequestDto.TitleProject}");
-        Console.WriteLine($"Comment: {projectTimeRequestDto.Comment}");
-        Console.WriteLine($"Time Spent (minutes): {projectTimeRequestDto.TimeSpentMinutes}");
-    }
+        try
+        {
+            if (projectTimeRequestDto.DateWorkDay > DateTime.Today)
+            {
+                Console.WriteLine($"You can't add Project Time in future");
+                return;
+            }
 
-    public class Project
-    {
-        public int Id { get; set; }
-        public string? TitleProject { get; set; }
-    }
+            var response = await Http.PostAsJsonAsync("api/ProjectTimes", projectTimeRequestDto);
 
-    public class ProjectTimeRequestDto
-    {
-        public string TitleProject { get; set; } = string.Empty;
-        public string Comment { get; set; } = string.Empty;
-        public int TimeSpentMinutes { get; set; }
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
     }
 }

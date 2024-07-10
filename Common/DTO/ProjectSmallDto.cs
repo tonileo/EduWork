@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Common.DTO
 {
-    public record ProjectTimeSumDto
+    public record ProjectSmallDto
     {
-        public string? TitleProject { get; set; }
-        public int SumTimeSpent { get; set; }
-
+        public int Id { get; set; }
+        public string? Title { get; set; }
         public bool IsFinished { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsEducation { get; set; }

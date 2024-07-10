@@ -13,6 +13,6 @@ namespace Common.DTO
 
         public string? TitleProject { get; set; }
 
-        public DateTime DateWorkDay { get; set; }
+        public DateTime DateWorkDay { get; set; } = DateTime.Today;
     }
 }

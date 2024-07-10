@@ -29,6 +29,20 @@ namespace EduWork.WebApi.Controllers
             _userProjectTimeService = userProjectTimeService;
         }
 
+        [HttpGet("projects")]
+        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects() //will switch to differnet controller later
+        {
+            var result = await _userProjectTimeService.GetProjects();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes() //only for testing, will remove later
+        {
+            var result = await _userProjectTimeService.GetProjectTimes();
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<ActionResult> InputProjectTime([FromServices] IIdentity currentUser, ProjectTimeRequestDto projectTime)
         {
@@ -37,56 +51,16 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentity currentUser, int id, ProjectTimeUpdateRequestDto projectTime)
+        public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentity currentUser, int id, ProjectTimeRequestDto projectTime)
         {
             await _userProjectTimeService.UpdateProjectTime(currentUser.Email, id, projectTime);
             return Ok();
-        }
-
-        //// PUT: api/ProjectTimes/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutProjectTime(int id, ProjectTime projectTime)
-        //{
-        //    if (id != projectTime.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    _context.Entry(projectTime).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ProjectTimeExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes()
-        {
-            var result = await _userProjectTimeService.GetProjectTimes();
-            return Ok(result);
         }
 
         [HttpGet]
         [Route("adminFilter")]
         public async Task<ActionResult<ProjectTimeResponseDto>> GetProjectTimesFilter([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)
         {
-            Console.WriteLine($"fromDate: {fromDate}, toDate: {toDate}, username: {username}, projectTitle: {projectTitle}");
-
             var result = await _userProjectTimeService.GetProjectTimesFilter(fromDate, toDate, username, projectTitle);
             return Ok(result);
         }
