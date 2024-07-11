@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.UI", "EduWork.UI\EduWork.UI.csproj", "{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{58029F92-9661-4659-895E-B19B4307DA34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduWork.UnitTests", "EduWork.UnitTests\EduWork.UnitTests.csproj", "{5F44D161-BCAA-4B5D-B008-206DD966587B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +43,16 @@ Global
 		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CD737F3-C7EC-40CA-81FF-ADA2629832C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F44D161-BCAA-4B5D-B008-206DD966587B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F44D161-BCAA-4B5D-B008-206DD966587B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F44D161-BCAA-4B5D-B008-206DD966587B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F44D161-BCAA-4B5D-B008-206DD966587B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F44D161-BCAA-4B5D-B008-206DD966587B} = {58029F92-9661-4659-895E-B19B4307DA34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {67D0BD26-2DF6-476D-AB65-D3CE626F2D43}
