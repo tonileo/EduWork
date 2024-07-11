@@ -1,9 +1,8 @@
 ﻿@page "/userStatsProjectTime"
 
-@using EduWork.UI.Components
+@using EduWork.UI.Featues.ProjectTime
 
-<PageTitle>Admin Project Statistics</PageTitle>
+<PageTitle>User Project Statistics</PageTitle>
 
-<h1>Admin Project Statistics</h1><br/>
-
-<ProjectTimeStats ApiEndpoint="api/ProjectTimes/userFilter" />
+<ProjectTimeStats ApiEndpoint="api/ProjectTimes/userFilter"
+                  haveUsername="false" />

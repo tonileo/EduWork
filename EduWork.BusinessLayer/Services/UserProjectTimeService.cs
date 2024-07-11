@@ -117,7 +117,7 @@ namespace EduWork.BusinessLayer.Services
 
                 var wordDayExist = await context.WorkDays
                     .Where(s => s.WorkDate == projectTimeDateOnly)
-                    .Select(f=> f.Id)
+                    .Select(f => f.Id)
                     .FirstOrDefaultAsync();
 
                 if (wordDayExist == 0)

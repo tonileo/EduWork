@@ -1,28 +1,97 @@
-﻿@using Common.DTO
-@using System.Linq;
+﻿@using EduWork.UI.Featues.ProjectTime
+@using Common.DTO
+
 @inject HttpClient Http
 
-@code {
-    [Parameter]
-    public string ApiEndpoint { get; set; }
+@using System.Linq;
 
-    private ProjectTimeResponseDto projectTimeResponse;
+@code {
+
+    private ProjectTimeResponseDto? projectTimeResponse;
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+    private string? username;
+    private string? projectTitle;
+
+    [Parameter]
+    public string? ApiEndpoint { get; set; }
+
+    [Parameter]
+    public bool haveUsername { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
-        projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>(ApiEndpoint);
+        await LoadProjectTimesAsync();
+    }
+
+    private async Task LoadProjectTimesAsync()
+    {
+        string parameters;
+
+        if (haveUsername)
+        {
+            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&username={username}&projectTitle={projectTitle}";
+        }
+        else
+        {
+            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&projectTitle={projectTitle}";
+        }
+
+
+        projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>($"{ApiEndpoint}?{parameters}");
+    }
+
+    private async Task ApplyFilter()
+    {
+        await LoadProjectTimesAsync();
     }
 }
 
 <div class="row">
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <input type="date" class="form-control" @bind="fromDate" id="fromDate" />
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <input type="date" class="form-control" @bind="toDate" id="toDate" />
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <input type="text" class="form-control" @bind="projectTitle" id="projectTitle" placeholder="Naziv projekta..." />
+        </div>
+    </div>
+
+    @if (haveUsername)
+    {
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <input type="text" class="form-control" @bind="username" id="username" placeholder="Korisničko ime..." />
+            </div>
+        </div>
+    }
+
+</div>
+<div class="col-md-3 col-sm-6 mt-3 mt-md-0">
+    <br>
+    <button class="btn btn-primary w-100" @onclick="ApplyFilter">Prikaži</button>
+</div>
+
+<br>
+<div class="row">
     <div class="col-md-6">
+
         @if (projectTimeResponse == null)
         {
             <p><em>Loading...</em></p>
         }
         else
         {
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Projekt</th>
@@ -32,8 +101,14 @@
                 <tbody>
                     @foreach (var sum in projectTimeResponse.ProjectTimeSums)
                     {
-                        <tr style="@(sum.IsPayable ? "" : "color: red")">
-                            <td>@sum.TitleProject</td>
+                        <tr>
+                            <td>
+                                @if (!sum.IsPayable)
+                                {
+                                    <span class="legend-circle" style="background-color: red;"></span>
+                                }
+                                @sum.TitleProject
+                            </td>
                             <td style="text-align: right;">@sum.SumTimeSpent</td>
                         </tr>
                     }
@@ -83,5 +158,9 @@
         border-radius: 50%;
         margin-right: 5px;
         vertical-align: middle;
+    }
+
+    .table-striped tbody tr:nth-child(odd) {
+        background-color: lightcyan;
     }
 </style>
