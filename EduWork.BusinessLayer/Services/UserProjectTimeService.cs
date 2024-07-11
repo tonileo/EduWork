@@ -177,18 +177,6 @@ namespace EduWork.BusinessLayer.Services
 
                 var projectTimes = await query.ToListAsync();
 
-                //var projectTimeSumsTasks = projectTimes
-                //    .GroupBy(pt => pt.Project.Title)
-                //    .Select(async g => new ProjectTimeSumDto
-                //    {
-                //        TitleProject = g.Key,
-                //        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
-                //        IsEducation = await context.Projects
-                //        .Where(p => p.Title == g.Key)
-                //        .Select(g => g.IsEducation)
-                //        .FirstOrDefaultAsync(),
-                //    });
-
                 var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
                 var projectProperties = await context.Projects
                     .Where(p => projectTitles.Contains(p.Title))

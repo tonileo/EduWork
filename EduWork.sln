@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.UI", "EduWork.UI\Ed
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{58029F92-9661-4659-895E-B19B4307DA34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduWork.UnitTests", "EduWork.UnitTests\EduWork.UnitTests.csproj", "{5F44D161-BCAA-4B5D-B008-206DD966587B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduWork.UnitTests", "EduWork.UnitTests\EduWork.UnitTests.csproj", "{5F44D161-BCAA-4B5D-B008-206DD966587B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
