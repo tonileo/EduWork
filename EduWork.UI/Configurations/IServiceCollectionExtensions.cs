@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using EduWork.UI.Authentication;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -19,21 +20,25 @@ namespace EduWork.UI.Configurations
             {
                 var authorizationMessageHandler = sp.GetRequiredService<AuthorizationMessageHandler>();
                 authorizationMessageHandler.InnerHandler = new HttpClientHandler();
+
                 authorizationMessageHandler = authorizationMessageHandler.ConfigureHandler(
                     authorizedUrls: new[] { downstreamApiOptions.BaseUrl },
                     scopes: new[] { downstreamApiOptions.Scope });
+
                 return new HttpClient(authorizationMessageHandler)
                 {
                     BaseAddress = new Uri(downstreamApiOptions.BaseUrl ?? string.Empty)
                 };
             });
 
-            services.AddMsalAuthentication(options =>
+            services.AddMsalAuthentication<RemoteAuthenticationState, UserAccount>(options =>
             {
                 configuration.Bind(ClientAzureAdOptions.Section, options.ProviderOptions.Authentication);
-                options.ProviderOptions.LoginMode = "redirect";
+                //options.ProviderOptions.LoginMode = "redirect";
+                options.ProviderOptions.LoginMode = "popup";
                 options.ProviderOptions.DefaultAccessTokenScopes.Add(downstreamApiOptions.Scope);
-            });
+                options.ProviderOptions.Cache.CacheLocation = "localStorage";
+            }).AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, UserAccount, UserAccountFactory>();
 
             return services;
         }
