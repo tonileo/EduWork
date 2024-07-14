@@ -1,0 +1,274 @@
+﻿@using Common.DTO
+@using System.Linq;
+
+@inject HttpClient Http
+
+<div class="row">
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <InputDate class="form-control" @bind-Value="fromDate" id="fromDate" @oninput="HandleFromDateInput" />
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <InputDate class="form-control" @bind-Value="toDate" id="toDate" @oninput="HandleToDateInput" />
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="form-group">
+            <InputText class="form-control" @bind-Value="projectTitle" id="projectTitle" placeholder="Naziv projekta..." @oninput="HandleProjectTitleInput" />
+        </div>
+    </div>
+
+    @if (haveUsername)
+    {
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                @if (usernames == null)
+                {
+                    <option>Loading...</option>
+                }
+                else
+                {
+                    <InputSelect class="form-control" @bind-Value="username" id="username" @oninput="HandleUsernameInput">
+                        <option value="">Odaberi korisnika...</option>
+                        @foreach (var user in usernames)
+                        {
+                            <option value="@user.Username">@user.Username</option>
+                        }
+                    </InputSelect>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+<br>
+<div class="row">
+    <div class="col-md-6">
+
+        @if (projectTimeResponse == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table @(haveUsername ? string.Empty : "table-striped")">
+                <thead>
+                    <tr>
+                        <th>Projekt</th>
+                        <th style="text-align: right;">Trajanje</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var sum in projectTimeResponse.ProjectTimeSums)
+                    {
+                        <tr class="@GetRowClass(sum.IsEducation, sum.IsFinished)">
+                            <td>
+                                @if (haveUsername)
+                                {
+                                    @if (!sum.IsPayable)
+                                    {
+                                        <span class="legend-circle" style="background-color: red;"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="legend-circle" style="background-color: forestgreen;"></span>
+                                    }
+                                }
+                                else
+                                {
+                                    @if (sum.IsEducation)
+                                    {
+                                        <span class="legend-circle" style="background-color: #2196F3;"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="legend-circle" style="background-color: black;"></span>
+                                    }
+                                }
+                                @sum.TitleProject
+                            </td>
+                            <td style="text-align: right;"><span>@sum.SumTimeSpentHours</span>h : <span>@sum.SumTimeSpentMinutes</span>min</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td><strong>Ukupno</strong></td>
+                        <td style="text-align: right;">
+                            <strong><span>@projectTimeResponse.SumAllProjectTimesHours</span>h : <span>@projectTimeResponse.SumAllProjectTimesMinutes</span>min</strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px;">
+                <ul style="list-style-type: none; padding: 0;">
+                    @if (haveUsername)
+                    {
+                        <li style="display: inline-block; margin-right: 15px;">
+                            <span class="legend-circle" style="background-color: red;"></span>
+                            <span>Ne plaćen</span>
+                        </li>
+
+                        <li style="display: inline-block; margin-right: 15px;">
+                            <span class="legend-circle" style="background-color: forestgreen;"></span>
+                            <span>Plaćen</span>
+                        </li>
+                    }
+                    <li style="display: inline-block; margin-right: 15px;">
+                        <span class="legend-circle" style="background-color: #2196F3;"></span>
+                        <span>Edukacija</span>
+                    </li>
+
+                    <li style="display: inline-block; margin-right: 15px;">
+                        <span class="legend-circle" style="background-color: #757575;"></span>
+                        <span>Završen</span>
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6" style="background-color: lightcyan; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+
+        <div style="margin-bottom: 30px;">
+            <p style="font-size: 18px; margin-bottom: 5px;">Provedeno vremena:</p>
+            <p style="font-size: 20px;">
+                <span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min
+            </p>
+        </div>
+
+        <div>
+            @foreach (var percentageTime in projectTimeResponse?.ProjectTimeSums ?? Enumerable.Empty<ProjectTimeSumDto>())
+            {
+                <div style="display: inline-block; vertical-align: top; margin-right: 20px; border-radius: 8px; padding-right: 20px; box-shadow: 3px 3px 5px rgba(0,0,0,0.4);">
+                    <p style="font-size: 24px; margin-bottom: 5px; margin-top: 0;">@percentageTime.PercentageTimeSpent%</p>
+                    <strong><p style="font-size: 14px; margin-bottom: 5px; margin-top: 5px;">@percentageTime.TitleProject</p></strong>
+                </div>
+            }
+        </div>
+
+    </div>
+
+
+</div>
+
+<style>
+    .legend-circle {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    .education-row {
+        background-color: #E0F7FA;
+    }
+
+    .finished-row {
+        color: gray;
+    }
+
+    .table-striped tbody tr:nth-child(odd) {
+        background-color: lightcyan;
+    }
+</style>
+
+@code {
+    private ProjectTimeResponseDto? projectTimeResponse;
+    private List<UsernamesDto>? usernames;
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+    private string? username;
+    private string? projectTitle;
+
+    [Parameter]
+    public string? ApiEndpoint { get; set; }
+
+    [Parameter]
+    public bool haveUsername { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (haveUsername)
+        {
+            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>("api/ProjectTimes/usernames");
+        }
+
+        await LoadProjectTimesAsync();
+    }
+
+    private async Task LoadProjectTimesAsync()
+    {
+        string parameters;
+
+        if (haveUsername)
+        {
+            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&username={username}&projectTitle={projectTitle}";
+        }
+        else
+        {
+            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&projectTitle={projectTitle}";
+        }
+
+        projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>($"{ApiEndpoint}?{parameters}");
+    }
+
+    private async Task HandleProjectTitleInput(ChangeEventArgs args)
+    {
+        projectTitle = args.Value?.ToString();
+        await ApplyFilter();
+    }
+
+    private async Task HandleUsernameInput(ChangeEventArgs args)
+    {
+        username = args.Value?.ToString();
+        await ApplyFilter();
+    }
+
+    private async Task HandleFromDateInput(ChangeEventArgs args)
+    {
+        fromDate = DateTime.TryParse(args.Value?.ToString(), out var date) ? date : (DateTime?)null;
+        await ApplyFilter();
+    }
+
+    private async Task HandleToDateInput(ChangeEventArgs args)
+    {
+        toDate = DateTime.TryParse(args.Value?.ToString(), out var date) ? date : (DateTime?)null;
+        await ApplyFilter();
+    }
+
+
+    private async Task ApplyFilter()
+    {
+        await LoadProjectTimesAsync();
+    }
+
+    private string GetRowClass(bool isEducation, bool isFinished)
+    {
+        string rowClass = string.Empty;
+
+        if (haveUsername == true)
+        {
+            if (isEducation)
+            {
+                rowClass += "education-row ";
+            }
+        }
+
+        if (isFinished)
+        {
+            rowClass += "finished-row";
+        }
+
+        return rowClass.Trim();
+    }
+}

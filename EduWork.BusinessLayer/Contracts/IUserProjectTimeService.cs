@@ -11,6 +11,7 @@ namespace EduWork.BusinessLayer.Contracts
     public interface IUserProjectTimeService
     {
         public Task<List<ProjectSmallDto>> GetProjects();
+        public Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email);
         public Task<List<ProjectTimeDtoTest>> GetProjectTimes();
         public Task InputProjectTime(string email, ProjectTimeRequestDto projectTime);
         public Task UpdateProjectTime(string email, int id, ProjectTimeRequestDto projectTime);

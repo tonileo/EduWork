@@ -11,6 +11,7 @@ namespace Common.DTO
         public List<ProjectTimeDto> ProjectTimes { get; set; }
         public List<ProjectTimeSumDto> ProjectTimeSums { get; set; }
 
-        public int SumAllProjectTimes { get; set; }
+        public int SumAllProjectTimesHours { get; set; }
+        public int SumAllProjectTimesMinutes { get; set; }
     }
 }

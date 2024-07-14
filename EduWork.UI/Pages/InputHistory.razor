@@ -1,0 +1,100 @@
+﻿@page "/inputHistory"
+
+@using Common.DTO
+@using EduWork.UI.Features.ProjectTime
+@inject HttpClient Http
+
+<PageTitle>Povijest unosa</PageTitle>
+
+<h3>Povijest unosa</h3>
+
+<p>*Klikom na redak možete ažurirati željeno projektno vrijeme </p>
+
+@* TO DO Implement filters *@
+
+<div class="row">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th class="text-center">Radni dan</th>
+                    <th class="text-center">Projekt</th>
+                    <th class="text-center">Provedno vrijeme</th>
+                    <th class="text-center">Komentar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (projectTimeDtoTest == null)
+                {
+                    <tr>
+                        <td class="text-center"><em>Loading...</em></td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var projectTimeLog in projectTimeDtoTest)
+                    {
+                    <tr @onclick="() => UpdateFilter(projectTimeLog)">
+                            <td class="text-center">@projectTimeLog.DateWorkDay</td>
+                            <td class="text-center">@projectTimeLog.TitleProject</td>
+                            <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
+                            <td class="text-center">@projectTimeLog.Comment</td>
+                        </tr>
+                        @if (updateForm && selectedProjectTime == projectTimeLog)
+                        {
+                            <tr>
+                                <td colspan="5">
+                                    <div style="background-color: lightcyan; padding: 20px; border-radius: 8px;">
+                                    <InputUpdateProjectTimeComponent ProjectTimeLog="projectTimeLog"></InputUpdateProjectTimeComponent>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+
+</div>
+
+<style>
+    .table-striped tbody tr:nth-child(odd) {
+        background-color: lightcyan;
+    }
+</style>
+
+@code {
+    private List<ProjectTimeDtoTest>? projectTimeDtoTest;
+    private ProjectTimeDtoTest? selectedProjectTime;
+    private bool updateForm;
+
+    private ProjectTimeDtoTest? openedProjectTime;
+
+    protected override async Task OnInitializedAsync()
+    {
+        updateForm = false;
+
+        try
+        {
+            projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>("api/ProjectTimes");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+        }
+    }
+
+    private void UpdateFilter(ProjectTimeDtoTest projectTimeLog)
+    {
+        if (openedProjectTime == projectTimeLog)
+        {
+            updateForm = !updateForm;
+        }
+        else
+        {
+            selectedProjectTime = projectTimeLog;
+            updateForm = true;
+        }
+
+        openedProjectTime = projectTimeLog;
+    }
+}

@@ -15,7 +15,7 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
-        public async Task<List<ProjectSmallDto>> GetProjects() //will switch to differnet controller later
+        public async Task<List<ProjectSmallDto>> GetProjects()
         {
             var projects = await context.Projects.AsNoTracking().ToListAsync();
 
@@ -24,9 +24,27 @@ namespace EduWork.BusinessLayer.Services
             return userprojects;
         }
 
-        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes() //only for testing, will remove later
+        public async Task<List<UsernamesDto>> GetUsernames()
         {
-            var userprojectTimes = await context.ProjectTimes.AsNoTracking().ToListAsync();
+            var usernames = await context.Users.AsNoTracking().ToListAsync();
+
+            var userprojects = mapper.Map<List<UsernamesDto>>(usernames);
+
+            return userprojects;
+        }
+
+        public async Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email)
+        {
+            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Email == email).AsNoTracking().ToListAsync();
+
+            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+
+            return userProfiles;
+        }
+
+        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes()
+        {
+            var userprojectTimes = await context.ProjectTimes.Include(s=> s.Project).Include(a => a.WorkDay).AsNoTracking().ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
@@ -172,10 +190,12 @@ namespace EduWork.BusinessLayer.Services
 
                 if (!string.IsNullOrEmpty(projectTitle))
                 {
-                    query = query.Where(pt => pt.Project.Title == projectTitle);
+                    query = query.Where(pt => pt.Project.Title.Contains(projectTitle));
                 }
 
                 var projectTimes = await query.ToListAsync();
+
+                var totalTimeSpentMinutes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
 
                 var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
                 var projectProperties = await context.Projects
@@ -192,14 +212,21 @@ namespace EduWork.BusinessLayer.Services
 
                 var projectTimeSumsTasks = projectTimes
                     .GroupBy(pt => pt.Project.Title)
-                    .Select(async g => new ProjectTimeSumDto
-                    {
-                        TitleProject = g.Key,
-                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
-                        IsEducation = projectProperties[g.Key].IsEducation,
-                        IsFinished = projectProperties[g.Key].IsFinished,
-                        IsPayable = projectProperties[g.Key].IsPayable,
-                        IsPrivate = projectProperties[g.Key].IsPrivate
+                     .Select(async g =>
+                     {
+                        var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
+                         var percentageTimeSpent = (int)Math.Round((double)sumTimeSpent / totalTimeSpentMinutes * 100);
+                         return new ProjectTimeSumDto
+                         {
+                             TitleProject = g.Key,
+                             SumTimeSpentHours = sumTimeSpent / 60,
+                             SumTimeSpentMinutes = sumTimeSpent % 60,
+                             PercentageTimeSpent = percentageTimeSpent,
+                             IsEducation = projectProperties[g.Key].IsEducation,
+                             IsFinished = projectProperties[g.Key].IsFinished,
+                             IsPayable = projectProperties[g.Key].IsPayable,
+                             IsPrivate = projectProperties[g.Key].IsPrivate
+                         };
                     });
 
                 var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
@@ -245,10 +272,12 @@ namespace EduWork.BusinessLayer.Services
 
                 if (!string.IsNullOrEmpty(projectTitle))
                 {
-                    query = query.Where(pt => pt.Project.Title == projectTitle);
+                    query = query.Where(pt => pt.Project.Title.Contains(projectTitle));
                 }
 
                 var projectTimes = await query.ToListAsync();
+
+                var totalTimeSpentMinutes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
 
                 var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
                 var projectProperties = await context.Projects
@@ -264,16 +293,23 @@ namespace EduWork.BusinessLayer.Services
                     .ToDictionaryAsync(p => p.Title);
 
                 var projectTimeSumsTasks = projectTimes
-                    .GroupBy(pt => pt.Project.Title)
-                    .Select(async g => new ProjectTimeSumDto
-                    {
-                        TitleProject = g.Key,
-                        SumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes),
-                        IsEducation = projectProperties[g.Key].IsEducation,
-                        IsFinished = projectProperties[g.Key].IsFinished,
-                        IsPayable = projectProperties[g.Key].IsPayable,
-                        IsPrivate = projectProperties[g.Key].IsPrivate
-                    });
+                     .GroupBy(pt => pt.Project.Title)
+                      .Select(async g =>
+                      {
+                          var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
+                          var percentageTimeSpent = (int)Math.Round((double)sumTimeSpent / totalTimeSpentMinutes * 100);
+                          return new ProjectTimeSumDto
+                          {
+                              TitleProject = g.Key,
+                              SumTimeSpentHours = sumTimeSpent / 60,
+                              SumTimeSpentMinutes = sumTimeSpent % 60,
+                              PercentageTimeSpent = percentageTimeSpent,
+                              IsEducation = projectProperties[g.Key].IsEducation,
+                              IsFinished = projectProperties[g.Key].IsFinished,
+                              //IsPayable = projectProperties[g.Key].IsPayable,
+                              //IsPrivate = projectProperties[g.Key].IsPrivate
+                          };
+                      });
 
                 var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
 

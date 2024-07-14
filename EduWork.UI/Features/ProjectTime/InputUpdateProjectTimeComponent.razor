@@ -1,0 +1,139 @@
+﻿@using Common.DTO
+
+@inject HttpClient Http
+
+<PageTitle>Unos projektnog vremena</PageTitle>
+
+<div class="form-container">
+    <h3 class="mb-4">Unos projektnog vremena</h3>
+
+    <EditForm Model="@projectTimeRequest" OnValidSubmit="@Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <div class="form-group mb-3">
+            <label for="titleProject">Projekt:</label>
+            <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
+                @if (projects == null)
+                {
+                    <option>Loading...</option>
+                }
+                else
+                {
+                    <option value="">-- Odaberi projekt --</option>
+                    @foreach (var project in projects)
+                    {
+                        <option value="@project.Title">@project.Title</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="date">Radni dan:</label>
+            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="comment">Komentar:</label>
+            <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="timeSpentMinutes">Vrijeme provedeno na projektu (minute):</label>
+            <div class="input-group-horizontal">
+                <InputNumber id="timeSpentMinutes" @bind-Value="projectTimeRequest.TimeSpentMinutes" class="form-control" min="0" required style="width: 100px; margin-right: 1rem;" />
+                <input type="range" id="timeSpentMinutesRange" @bind="projectTimeRequest.TimeSpentMinutes" class="form-range" min="0" max="480" step="1" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary me-2">Podnesni</button>
+            <button type="button" class="btn btn-secondary" @onclick="ClearForm">Očisti</button>
+        </div>
+    </EditForm>
+</div>
+
+<style>
+    .input-group-horizontal {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: lightcyan
+    }
+</style>
+
+@code {
+    [Parameter]
+    public bool updateForm { get; set; }
+
+    [Parameter]
+    public ProjectTimeDtoTest? ProjectTimeLog { get; set; }
+
+    private List<ProjectSmallDto>? projects;
+    private ProjectTimeRequestDto projectTimeRequest = new ProjectTimeRequestDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>("api/ProjectTimes/projects");
+
+        if (ProjectTimeLog != null)
+        {
+            projectTimeRequest.DateWorkDay = ProjectTimeLog.DateWorkDay.ToDateTime(TimeOnly.MinValue);
+            projectTimeRequest.TitleProject = ProjectTimeLog.TitleProject;
+            projectTimeRequest.Comment = ProjectTimeLog.Comment;
+            projectTimeRequest.TimeSpentMinutes = ProjectTimeLog.TimeSpentMinutes;
+        }
+        else
+        {
+            projectTimeRequest.DateWorkDay = DateTime.Today;
+            projectTimeRequest.TimeSpentMinutes = 240; // 4h
+        }
+    }
+
+    private void ClearForm()
+    {
+        projectTimeRequest = new ProjectTimeRequestDto();
+        projectTimeRequest.TimeSpentMinutes = 240;
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (projectTimeRequest.DateWorkDay > DateTime.Today)
+            {
+                Console.WriteLine($"You can't add Project Time that is in future");
+                return;
+            }
+
+            if (!updateForm)
+            {
+                var response = await Http.PostAsJsonAsync("api/ProjectTimes", projectTimeRequest);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync("api/ProjectTimes" + ProjectTimeLog?.Id, projectTimeRequest);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+}

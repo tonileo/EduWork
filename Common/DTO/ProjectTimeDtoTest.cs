@@ -13,7 +13,10 @@ namespace Common.DTO
         public string? Comment { get; set; }
         public int TimeSpentMinutes { get; set; }
 
-        public int WorkDayId { get; set; }
-        public int ProjectId { get; set; }
+        public DateOnly DateWorkDay { get; set; }
+        public string? TitleProject { get; set; }
+
+        //public int WorkDayId { get; set; }
+        //public int ProjectId { get; set; }
     }
 }

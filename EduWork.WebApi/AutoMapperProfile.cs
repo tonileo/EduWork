@@ -13,9 +13,13 @@ namespace EduWork.BusinessLayer
     {
         public AutoMapperProfile() 
         {
-            CreateMap<ProjectTime, ProjectTimeDtoTest>();
+            CreateMap<ProjectTime, ProjectTimeDtoTest>()
+            .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
+            .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate));
 
             CreateMap<Project, ProjectSmallDto>();
+
+            CreateMap<User, UsernamesDto>();
 
             CreateMap<ProjectTime, ProjectTimeDto>()
            .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title));
@@ -23,7 +27,8 @@ namespace EduWork.BusinessLayer
             CreateMap<List<ProjectTime>, ProjectTimeResponseDto>()
             .ForMember(dest => dest.ProjectTimes, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.ProjectTimeSums, opt => opt.Ignore())
-            .ForMember(dest => dest.SumAllProjectTimes, opt => opt.MapFrom(src => src.Sum(pt => pt.TimeSpentMinutes)));
+            .ForMember(dest => dest.SumAllProjectTimesHours, opt => opt.MapFrom(src => src.Sum(pt => pt.TimeSpentMinutes) / 60))
+            .ForMember(dest => dest.SumAllProjectTimesMinutes, opt => opt.MapFrom(src => src.Sum(pt => pt.TimeSpentMinutes) % 60));
 
             CreateMap<ProjectTimeRequestDto, ProjectTime>();
         }

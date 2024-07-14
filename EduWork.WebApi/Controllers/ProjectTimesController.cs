@@ -30,14 +30,28 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet("projects")]
-        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects() //will switch to differnet controller later
+        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects()
         {
             var result = await _userProjectTimeService.GetProjects();
             return Ok(result);
         }
 
+        [HttpGet("usernames")]
+        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetUsernames()
+        {
+            var result = await _userProjectTimeService.GetUsernames();
+            return Ok(result);
+        }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes() //only for testing, will remove later
+        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetMyProjectTimes([FromServices] IIdentity currentUser)
+        {
+            var result = await _userProjectTimeService.GetMyProjectTimes(currentUser.Email);
+            return Ok(result);
+        }
+
+        [HttpGet("admin")]
+        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes()
         {
             var result = await _userProjectTimeService.GetProjectTimes();
             return Ok(result);

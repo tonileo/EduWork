@@ -1,4 +1,4 @@
-﻿.legend-circle {
+﻿::deep .legend-circle {
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -7,14 +7,14 @@
     vertical-align: middle;
 }
 
-.education-row {
+::deep .education-row {
     background-color: #E0F7FA;
 }
 
-.finished-row {
+::deep .finished-row {
     color: gray;
 }
 
-.table-striped tbody tr:nth-child(odd) {
+::deep .table-striped tbody tr:nth-child(odd) {
     background-color: lightcyan;
 }
