@@ -4,21 +4,21 @@
 @inject HttpClient Http
 
 
-<EditForm Model="@filterModel" OnValidSubmit="ApplyFilter">
+<EditForm Model="@filterModel" OnValidSubmit="LoadProjectTimesAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
 <div class="row">
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
-                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" @oninput="HandleFromDateInput" />
+                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" />
                 <ValidationMessage For="() => filterModel.FromDate" />
         </div>
     </div>
 
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
-            <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" @oninput="HandleToDateInput" />
+            <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" />
                 <ValidationMessage For="() => filterModel.ToDate" />
         </div>
     </div>
@@ -26,7 +26,7 @@
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
                 <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
-                placeholder="Naziv projekta..." @oninput="HandleProjectTitleInput" />
+                placeholder="Naziv projekta..." />
                 <ValidationMessage For="() => filterModel.ProjectTitle" />
         </div>
     </div>
@@ -41,7 +41,7 @@
                 }
                 else
                 {
-                    <InputSelect class="form-control" @bind-Value="username" id="username" @oninput="HandleUsernameInput">
+            <InputSelect class="form-control" @bind-Value="filterModel.Username" id="username">
                         <option value="">Odaberi korisnika...</option>
                         @foreach (var user in usernames)
                         {
@@ -55,9 +55,10 @@
     }
 
 </div>
-
-
-    <button type="submit" class="btn btn-primary">Filter</button>
+<div class="col-md-3 col-sm-6">
+    <br />
+    <button type="submit" class="btn btn-primary">Filtriraj</button>
+    </div>
 </EditForm>
 
 <br>
@@ -168,7 +169,6 @@
 
     </div>
 
-
 </div>
 
 <style>
@@ -200,11 +200,6 @@
 
     private FilterModel? filterModel = new FilterModel();
 
-    private DateTime? fromDate;
-    private DateTime? toDate;
-    private string? username;
-    private string? projectTitle;
-
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
@@ -232,40 +227,15 @@
         }
         else
         {
-            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&projectTitle={projectTitle}";
+            parameters = $"fromDate={filterModel.FromDate?.ToString("o")}&toDate={filterModel.ToDate?.ToString("o")}&projectTitle={filterModel.ProjectTitle}";
         }
 
+        Console.WriteLine(filterModel.FromDate?.ToString("o"));
+        Console.WriteLine(filterModel.FromDate);
+        Console.WriteLine(DateTime.Today);
+        Console.WriteLine(DateTime.Today.Date);
+
         projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>($"{ApiEndpoint}?{parameters}");
-    }
-
-    private async Task HandleProjectTitleInput(ChangeEventArgs args)
-    {
-        projectTitle = args.Value?.ToString();
-        await ApplyFilter();
-    }
-
-    private async Task HandleUsernameInput(ChangeEventArgs args)
-    {
-        username = args.Value?.ToString();
-        await ApplyFilter();
-    }
-
-    private async Task HandleFromDateInput(ChangeEventArgs args)
-    {
-        fromDate = DateTime.TryParse(args.Value?.ToString(), out var date) ? date : (DateTime?)null;
-        await ApplyFilter();
-    }
-
-    private async Task HandleToDateInput(ChangeEventArgs args)
-    {
-        toDate = DateTime.TryParse(args.Value?.ToString(), out var date) ? date : (DateTime?)null;
-        await ApplyFilter();
-    }
-
-
-    private async Task ApplyFilter()
-    {
-        await LoadProjectTimesAsync();
     }
 
     private string GetRowClass(bool isEducation, bool isFinished)

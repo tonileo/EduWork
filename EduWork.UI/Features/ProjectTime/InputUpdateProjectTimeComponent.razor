@@ -117,12 +117,6 @@
     {
         try
         {
-            if (projectTimeRequest.DateWorkDay > DateTime.Today)
-            {
-                Console.WriteLine($"You can't add Project Time that is in future");
-                return;
-            }
-
             if (!updateForm)
             {
                 var response = await Http.PostAsJsonAsync("api/ProjectTimes", projectTimeRequest);
