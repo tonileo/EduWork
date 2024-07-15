@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.DTO
+namespace Common.DTO.ProjectTime
 {
     public record ProjectTimeSumDto
     {
@@ -12,7 +12,7 @@ namespace Common.DTO
         public int SumTimeSpentHours { get; set; }
         public int SumTimeSpentMinutes { get; set; }
 
-        public int PercentageTimeSpent {  get; set; }
+        public int PercentageTimeSpent { get; set; }
 
         public bool IsFinished { get; set; }
         public bool IsPrivate { get; set; }

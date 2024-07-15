@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web.Resource;
 using EduWork.BusinessLayer.Services;
 using EduWork.BusinessLayer.Contracts;
-using Common.DTO;
 using EduWork.WebApi.Authentication;
+using Common.DTO.ProjectTime;
 
 namespace EduWork.WebApi.Controllers
 {

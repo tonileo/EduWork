@@ -1,24 +1,33 @@
 ﻿@using Common.DTO
-@using System.Linq;
+@using Common.DTO.ProjectTime
 
 @inject HttpClient Http
+
+
+<EditForm Model="@filterModel" OnValidSubmit="ApplyFilter">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
 <div class="row">
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
-            <InputDate class="form-control" @bind-Value="fromDate" id="fromDate" @oninput="HandleFromDateInput" />
+                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" @oninput="HandleFromDateInput" />
+                <ValidationMessage For="() => filterModel.FromDate" />
         </div>
     </div>
 
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
-            <InputDate class="form-control" @bind-Value="toDate" id="toDate" @oninput="HandleToDateInput" />
+            <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" @oninput="HandleToDateInput" />
+                <ValidationMessage For="() => filterModel.ToDate" />
         </div>
     </div>
 
     <div class="col-md-3 col-sm-6">
         <div class="form-group">
-            <InputText class="form-control" @bind-Value="projectTitle" id="projectTitle" placeholder="Naziv projekta..." @oninput="HandleProjectTitleInput" />
+                <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
+                placeholder="Naziv projekta..." @oninput="HandleProjectTitleInput" />
+                <ValidationMessage For="() => filterModel.ProjectTitle" />
         </div>
     </div>
 
@@ -39,12 +48,17 @@
                             <option value="@user.Username">@user.Username</option>
                         }
                     </InputSelect>
+            <ValidationMessage For="() => filterModel.Username" />
                 }
             </div>
         </div>
     }
 
 </div>
+
+
+    <button type="submit" class="btn btn-primary">Filter</button>
+</EditForm>
 
 <br>
 <div class="row">
@@ -138,7 +152,7 @@
         <div style="margin-bottom: 30px;">
             <p style="font-size: 18px; margin-bottom: 5px;">Provedeno vremena:</p>
             <p style="font-size: 20px;">
-                <span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min
+               <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
             </p>
         </div>
 
@@ -184,6 +198,8 @@
     private ProjectTimeResponseDto? projectTimeResponse;
     private List<UsernamesDto>? usernames;
 
+    private FilterModel? filterModel = new FilterModel();
+
     private DateTime? fromDate;
     private DateTime? toDate;
     private string? username;
@@ -212,7 +228,7 @@
 
         if (haveUsername)
         {
-            parameters = $"fromDate={fromDate?.ToString("o")}&toDate={toDate?.ToString("o")}&username={username}&projectTitle={projectTitle}";
+            parameters = $"fromDate={filterModel.FromDate?.ToString("o")}&toDate={filterModel.ToDate?.ToString("o")}&username={filterModel.Username}&projectTitle={filterModel.ProjectTitle}";
         }
         else
         {

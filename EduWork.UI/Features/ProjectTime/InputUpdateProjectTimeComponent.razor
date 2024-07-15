@@ -1,4 +1,4 @@
-﻿@using Common.DTO
+﻿@using Common.DTO.ProjectTime
 
 @inject HttpClient Http
 
@@ -11,39 +11,45 @@
         <DataAnnotationsValidator />
         <ValidationSummary class="alert alert-danger" />
 
-        <div class="form-group mb-3">
-            <label for="titleProject">Projekt:</label>
-            <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
-                @if (projects == null)
-                {
-                    <option>Loading...</option>
-                }
-                else
-                {
-                    <option value="">-- Odaberi projekt --</option>
-                    @foreach (var project in projects)
+        <div class="input-group-horizontal">
+            <div class="form-group mb-3">
+                <label for="titleProject">Projekt:</label>
+                <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
+                    @if (projects == null)
                     {
-                        <option value="@project.Title">@project.Title</option>
+                        <option>Loading...</option>
                     }
-                }
-            </InputSelect>
-        </div>
+                    else
+                    {
+                        <option value="" disabled selected>-- Odaberi projekt --</option>
+                        @foreach (var project in projects)
+                        {
+                            <option value="@project.Title">@project.Title</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => projectTimeRequest.TitleProject)" />
+            </div>
 
-        <div class="form-group mb-3">
-            <label for="date">Radni dan:</label>
-            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" />
+            <div class="form-group mb-3">
+                <label for="date">Radni dan:</label>
+                <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" />
+                <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
+            </div>
         </div>
 
         <div class="form-group mb-3">
             <label for="comment">Komentar:</label>
-            <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" required />
+            <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" />
+            <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
         </div>
 
         <div class="form-group mb-3">
             <label for="timeSpentMinutes">Vrijeme provedeno na projektu (minute):</label>
             <div class="input-group-horizontal">
-                <InputNumber id="timeSpentMinutes" @bind-Value="projectTimeRequest.TimeSpentMinutes" class="form-control" min="0" required style="width: 100px; margin-right: 1rem;" />
+                <InputNumber id="timeSpentMinutes" @bind-Value="projectTimeRequest.TimeSpentMinutes" class="form-control" min="0" required style="width: 100px;" />
                 <input type="range" id="timeSpentMinutesRange" @bind="projectTimeRequest.TimeSpentMinutes" class="form-range" min="0" max="480" step="1" />
+                <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
             </div>
         </div>
 
@@ -58,13 +64,18 @@
     .input-group-horizontal {
         display: flex;
         align-items: center;
+        gap: 20px;
     }
+
+        .input-group-horizontal .form-group {
+            flex: 1;
+        }
 
     .form-container {
         max-width: 600px;
         margin: 0 auto;
         padding: 20px;
-        background-color: lightcyan
+        background-color: lightcyan;
     }
 </style>
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.DTO;
+using Common.DTO.ProjectTime;
 using EduWork.DataAccessLayer.Entites;
 
 namespace EduWork.BusinessLayer
