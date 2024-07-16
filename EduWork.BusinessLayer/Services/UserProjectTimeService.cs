@@ -34,9 +34,16 @@ namespace EduWork.BusinessLayer.Services
             return userprojects;
         }
 
-        public async Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email)
+        public async Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email, DateTime userWorkDay)
         {
-            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Email == email).AsNoTracking().ToListAsync();
+            if (userWorkDay > DateTime.Today)
+            {
+                throw new ArgumentException("Work day date can't be in future");
+            }
+
+            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly).AsNoTracking().ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
@@ -211,9 +218,9 @@ namespace EduWork.BusinessLayer.Services
                     })
                     .ToDictionaryAsync(p => p.Title);
 
-                var projectTimeSumsTasks = projectTimes
+                var projectTimeSums = projectTimes
                     .GroupBy(pt => pt.Project.Title)
-                     .Select(async g =>
+                     .Select(g =>
                      {
                         var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
                          var percentageTimeSpent = (int)Math.Round((double)sumTimeSpent / totalTimeSpentMinutes * 100);
@@ -228,9 +235,7 @@ namespace EduWork.BusinessLayer.Services
                              IsPayable = projectProperties[g.Key].IsPayable,
                              IsPrivate = projectProperties[g.Key].IsPrivate
                          };
-                    });
-
-                var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
+                    }).OrderByDescending(a => a.PercentageTimeSpent).ToList();
 
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 
@@ -293,9 +298,9 @@ namespace EduWork.BusinessLayer.Services
                     })
                     .ToDictionaryAsync(p => p.Title);
 
-                var projectTimeSumsTasks = projectTimes
+                var projectTimeSums = projectTimes
                      .GroupBy(pt => pt.Project.Title)
-                      .Select(async g =>
+                      .Select(g =>
                       {
                           var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
                           var percentageTimeSpent = (int)Math.Round((double)sumTimeSpent / totalTimeSpentMinutes * 100);
@@ -307,12 +312,8 @@ namespace EduWork.BusinessLayer.Services
                               PercentageTimeSpent = percentageTimeSpent,
                               IsEducation = projectProperties[g.Key].IsEducation,
                               IsFinished = projectProperties[g.Key].IsFinished,
-                              //IsPayable = projectProperties[g.Key].IsPayable,
-                              //IsPrivate = projectProperties[g.Key].IsPrivate
                           };
-                      });
-
-                var projectTimeSums = await Task.WhenAll(projectTimeSumsTasks);
+                      }).OrderByDescending(a => a.PercentageTimeSpent).ToList();
 
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 

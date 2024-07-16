@@ -44,9 +44,9 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetMyProjectTimes([FromServices] IIdentity currentUser)
+        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetMyProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
         {
-            var result = await _userProjectTimeService.GetMyProjectTimes(currentUser.Email);
+            var result = await _userProjectTimeService.GetMyProjectTimes(currentUser.Email, userWorkDay);
             return Ok(result);
         }
 

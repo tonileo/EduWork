@@ -11,7 +11,13 @@
         <DataAnnotationsValidator />
         <ValidationSummary class="alert alert-danger" />
 
-        <div class="input-group-horizontal">
+        <div>
+            <div class="form-group mb-3">
+                <label for="date">Radni dan:</label>
+                <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" />
+                <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
+            </div>
+
             <div class="form-group mb-3">
                 <label for="titleProject">Projekt:</label>
                 <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
@@ -29,12 +35,6 @@
                     }
                 </InputSelect>
                 <ValidationMessage For="@(() => projectTimeRequest.TitleProject)" />
-            </div>
-
-            <div class="form-group mb-3">
-                <label for="date">Radni dan:</label>
-                <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" />
-                <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
             </div>
         </div>
 
@@ -73,7 +73,6 @@
 
     .form-container {
         max-width: 600px;
-        margin: 0 auto;
         padding: 20px;
         background-color: lightcyan;
     }

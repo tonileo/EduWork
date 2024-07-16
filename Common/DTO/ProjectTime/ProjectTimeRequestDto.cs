@@ -10,7 +10,7 @@ namespace Common.DTO.ProjectTime
     public record ProjectTimeRequestDto
     {
         [Required(ErrorMessage = "Vrijeme provedeno na projektu je obavezno.")]
-        [Range(0, 480, ErrorMessage = "Vrijeme mora biti između 0 i 480 minuta.")]
+        [Range(1, 480, ErrorMessage = "Vrijeme mora biti između 1 i 480 minuta.")]
         public int TimeSpentMinutes { get; set; }
 
         [Required(ErrorMessage = "Odabir projekta je obavezan.")]
@@ -18,7 +18,7 @@ namespace Common.DTO.ProjectTime
 
         [Required]
         [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti.")]
-        public DateTime DateWorkDay { get; set; } = DateTime.Today;
+        public DateTime DateWorkDay { get; set; }
 
         public string? Comment { get; set; }
     }

@@ -15,8 +15,5 @@ namespace Common.DTO.ProjectTime
 
         public DateOnly DateWorkDay { get; set; }
         public string? TitleProject { get; set; }
-
-        //public int WorkDayId { get; set; }
-        //public int ProjectId { get; set; }
     }
 }
