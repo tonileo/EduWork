@@ -25,6 +25,7 @@ namespace EduWork.BusinessLayer.Services
 
             var userProjectTime = await context.ProjectTimes
                 .Include(s => s.Project)
+                .Where(m => m.Project.IsFinished)
                 .Include(a => a.WorkDay)
                 .Where(g => g.WorkDay.User.Email == email)
                 .OrderByDescending(pt => pt.Id)
