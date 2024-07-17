@@ -25,7 +25,6 @@ namespace EduWork.BusinessLayer.Services
 
             var userProjectTime = await context.ProjectTimes
                 .Include(s => s.Project)
-                .Where(m => m.Project.IsFinished)
                 .Include(a => a.WorkDay)
                 .Where(g => g.WorkDay.User.Email == email)
                 .OrderByDescending(pt => pt.Id)
@@ -357,6 +356,48 @@ namespace EduWork.BusinessLayer.Services
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 
                 projectTimeResponseDto.ProjectTimeSums = projectTimeSums.ToList();
+
+                return projectTimeResponseDto;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with GetMyProjectTimesFilter" + ex.Message);
+            }
+        }
+
+        public async Task<List<ProjectTimeDtoTest>> GetMyHistoryProjectTimesFilter(string? email, bool? thisMonth, bool? lastMonth, bool? thisQuarter)
+        {
+            try
+            {
+                IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
+                .Where(pt => pt.WorkDay.User.Email == email).Include(w => w.WorkDay).AsNoTracking().AsQueryable();
+
+                var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var startOfLastMonth = startOfThisMonth.AddMonths(-1);
+                var startOfNextMonth = startOfThisMonth.AddMonths(1);
+                var startOfThisQuarter = new DateTime(DateTime.Now.Year, ((DateTime.Now.Month - 1) / 3) * 3 + 1, 1);
+
+                DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
+                DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
+                DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
+                DateOnly startOfThisQuarterDateOnly = DateOnly.FromDateTime(startOfThisQuarter);
+
+                if (thisMonth == true)
+                {
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfThisMonthDateOnly && pt.WorkDay.WorkDate < startOfNextMonthDateOnly);
+                }
+                else if (lastMonth == true)
+                {
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfLastMonthDateOnly && pt.WorkDay.WorkDate < startOfThisMonthDateOnly);
+                }
+                else if (thisQuarter == true)
+                {
+                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfThisQuarterDateOnly && pt.WorkDay.WorkDate < startOfNextMonthDateOnly);
+                }
+
+                var projectTimes = await query.ToListAsync();
+
+                var projectTimeResponseDto = mapper.Map<List<ProjectTimeDtoTest>>(projectTimes);
 
                 return projectTimeResponseDto;
             }
