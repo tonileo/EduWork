@@ -30,9 +30,9 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet("projects")]
-        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects()
+        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects([FromServices] IIdentity currentUser)
         {
-            var result = await _userProjectTimeService.GetProjects();
+            var result = await _userProjectTimeService.GetProjects(currentUser.Email);
             return Ok(result);
         }
 

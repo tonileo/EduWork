@@ -10,11 +10,10 @@
 <div class="flex-container">
     <div class="form-section">
 
-
         <div class="form-container">
             <h3 class="mb-4">Unos projektnog vremena</h3>
 
-            <EditForm Model="@projectTimeRequest" OnValidSubmit="@Submit">
+            <EditForm Model="@projectTimeRequest" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="alert alert-danger" />
 
@@ -23,9 +22,9 @@
                         <label for="date">Radni dan:</label>
 
                         <div class="input-group">
-                            <button type="button" @onclick="() => ChangeDate(-1)" class="chevron"><span><i class="fa fa-chevron-left"></i></span></button>
-                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class=" form-control" />
-                            <button type="button" @onclick="() => ChangeDate(1)" class="chevron"><span><i class="fa fa-chevron-right"></i></span></button>
+                            <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
+                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @onchange="HandleDateInput" class="form-control" disabled="@(updateForm)" />
+                            <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
                         </div>
 
                         <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
@@ -58,12 +57,23 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="timeSpentMinutes">Vrijeme provedeno na projektu (minute):</label>
                     <div class="input-group-horizontal">
-                        <InputNumber id="timeSpentMinutes" @bind-Value="projectTimeRequest.TimeSpentMinutes" class="form-control" min="0" required style="width: 100px;" />
-                        <input type="range" id="timeSpentMinutesRange" @bind="projectTimeRequest.TimeSpentMinutes" class="form-range" min="0" max="480" step="1" />
-                        <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
+                        <div>
+                            <label for="timeSpentHours">Sati:</label>
+                            <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required style="width: 80px;" @oninput="UpdateTime" />
+                        </div>
+
+                        <div>
+                            <label for="timeSpentMinutes">Minute:</label>
+                            <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required style="width: 80px;" @oninput="UpdateTime" />
+                        </div>
+
+                        <div class="range-container">
+                            <label for="timeSpentMinutesRange"></label>
+                            <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
+                        </div>
                     </div>
+                    <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
                 </div>
 
                 <div class="form-group">
@@ -101,7 +111,7 @@
                             <td class="text-center">@projectTimeLog.TitleProject</td>
                             <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
                             <td class="text-center">@projectTimeLog.Comment</td>
-                            <td>
+                            <td class="text-center">
                                 <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="far fa-edit"></i></button>
                             </td>
                         </tr>
@@ -128,16 +138,22 @@
         flex: 2;
     }
 
+    .edit-mode {
+        background-color: #f0f8ff;
+        border: 1px solid #0000ff;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
     .input-group-horizontal {
         display: flex;
         align-items: center;
         gap: 20px;
     }
 
-        .input-group-horizontal .form-group {
-            flex: 1;
-            margin: 0 8px;
-        }
+    .range-container {
+        flex: 1;
+    }
 
 </style>
 
@@ -147,15 +163,36 @@
     public ProjectTimeDtoTest? ProjectTimeLog { get; set; }
 
     private List<ProjectSmallDto>? projects;
-    private ProjectTimeRequestDto projectTimeRequest = new ProjectTimeRequestDto();
+
+    public ProjectTimeRequestDto projectTimeRequest = new ProjectTimeRequestDto();
 
     private List<ProjectTimeDtoTest>? projectTimeDtoTest;
+
+    private int hours;
+
+    private int minutes;
+
+    private int rangeValue
+    {
+        get => (hours * 60) + minutes;
+        set
+        {
+            hours = value / 60;
+            minutes = value % 60;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         projectTimeRequest.DateWorkDay = DateTime.Today;
 
+        projectTimeRequest.TimeSpentMinutes = 240;
+        hours = projectTimeRequest.TimeSpentMinutes / 60;
+        minutes = projectTimeRequest.TimeSpentMinutes % 60;
+
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>("api/ProjectTimes/projects");
+
+        projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
 
         await LoadData();
     }
@@ -177,10 +214,12 @@
     private void EditData(ProjectTimeDtoTest projectTimeLog)
     {
         ProjectTimeLog = projectTimeLog;
-        //projectTimeRequest.DateWorkDay = new DateTime(projectTimeLog.DateWorkDay.Year, projectTimeLog.DateWorkDay.Month, projectTimeLog.DateWorkDay.Day);
         projectTimeRequest.TitleProject = projectTimeLog.TitleProject;
         projectTimeRequest.TimeSpentMinutes = projectTimeLog.TimeSpentMinutes;
         projectTimeRequest.Comment = projectTimeLog.Comment;
+
+        hours = projectTimeLog.TimeSpentMinutes / 60;
+        minutes = projectTimeLog.TimeSpentMinutes % 60;
 
         updateForm = true;
     }
@@ -192,25 +231,40 @@
         await LoadData();
     }
 
+    private void UpdateTime()
+    {
+        projectTimeRequest.TimeSpentMinutes = (hours * 60) + minutes;
+    }
+
+    private void UpdateTimeFromRange(ChangeEventArgs args)
+    {
+        rangeValue = Convert.ToInt32(args.Value);
+        projectTimeRequest.TimeSpentMinutes = rangeValue;
+    }
 
     private async void ChangeDate(int change)
     {
-        projectTimeRequest.DateWorkDay = projectTimeRequest.DateWorkDay.AddDays(change);
-
-        await LoadData();
+        if (projectTimeRequest.DateWorkDay < DateTime.Today || (projectTimeRequest.DateWorkDay == DateTime.Today && change < 0))
+        {
+            projectTimeRequest.DateWorkDay = projectTimeRequest.DateWorkDay.AddDays(change);
+            await LoadData();
+        }
     }
 
     private void ClearForm()
     {
         projectTimeRequest = new ProjectTimeRequestDto();
         projectTimeRequest.DateWorkDay = DateTime.Today;
-        projectTimeRequest.TimeSpentMinutes = 240;
+        hours = 4;
+        minutes = 0;
     }
 
     private async Task Submit()
     {
         try
         {
+            projectTimeRequest.TimeSpentMinutes = (hours * 60) + minutes;
+
             if (!updateForm)
             {
                 var response = await Http.PostAsJsonAsync("api/ProjectTimes", projectTimeRequest);
@@ -222,17 +276,23 @@
             }
             else
             {
-                var response = await Http.PutAsJsonAsync("api/ProjectTimes" + ProjectTimeLog?.Id, projectTimeRequest);
+                var response = await Http.PutAsJsonAsync("api/ProjectTimes/" + ProjectTimeLog?.Id, projectTimeRequest);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
                 }
+
+                updateForm = false;
+
+                ClearForm();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception: {ex.Message}");
         }
+
+        await LoadData();
     }
 }

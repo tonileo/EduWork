@@ -1,0 +1,33 @@
+﻿/*::deep .flex-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+::deep .form-section {
+    flex: 1;
+    max-width: 600px;
+}
+
+::deep .table-section {
+    flex: 2;
+}
+
+::deep .edit-mode {
+    background-color: #f0f8ff;
+    border: 1px solid #0000ff;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+::deep .input-group-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+    ::deep .input-group-horizontal .form-group {
+        flex: 1;
+        margin: 0 8px;
+    }
+*/

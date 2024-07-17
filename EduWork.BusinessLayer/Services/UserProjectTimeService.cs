@@ -16,13 +16,25 @@ namespace EduWork.BusinessLayer.Services
 {
     public class UserProjectTimeService(AppDbContext context, IMapper mapper) : IUserProjectTimeService
     {
-        public async Task<List<ProjectSmallDto>> GetProjects()
+        public async Task<List<ProjectSmallDto>> GetProjects(string? email)
         {
             var projects = await context.Projects.AsNoTracking().ToListAsync();
 
-            var userprojects = mapper.Map<List<ProjectSmallDto>>(projects);
+            var userProjectTime = await context.ProjectTimes
+                .Include(s => s.Project)
+                .Include(a => a.WorkDay)
+                .Where(g => g.WorkDay.User.Email == email)
+                .OrderByDescending(pt => pt.Id)
+                .FirstOrDefaultAsync();
 
-            return userprojects;
+            var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
+
+            foreach (var projectDto in userProjects)
+            {
+                projectDto.LastChosenTitle = userProjectTime?.Project.Title;
+            }
+
+            return userProjects;
         }
 
         public async Task<List<UsernamesDto>> GetUsernames()
