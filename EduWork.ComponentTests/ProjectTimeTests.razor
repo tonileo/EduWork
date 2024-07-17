@@ -1,0 +1,103 @@
+﻿@using Common.DTO.ProjectTime
+@using EduWork.UI.Pages
+@using Microsoft.AspNetCore.Components.Forms
+@using RichardSzalay.MockHttp
+
+@inherits TestContext
+
+@code {
+    private List<ProjectSmallDto> GetProjects()
+    {
+        var projects = new List<ProjectSmallDto>
+        {
+            new ProjectSmallDto { Id = 1, Title = "Test1" },
+            new ProjectSmallDto { Id = 2, Title = "Test2" }
+        };
+
+        return projects;
+    }
+
+    private void SetupMockHttpClient()
+    {
+        var mock = Services.AddMockHttpClient();
+        mock.When("http://localhost/api/ProjectTimes/projects").RespondJson(GetProjects());
+    }
+
+    [Fact]
+    public void InitialHeadingOnPageLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = Render(@<InputProjectTime />);
+
+        // Assert
+        cut.Find("h3").MarkupMatches(@<h3 class="mb-4">Unos projektnog vremena</h3>);
+    }
+
+    [Fact]
+    public void InputDateSetCorrectlyOnPageLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>();
+
+        // Assert
+        var inputDate = cut.Find("input[type='date']");
+        Assert.NotNull(inputDate);
+        Assert.Equal("date", inputDate.Id);
+        Assert.Equal("form-control valid", inputDate.ClassList.ToString());
+    }
+
+    [Fact]
+    public void InputDateSetToTodayOnLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>();
+
+        // Assert
+        var inputDate = cut.Find("input[type='date']");
+        var today = DateTime.Today.ToString("yyyy-MM-dd");
+        Assert.Equal(today, inputDate.GetAttribute("value"));
+    }
+
+    [Fact]
+    public void InputDateWhenClickedOnSubtractDateButtonShowsYesterdaysDate()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        var cut = RenderComponent<InputProjectTime>();
+        var inputDate = cut.Find("input[type='date']");
+
+        // Act
+        cut.Find("#subtractDateButton").Click();
+
+        // Assert
+        var yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+        Assert.Equal(yesterday, inputDate.GetAttribute("value"));
+    }
+
+    [Fact]
+    public void InputDateWhenClickedOnAddDateButtonShowsTomorrowDate()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        var cut = RenderComponent<InputProjectTime>();
+        var inputDate = cut.Find("input[type='date']");
+
+        // Act
+        cut.Find("#addDateButton").Click();
+
+        // Assert
+        var yesterday = DateTime.Today.AddDays(+1).ToString("yyyy-MM-dd");
+        Assert.Equal(yesterday, inputDate.GetAttribute("value"));
+    }
+}
