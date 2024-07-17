@@ -176,6 +176,30 @@ namespace EduWork.BusinessLayer.Services
             }
         }
 
+        public async Task DeleteProjectTime(int id)
+        {
+            try
+            {
+                var existingProjectTime = await context.ProjectTimes.FindAsync(id);
+
+                if (existingProjectTime == null)
+                {
+                    throw new ArgumentException("Project time entry not found");
+                }
+
+                if (existingProjectTime != null)
+                {
+                    context.ProjectTimes.Remove(existingProjectTime);
+                }
+
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with deleting project time" + ex.Message);
+            }
+        }
+
         public async Task<ProjectTimeResponseDto> GetProjectTimesFilter(DateTime? fromDate, DateTime? toDate, string? username, string? projectTitle)
         {
             try

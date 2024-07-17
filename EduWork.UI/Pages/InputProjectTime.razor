@@ -92,7 +92,7 @@
                     <th class="text-center">Projekt</th>
                     <th class="text-center">Provedno vrijeme</th>
                     <th class="text-center">Komentar</th>
-                    <th></th>
+                    <th class="text-center">Akcije></th>
                 </tr>
             </thead>
             <tbody>
@@ -113,6 +113,7 @@
                             <td class="text-center">@projectTimeLog.Comment</td>
                             <td class="text-center">
                                 <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="far fa-edit"></i></button>
+                                <button class="btn btn-danger" @onclick="() => DeleteData(projectTimeLog.Id)"><i class="fas fa-trash-alt"></i></button>
                             </td>
                         </tr>
                     }
@@ -222,6 +223,13 @@
         minutes = projectTimeLog.TimeSpentMinutes % 60;
 
         updateForm = true;
+    }
+
+    private async void DeleteData(int deleteId)
+    {
+        var projectTimeDelete = await Http.DeleteAsync($"api/ProjectTimes/{deleteId}");
+
+        await LoadData();
     }
 
     private async void HandleDateInput(ChangeEventArgs args)

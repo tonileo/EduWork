@@ -71,6 +71,13 @@ namespace EduWork.WebApi.Controllers
             return Ok();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProjectTime(int id)
+        {
+            await _userProjectTimeService.DeleteProjectTime(id);
+            return Ok();
+        }
+
         [HttpGet]
         [Route("adminFilter")]
         public async Task<ActionResult<ProjectTimeResponseDto>> GetProjectTimesFilter([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)

@@ -17,6 +17,7 @@ namespace EduWork.BusinessLayer.Contracts
         public Task<List<ProjectTimeDtoTest>> GetProjectTimes();
         public Task InputProjectTime(string email, ProjectTimeRequestDto projectTime);
         public Task UpdateProjectTime(string email, int id, ProjectTimeRequestDto projectTime);
+        public Task DeleteProjectTime (int id);
         public Task<ProjectTimeResponseDto> GetProjectTimesFilter(DateTime? fromDate, DateTime? toDate, string? username, string? projectTitle);
         public Task<ProjectTimeResponseDto> GetMyProjectTimesFilter(string email, DateTime? fromDate, DateTime? toDate, string? projectTitle);
     }
