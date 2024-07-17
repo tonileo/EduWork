@@ -10,10 +10,10 @@ namespace Common.DTO.ProjectTime
     public record FilterModel
     {
         [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti.")]
-        public DateTime? FromDate { get; set; } = DateTime.Today.AddMonths(-1).ToUniversalTime();
+        public DateTime? FromDate { get; set; } = DateTime.Today.AddMonths(-1);
 
         [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti.")]
-        public DateTime? ToDate { get; set; } = DateTime.Today.ToUniversalTime();
+        public DateTime? ToDate { get; set; } = DateTime.Today;
 
         public string? Username { get; set; }
 

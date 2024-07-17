@@ -18,7 +18,10 @@ namespace EduWork.BusinessLayer.Services
     {
         public async Task<List<ProjectSmallDto>> GetProjects(string? email)
         {
-            var projects = await context.Projects.AsNoTracking().ToListAsync();
+            var projects = await context.Projects
+                .Where(p => !p.IsFinished)
+                .AsNoTracking()
+                .ToListAsync();
 
             var userProjectTime = await context.ProjectTimes
                 .Include(s => s.Project)
@@ -186,8 +189,7 @@ namespace EduWork.BusinessLayer.Services
                 {
                     throw new ArgumentException("Project time entry not found");
                 }
-
-                if (existingProjectTime != null)
+                else
                 {
                     context.ProjectTimes.Remove(existingProjectTime);
                 }
