@@ -14,14 +14,14 @@ namespace EduWork.BusinessLayer
     {
         public AutoMapperProfile() 
         {
+            CreateMap<Project, ProjectSmallDto>()
+           .ForMember(dest => dest.LastChosenTitle, opt => opt.MapFrom(src => ""));
+
+            CreateMap<User, UsernamesDto>();
+
             CreateMap<ProjectTime, ProjectTimeDtoTest>()
             .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
             .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate));
-
-            CreateMap<Project, ProjectSmallDto>()
-            .ForMember(dest => dest.LastChosenTitle, opt => opt.MapFrom(src => ""));
-
-            CreateMap<User, UsernamesDto>();
 
             CreateMap<ProjectTime, ProjectTimeDto>()
            .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title));

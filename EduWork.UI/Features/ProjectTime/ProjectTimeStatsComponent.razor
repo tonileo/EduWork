@@ -1,63 +1,63 @@
 ﻿@using Common.DTO
 @using Common.DTO.ProjectTime
+@using EduWork.UI.Shared
 
 @inject HttpClient Http
-
 
 <EditForm Model="@filterModel" OnValidSubmit="LoadProjectTimesAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-<div class="row">
-    <div class="col-md-3 col-sm-6">
-        <div class="form-group">
-                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" />
-                <ValidationMessage For="() => filterModel.FromDate" />
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6">
-        <div class="form-group">
-            <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" />
-                <ValidationMessage For="() => filterModel.ToDate" />
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6">
-        <div class="form-group">
-                <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
-                placeholder="Naziv projekta..." />
-                <ValidationMessage For="() => filterModel.ProjectTitle" />
-        </div>
-    </div>
-
-    @if (haveUsername)
-    {
+    <div class="row">
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                @if (usernames == null)
-                {
-                    <option>Loading...</option>
-                }
-                else
-                {
-            <InputSelect class="form-control" @bind-Value="filterModel.Username" id="username">
-                        <option value="">Odaberi korisnika...</option>
-                        @foreach (var user in usernames)
-                        {
-                            <option value="@user.Username">@user.Username</option>
-                        }
-                    </InputSelect>
-            <ValidationMessage For="() => filterModel.Username" />
-                }
+                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" />
+                <ValidationMessage For="() => filterModel.FromDate" />
             </div>
         </div>
-    }
 
-</div>
-<div class="col-md-3 col-sm-6">
-    <br />
-    <button type="submit" class="btn btn-primary">Filtriraj</button>
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" />
+                <ValidationMessage For="() => filterModel.ToDate" />
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
+                           placeholder="Naziv projekta..." />
+                <ValidationMessage For="() => filterModel.ProjectTitle" />
+            </div>
+        </div>
+
+        @if (haveUsername)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    @if (usernames == null)
+                    {
+            <option>Loading...</option>
+                    }
+                    else
+                    {
+            <InputSelect class="form-control" @bind-Value="filterModel.Username" id="username">
+                <option value="">Odaberi korisnika...</option>
+                            @foreach (var user in usernames)
+                            {
+                    <option value="@user.Username">@user.Username</option>
+                            }
+            </InputSelect>
+            <ValidationMessage For="() => filterModel.Username" />
+                    }
+        </div>
+        </div>
+        }
+
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <br />
+        <button type="submit" class="btn btn-primary">Filtriraj</button>
     </div>
 </EditForm>
 
@@ -80,7 +80,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var sum in projectTimeResponse.ProjectTimeSums)
+                    @foreach (var sum in projectTimeResponse.ProjectTimeSums.OrderByDescending(p => p.PercentageTimeSpent))
                     {
                         <tr class="@GetRowClass(sum.IsEducation, sum.IsFinished)">
                             <td>
@@ -148,16 +148,25 @@
         }
     </div>
 
-    <div class="col-md-6" style="background-color: lightcyan; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+    <div class="col-md-6" style="background-color: lightcyan; padding: 20px; border-radius: 8px; display: flex;
+flex-direction: row; justify-content: space-between; height: 100%; margin-top: 20px;">
 
-        <div style="margin-bottom: 30px;">
-            <p style="font-size: 18px; margin-bottom: 5px;">Provedeno vremena:</p>
-            <p style="font-size: 20px;">
-               <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
-            </p>
-        </div>
+        @if (projectTimeResponse != null)
+        {
+            <ChartComponent projectTimeSumDto="projectTimeResponse.ProjectTimeSums"></ChartComponent>
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
 
         <div>
+            <div style="margin-bottom: 30px;">
+                <p style="font-size: 18px; margin-bottom: 5px;">Provedeno vremena:</p>
+                <p style="font-size: 20px;">
+                    <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
+                </p>
+            </div>
             @foreach (var percentageTime in projectTimeResponse?.ProjectTimeSums ?? Enumerable.Empty<ProjectTimeSumDto>())
             {
                 <div style="display: inline-block; vertical-align: top; margin-right: 20px; border-radius: 8px; padding-right: 20px; box-shadow: 3px 3px 5px rgba(0,0,0,0.4);">
@@ -166,7 +175,6 @@
                 </div>
             }
         </div>
-
     </div>
 
 </div>
@@ -198,7 +206,7 @@
     private ProjectTimeResponseDto? projectTimeResponse;
     private List<UsernamesDto>? usernames;
 
-    private FilterModel? filterModel = new FilterModel();
+    private FilterModel filterModel = new FilterModel();
 
     [Parameter]
     public string? ApiEndpoint { get; set; }
@@ -209,6 +217,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        filterModel.FromDate = DateTime.Today.AddMonths(-1);
+
+        filterModel.ToDate = DateTime.Today;
+
         if (haveUsername)
         {
             usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>("api/ProjectTimes/usernames");
@@ -221,19 +233,17 @@
     {
         string parameters;
 
+        string respondfromDate = $"fromDate={filterModel.FromDate:yyyy-MM-ddTHH:mm:ss}";
+        string respondToDate = $"toDate={filterModel.ToDate:yyyy-MM-ddTHH:mm:ss}";
+
         if (haveUsername)
         {
-            parameters = $"fromDate={filterModel.FromDate?.ToString("o")}&toDate={filterModel.ToDate?.ToString("o")}&username={filterModel.Username}&projectTitle={filterModel.ProjectTitle}";
+            parameters = $"{respondfromDate}&{respondToDate}&username={filterModel.Username}&projectTitle={filterModel.ProjectTitle}";
         }
         else
         {
-            parameters = $"fromDate={filterModel.FromDate?.ToString("o")}&toDate={filterModel.ToDate?.ToString("o")}&projectTitle={filterModel.ProjectTitle}";
+            parameters = $"{respondfromDate}&{respondToDate}&projectTitle={filterModel.ProjectTitle}";
         }
-
-        Console.WriteLine(filterModel.FromDate?.ToString("o"));
-        Console.WriteLine(filterModel.FromDate);
-        Console.WriteLine(DateTime.Today);
-        Console.WriteLine(DateTime.Today.Date);
 
         projectTimeResponse = await Http.GetFromJsonAsync<ProjectTimeResponseDto>($"{ApiEndpoint}?{parameters}");
     }

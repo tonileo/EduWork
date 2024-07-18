@@ -1,4 +1,4 @@
-﻿::deep .legend-circle {
+﻿/*::deep .legend-circle {
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -18,3 +18,4 @@
 ::deep .table-striped tbody tr:nth-child(odd) {
     background-color: lightcyan;
 }
+*/
