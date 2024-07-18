@@ -1,5 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using EduWork.UI.Authentication;
+using EduWork.UI.Interop;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -15,6 +16,8 @@ namespace EduWork.UI.Configurations
 
             configuration.GetSection(ClientAzureAdOptions.Section).Bind(azureAdOptions);
             configuration.GetSection(DownstreamApiOptions.Section).Bind(downstreamApiOptions);
+
+            //services.AddScoped<ChartJs>();
 
             services.AddScoped(sp =>
             {
@@ -42,10 +45,5 @@ namespace EduWork.UI.Configurations
 
             return services;
         }
-        //public static void AddRootComponents(this WebAssemblyHostBuilder builder)
-        //{
-        //    builder.RootComponents.Add<App>("#app");
-        //    builder.RootComponents.Add<HeadOutlet>("head::after");
-        //}
     }
 }

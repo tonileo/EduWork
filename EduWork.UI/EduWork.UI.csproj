@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\AdminInputHistory.razor" />
     <Content Remove="Pages\DateInput.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Features\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+    <None Remove="Interop\ChartJsInterop.js" />
     <None Remove="Pages\AdminStatsProjectTime.razor.css" />
   </ItemGroup>
 
@@ -31,12 +33,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
     <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
+    <_ContentIncludedByDefault Remove="Shared\ChartComponent.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Features\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+    <Content Include="Interop\ChartJs.cs" />
     <Content Include="Pages\AdminStatsProjectTime.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Shared\ChartComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\AdminInputHistory.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\AdminInputHistory.razor" />
   </ItemGroup>
 
 </Project>
