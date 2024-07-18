@@ -18,8 +18,12 @@ namespace EduWork.BusinessLayer
            .ForMember(dest => dest.LastChosenTitle, opt => opt.MapFrom(src => ""));
 
             CreateMap<User, UsernamesDto>();
-
+            
             CreateMap<ProjectTime, ProjectTimeDtoTest>()
+            .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
+            .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate));
+
+            CreateMap<ProjectTime, ProjectTimeHistoryDto>()
             .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
             .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate));
 

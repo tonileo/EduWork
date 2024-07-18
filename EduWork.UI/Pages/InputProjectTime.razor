@@ -102,6 +102,12 @@
                         <td class="text-center" colspan="5"><em>Loading...</em></td>
                     </tr>
                 }
+                else if (!projectTimeDtoTest.Any())
+                {
+                    <tr>
+                        <td class="text-center" colspan="5"><em>Nema zapisa za ovaj dan</em></td>
+                    </tr>
+                }
                 else
                 {
                     @foreach (var projectTimeLog in projectTimeDtoTest)
@@ -124,40 +130,11 @@
 </div>
 
 <style>
-    .flex-container {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-    }
-
-    .form-section {
-        flex: 1;
-        max-width: 600px;
-    }
-
-    .table-section {
-        flex: 2;
-    }
-
     .edit-mode {
         background-color: #f0f8ff;
         border: 1px solid #0000ff;
         padding: 15px;
         border-radius: 10px;
-    }
-
-    .input-group-horizontal {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-        .input-group-horizontal .form-group {
-            flex: 1;
-            margin: 0 8px;
-        }
-
-    .range-container {
-        flex: 1;
     }
 </style>
 
@@ -190,7 +167,7 @@
     {
         projectTimeRequest.DateWorkDay = DateTime.Today;
 
-        projectTimeRequest.TimeSpentMinutes = 240;
+        projectTimeRequest.TimeSpentMinutes = 450;
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
@@ -207,6 +184,7 @@
         {
             string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay:yyyy-MM-ddTHH:mm:ss}";
             projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>("api/ProjectTimes?" + parameters);
+
             StateHasChanged();
         }
         catch (Exception ex)
@@ -237,9 +215,12 @@
 
     private async void HandleDateInput(ChangeEventArgs args)
     {
-        projectTimeRequest.DateWorkDay = Convert.ToDateTime(args.Value);
+        if (args.Value != null)
+        {
+            projectTimeRequest.DateWorkDay = Convert.ToDateTime(args.Value);
 
-        await LoadData();
+            await LoadData();
+        }
     }
 
     private void UpdateTime()
@@ -258,16 +239,21 @@
         if (projectTimeRequest.DateWorkDay < DateTime.Today || (projectTimeRequest.DateWorkDay == DateTime.Today && change < 0))
         {
             projectTimeRequest.DateWorkDay = projectTimeRequest.DateWorkDay.AddDays(change);
+
             await LoadData();
         }
     }
 
-    private void ClearForm()
+    private async void ClearForm()
     {
+        updateForm = false;
+
         projectTimeRequest = new ProjectTimeRequestDto();
         projectTimeRequest.DateWorkDay = DateTime.Today;
-        hours = 4;
-        minutes = 0;
+        hours = 7;
+        minutes = 30;
+
+        await LoadData();
     }
 
     private async Task Submit()

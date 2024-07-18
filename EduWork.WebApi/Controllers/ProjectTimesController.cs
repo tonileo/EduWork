@@ -96,7 +96,7 @@ namespace EduWork.WebApi.Controllers
 
         [HttpGet]
         [Route("historyFilter")]
-        public async Task<ActionResult<ProjectTimeDtoTest>> GetMyHistoryProjectTimesFilter([FromServices] IIdentity currentUser, [FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter)
+        public async Task<ActionResult<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter([FromServices] IIdentity currentUser, [FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter)
         {
             var result = await _userProjectTimeService.GetMyHistoryProjectTimesFilter(currentUser.Email, thisMonth, lastMonth, thisQuarter);
             return Ok(result);

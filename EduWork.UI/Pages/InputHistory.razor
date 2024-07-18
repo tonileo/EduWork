@@ -9,24 +9,23 @@
 
 <h3>Povijest unosa</h3>
 
-@* TO DO Implement filters *@
-
-<button type="button" id="subtractDateButton" @onclick="() => FilterDate(1)">Prošli mjesec</button>
-<button type="button" id="subtractDateButton" @onclick="() => FilterDate(2)">Trenutni mjesec</button>
-<button type="button" id="subtractDateButton" @onclick="() => FilterDate(3)">Trenutno tromjesječje</button>
+<button type="button" @onclick="() => FilterDate(1)">Prošli mjesec</button>
+<button type="button" @onclick="() => FilterDate(2)">Trenutni mjesec</button>
+<button type="button" @onclick="() => FilterDate(3)">Trenutno tromjesječje</button>
 
 <div class="row">
-    <table class="table table-striped">
+    <table class="table">
         <thead class="thead-dark">
             <tr>
                 <th class="text-center">Radni dan</th>
                 <th class="text-center">Projekt</th>
                 <th class="text-center">Provedno vrijeme</th>
                 <th class="text-center">Komentar</th>
+                <th class="text-center">Ukupno provedno vremena</th>
             </tr>
         </thead>
         <tbody>
-            @if (projectTimeDtoTest == null)
+            @if (projectTimeHistoryDto == null)
             {
                 <tr>
                     <td class="text-center"><em>Loading...</em></td>
@@ -34,13 +33,18 @@
             }
             else
             {
-                @foreach (var projectTimeLog in projectTimeDtoTest)
+                @foreach (var projectTimeLog in projectTimeHistoryDto)
                 {
-                    <tr>
+                    <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))">
                         <td class="text-center">@projectTimeLog.DateWorkDay</td>
                         <td class="text-center">@projectTimeLog.TitleProject</td>
                         <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
                         <td class="text-center">@projectTimeLog.Comment</td>
+                        <td class="text-center">
+                            <span>@projectTimeLog.SumTimeSpentHours</span> h :
+                            <span>@projectTimeLog.SumTimeSpentMinutes</span> min
+                        </td>
+                        
                     </tr>
                 }
             }
@@ -49,14 +53,8 @@
 
 </div>
 
-<style>
-    .table-striped tbody tr:nth-child(odd) {
-        background-color: lightcyan;
-    }
-</style>
-
 @code {
-    private List<ProjectTimeDtoTest>? projectTimeDtoTest;
+    private List<ProjectTimeHistoryDto>? projectTimeHistoryDto;
     private ProjectTimeDtoTest? selectedProjectTime;
 
     private ProjectTimeDtoTest? openedProjectTime;
@@ -81,7 +79,7 @@
     {
         try
         {
-            projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>("api/ProjectTimes/historyFilter" + $"{parameters}");
+            projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>("api/ProjectTimes/historyFilter" + $"{parameters}");
 
             StateHasChanged();
         }
@@ -109,6 +107,28 @@
         {
             parameters = $"?thisQuarter=true";
             await LoadData(parameters);
+        }
+    }
+
+    private string GetRowColor(int hours, int minutes, bool isNonWorkingDay)
+    {
+        var totalMinutes = hours * 60 + minutes;
+        
+        if (isNonWorkingDay)
+        {
+            return "lightgray";
+        }
+        else if(totalMinutes == 0)
+        {
+            return "lightcoral";
+        }
+        else if (totalMinutes >= 450)
+        {
+            return "lightgreen";
+        }
+        else
+        {
+            return "lightgoldenrodyellow";
         }
     }
 }

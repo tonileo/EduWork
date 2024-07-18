@@ -11,6 +11,8 @@ using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EduWork.BusinessLayer.Services
 {
@@ -67,7 +69,7 @@ namespace EduWork.BusinessLayer.Services
 
         public async Task<List<ProjectTimeDtoTest>> GetProjectTimes()
         {
-            var userprojectTimes = await context.ProjectTimes.Include(s=> s.Project).Include(a => a.WorkDay).AsNoTracking().ToListAsync();
+            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).AsNoTracking().ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
@@ -98,7 +100,19 @@ namespace EduWork.BusinessLayer.Services
 
                 if (userWorkDayId == 0)
                 {
-                    throw new ArgumentException("Work day for logged in user is not generated");
+                    var user = await context.Users.SingleOrDefaultAsync(u => u.Email == email);
+
+                    var newWorkDay = new WorkDay
+                    {
+                        WorkDate = projectTimeDateOnly,
+                        UserId = user.Id,
+                        User = user
+                    };
+
+                    await context.WorkDays.AddAsync(newWorkDay);
+                    await context.SaveChangesAsync();
+
+                    userWorkDayId = newWorkDay.Id;
                 }
 
                 var projectExist = await context.Projects
@@ -260,7 +274,7 @@ namespace EduWork.BusinessLayer.Services
                     .GroupBy(pt => pt.Project.Title)
                      .Select(g =>
                      {
-                        var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
+                         var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
                          var percentageTimeSpent = (int)Math.Round((double)sumTimeSpent / totalTimeSpentMinutes * 100);
                          return new ProjectTimeSumDto
                          {
@@ -273,7 +287,7 @@ namespace EduWork.BusinessLayer.Services
                              IsPayable = projectProperties[g.Key].IsPayable,
                              IsPrivate = projectProperties[g.Key].IsPrivate
                          };
-                    }).OrderByDescending(a => a.PercentageTimeSpent).ToList();
+                     }).OrderByDescending(a => a.PercentageTimeSpent).ToList();
 
                 var projectTimeResponseDto = mapper.Map<List<ProjectTime>, ProjectTimeResponseDto>(projectTimes);
 
@@ -365,7 +379,7 @@ namespace EduWork.BusinessLayer.Services
             }
         }
 
-        public async Task<List<ProjectTimeDtoTest>> GetMyHistoryProjectTimesFilter(string? email, bool? thisMonth, bool? lastMonth, bool? thisQuarter)
+        public async Task<List<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter(string? email, bool? thisMonth, bool? lastMonth, bool? thisQuarter)
         {
             try
             {
@@ -375,31 +389,106 @@ namespace EduWork.BusinessLayer.Services
                 var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 var startOfLastMonth = startOfThisMonth.AddMonths(-1);
                 var startOfNextMonth = startOfThisMonth.AddMonths(1);
-                var startOfThisQuarter = new DateTime(DateTime.Now.Year, ((DateTime.Now.Month - 1) / 3) * 3 + 1, 1);
+                var startOfThisQuarter = new DateTime(DateTime.Now.Year, (DateTime.Now.Month - 3), 1);
+                var startOfNextQuarter = startOfThisQuarter.AddMonths(3);
 
                 DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
                 DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
                 DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
                 DateOnly startOfThisQuarterDateOnly = DateOnly.FromDateTime(startOfThisQuarter);
+                DateOnly startOfNextQuarterDateOnly = DateOnly.FromDateTime(startOfNextQuarter);
 
-                if (thisMonth == true)
+                DateOnly startDate;
+                DateOnly endDate;
+
+                if (lastMonth == true)
                 {
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfThisMonthDateOnly && pt.WorkDay.WorkDate < startOfNextMonthDateOnly);
-                }
-                else if (lastMonth == true)
-                {
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfLastMonthDateOnly && pt.WorkDay.WorkDate < startOfThisMonthDateOnly);
+                    startDate = startOfLastMonthDateOnly;
+                    endDate = startOfThisMonthDateOnly;
                 }
                 else if (thisQuarter == true)
                 {
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= startOfThisQuarterDateOnly && pt.WorkDay.WorkDate < startOfNextMonthDateOnly);
+                    startDate = startOfThisQuarterDateOnly;
+                    endDate = startOfNextQuarterDateOnly;
                 }
+                else
+                {
+                    startDate = startOfThisMonthDateOnly;
+                    endDate = startOfNextMonthDateOnly;
+                }
+
+                query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
 
                 var projectTimes = await query.ToListAsync();
 
-                var projectTimeResponseDto = mapper.Map<List<ProjectTimeDtoTest>>(projectTimes);
+                var allDates = new List<DateOnly>();
 
-                return projectTimeResponseDto;
+                for (var date = startDate; date < endDate; date = date.AddDays(1))
+                {
+                    allDates.Add(date);
+                }
+
+                var groupedProjectTimes = projectTimes
+                .GroupBy(pt => pt.WorkDay.WorkDate)
+                .Select(g => new
+                {
+                    WorkDate = g.Key,
+                    TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
+                    ProjectTimes = g.ToList()
+                });
+
+                var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();
+
+                var holidays = await context.NonWorkingDays.Select(h => h.NonWorkingDate).ToListAsync();
+
+                foreach (var date in allDates)
+                {
+                    var groupedEntry = groupedProjectTimes.FirstOrDefault(g => g.WorkDate == date);
+
+                    var totalTimeSpentMinutes = groupedEntry?.TotalTimeSpentMinutes ?? 0;
+                    var timeSpentHours = totalTimeSpentMinutes / 60;
+                    var timeSpentMinutes = totalTimeSpentMinutes % 60;
+
+                    bool isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday || holidays.Contains(date);
+
+                    if (isWeekend)
+                    {
+                        var dto = new ProjectTimeHistoryDto
+                        {
+                            DateWorkDay = date,
+                            SumTimeSpentHours = 0,
+                            SumTimeSpentMinutes = 0,
+                            IsNonWorkingDay = true,
+                        };
+                        projectTimeHistoryDtos.Add(dto);
+                    }
+                    else
+                    {
+                        if (groupedEntry != null)
+                        {
+                            foreach (var pt in groupedEntry.ProjectTimes)
+                            {
+                                var dto = mapper.Map<ProjectTimeHistoryDto>(pt);
+                                dto.SumTimeSpentHours = timeSpentHours;
+                                dto.SumTimeSpentMinutes = timeSpentMinutes;
+                                dto.IsNonWorkingDay = false;
+                                projectTimeHistoryDtos.Add(dto);
+                            }
+                        }
+                        else
+                        {
+                            var dto = new ProjectTimeHistoryDto
+                            {
+                                DateWorkDay = date,
+                                SumTimeSpentHours = timeSpentHours,
+                                SumTimeSpentMinutes = timeSpentMinutes,
+                                IsNonWorkingDay = false
+                            };
+                            projectTimeHistoryDtos.Add(dto);
+                        }
+                    }
+                }
+                return projectTimeHistoryDtos;
             }
             catch (Exception ex)
             {
