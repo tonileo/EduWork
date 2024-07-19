@@ -168,12 +168,12 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!date.HasValue)
-        {
-            date = DateTime.Today;
+        // if (!date.HasValue)
+        // {
+        //     date = DateTime.Today;
 
-            Console.WriteLine(date);
-        }
+        //     Console.WriteLine(date);
+        // }
 
         projectTimeRequest.DateWorkDay = date.Value;
 
@@ -299,12 +299,11 @@
 
                 ClearForm();
             }
+            await LoadData();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception: {ex.Message}");
         }
-
-        await LoadData();
     }
 }

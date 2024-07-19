@@ -37,7 +37,9 @@
                 {
                     <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))">
                         <td class="text-center">
-                            <a href="#" @onclick="() => NavigateToProjectTime(projectTimeLog.DateWorkDay)">@projectTimeLog.DateWorkDay</a>
+                            <a href="@("/inputProjectTime/" + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                @projectTimeLog.DateWorkDay
+                            </a>
                         </td>
                         <td class="text-center">@projectTimeLog.TitleProject</td>
                         <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
@@ -110,17 +112,6 @@
             parameters = $"?thisQuarter=true";
             await LoadData(parameters);
         }
-    }
-
-    private void NavigateToProjectTime(DateOnly date)
-    {
-        Console.WriteLine(date);
-
-        var formattedDate = date.ToString("MM-dd-yyyy");
-
-        Console.WriteLine(formattedDate);
-
-        NavigationManager.NavigateTo($"/inputProjectTime/{formattedDate}");
     }
 
     private string GetRowColor(int hours, int minutes, bool isNonWorkingDay)
