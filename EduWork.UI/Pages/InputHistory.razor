@@ -2,7 +2,7 @@
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Features.ProjectTime
 
-
+@inject NavigationManager NavigationManager
 @inject HttpClient Http
 
 <PageTitle>Povijest unosa</PageTitle>
@@ -36,7 +36,9 @@
                 @foreach (var projectTimeLog in projectTimeHistoryDto)
                 {
                     <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))">
-                        <td class="text-center">@projectTimeLog.DateWorkDay</td>
+                        <td class="text-center">
+                            <a href="#" @onclick="() => NavigateToProjectTime(projectTimeLog.DateWorkDay)">@projectTimeLog.DateWorkDay</a>
+                        </td>
                         <td class="text-center">@projectTimeLog.TitleProject</td>
                         <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
                         <td class="text-center">@projectTimeLog.Comment</td>
@@ -44,7 +46,7 @@
                             <span>@projectTimeLog.SumTimeSpentHours</span> h :
                             <span>@projectTimeLog.SumTimeSpentMinutes</span> min
                         </td>
-                        
+
                     </tr>
                 }
             }
@@ -110,15 +112,26 @@
         }
     }
 
+    private void NavigateToProjectTime(DateOnly date)
+    {
+        Console.WriteLine(date);
+
+        var formattedDate = date.ToString("MM-dd-yyyy");
+
+        Console.WriteLine(formattedDate);
+
+        NavigationManager.NavigateTo($"/inputProjectTime/{formattedDate}");
+    }
+
     private string GetRowColor(int hours, int minutes, bool isNonWorkingDay)
     {
         var totalMinutes = hours * 60 + minutes;
-        
+
         if (isNonWorkingDay)
         {
             return "lightgray";
         }
-        else if(totalMinutes == 0)
+        else if (totalMinutes == 0)
         {
             return "lightcoral";
         }

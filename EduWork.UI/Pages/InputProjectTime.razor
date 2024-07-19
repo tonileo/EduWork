@@ -1,4 +1,4 @@
-﻿@page "/inputProjectTime"
+﻿@page "/inputProjectTime/{date:datetime?}"
 
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Features.ProjectTime
@@ -139,6 +139,9 @@
 </style>
 
 @code {
+    [Parameter]
+    public DateTime? date { get; set; }
+
     public bool updateForm { get; set; }
 
     public ProjectTimeDtoTest? ProjectTimeLog { get; set; }
@@ -163,9 +166,23 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!date.HasValue)
+        {
+            date = DateTime.Today;
+
+            Console.WriteLine(date);
+        }
+
+        projectTimeRequest.DateWorkDay = date.Value;
+
+        await LoadData();
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        projectTimeRequest.DateWorkDay = DateTime.Today;
+        // projectTimeRequest.DateWorkDay = DateTime.Today;
 
         projectTimeRequest.TimeSpentMinutes = 450;
         hours = projectTimeRequest.TimeSpentMinutes / 60;
@@ -174,8 +191,6 @@
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>("api/ProjectTimes/projects");
 
         projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
-
-        await LoadData();
     }
 
     private async Task LoadData()
