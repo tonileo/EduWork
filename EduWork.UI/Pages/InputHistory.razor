@@ -35,11 +35,18 @@
             {
                 @foreach (var projectTimeLog in projectTimeHistoryDto)
                 {
-                    <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))">
+                    <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))" @onclick="() => ToggleRow(projectTimeLog)">
                         <td class="text-center">
-                            <a href="@("/inputProjectTime/" + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                            @if (projectTimeLog.IsNonWorkingDay)
+                            {
                                 @projectTimeLog.DateWorkDay
-                            </a>
+                            }
+                            else
+                            {
+                                <a href="@("/inputProjectTime/" + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                    @projectTimeLog.DateWorkDay
+                                </a>
+                            }
                         </td>
                         <td class="text-center">@projectTimeLog.TitleProject</td>
                         <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
@@ -50,6 +57,21 @@
                         </td>
 
                     </tr>
+
+                    @if (expandedRow == projectTimeLog)
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="expanded-content">
+                                    <p>Details for @projectTimeLog.DateWorkDay:</p>
+                                    <ul>
+                                        <li>Additional Detail 1</li>
+                                        <li>Additional Detail 2</li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
             }
         </tbody>
@@ -65,17 +87,10 @@
 
     private bool lastMonth;
 
+    private ProjectTimeHistoryDto? expandedRow;
+
     protected override async Task OnInitializedAsync()
     {
-        // try
-        // {
-        //     projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>("api/ProjectTimes/admin");
-        // }
-        // catch (Exception ex)
-        // {
-        //     Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
-        // }
-
         await LoadData("");
     }
 
@@ -111,6 +126,18 @@
         {
             parameters = $"?thisQuarter=true";
             await LoadData(parameters);
+        }
+    }
+
+    private void ToggleRow(ProjectTimeHistoryDto projectTimeLog)
+    {
+        if (expandedRow == projectTimeLog)
+        {
+            expandedRow = null;
+        }
+        else
+        {
+            expandedRow = projectTimeLog;
         }
     }
 

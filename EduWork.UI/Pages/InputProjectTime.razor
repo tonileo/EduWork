@@ -168,12 +168,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // if (!date.HasValue)
-        // {
-        //     date = DateTime.Today;
-
-        //     Console.WriteLine(date);
-        // }
+        if (!date.HasValue)
+        {
+            date = DateTime.Today;
+        }
 
         projectTimeRequest.DateWorkDay = date.Value;
 
@@ -182,8 +180,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // projectTimeRequest.DateWorkDay = DateTime.Today;
-
         projectTimeRequest.TimeSpentMinutes = 450;
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
