@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduWork.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240702133105_init")]
+    [Migration("20240721180024_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -47,7 +47,8 @@ namespace EduWork.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Year")
+                        .IsUnique();
 
                     b.ToTable("AnnualLeaves");
                 });
@@ -90,7 +91,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -100,6 +100,9 @@ namespace EduWork.DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("AppRoles");
                 });
@@ -122,6 +125,9 @@ namespace EduWork.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NonWorkingDate")
+                        .IsUnique();
+
                     b.ToTable("NonWorkingDays");
                 });
 
@@ -134,7 +140,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -168,6 +173,9 @@ namespace EduWork.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Title")
+                        .IsUnique();
+
                     b.ToTable("Projects");
                 });
 
@@ -180,7 +188,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -190,6 +197,9 @@ namespace EduWork.DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.ToTable("ProjectRoles");
                 });
@@ -203,7 +213,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -267,11 +276,13 @@ namespace EduWork.DataAccessLayer.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EntraObjectId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -281,6 +292,15 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppRoleId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("EntraObjectId")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -329,7 +349,8 @@ namespace EduWork.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "WorkDate")
+                        .IsUnique();
 
                     b.ToTable("WorkDays");
                 });
@@ -363,7 +384,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
                         .WithMany("AnnualLeaves")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -374,7 +395,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
                         .WithMany("AnnualLeaveRecords")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -404,7 +425,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
                         .WithMany("SickLeaveRecords")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -415,7 +436,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.AppRole", "AppRole")
                         .WithMany("Users")
                         .HasForeignKey("AppRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AppRole");
@@ -426,7 +447,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.Project", "Project")
                         .WithMany("UserProjectRoles")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EduWork.DataAccessLayer.Entites.ProjectRole", "ProjectRole")
@@ -438,7 +459,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
                         .WithMany("UserProjectRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -453,7 +474,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
                         .WithMany("WorkDays")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

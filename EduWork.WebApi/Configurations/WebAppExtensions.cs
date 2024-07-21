@@ -1,4 +1,5 @@
 ﻿using EduWork.DataAccessLayer;
+using EduWork.DataAccessLayer.Seed;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduWork.WebApi.Configuration
@@ -26,16 +27,29 @@ namespace EduWork.WebApi.Configuration
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapControllers();
+
             return app;
         }
 
         public static WebApplication MigrateDatabase(this WebApplication app)
         {
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                context.Database.Migrate();
-            }
+            using var scope = app.Services.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            
+            context.Database.Migrate();
+
+            return app;
+        }
+
+        public static WebApplication SeedData(this WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+
+            var seedData = scope.ServiceProvider.GetRequiredService<SeedData>();
+
+            seedData.Run();
 
             return app;
         }

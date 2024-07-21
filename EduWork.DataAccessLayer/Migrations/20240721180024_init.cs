@@ -18,7 +18,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -46,7 +46,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace EduWork.DataAccessLayer.Migrations
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     IsFinished = table.Column<bool>(type: "bit", nullable: false),
                     IsPrivate = table.Column<bool>(type: "bit", nullable: false),
                     IsEducation = table.Column<bool>(type: "bit", nullable: false),
@@ -81,8 +81,8 @@ namespace EduWork.DataAccessLayer.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EntraObjectId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EntraObjectId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     AppRoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -93,7 +93,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.AppRoleId,
                         principalTable: "AppRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,7 +115,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -137,7 +137,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -159,7 +159,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,13 +186,13 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserProjectRoles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -212,7 +212,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,7 +221,7 @@ namespace EduWork.DataAccessLayer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     TimeSpentMinutes = table.Column<int>(type: "int", nullable: false),
                     WorkDayId = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false)
@@ -265,14 +265,39 @@ namespace EduWork.DataAccessLayer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnnualLeaves_UserId",
+                name: "IX_AnnualLeaves_UserId_Year",
                 table: "AnnualLeaves",
-                column: "UserId");
+                columns: new[] { "UserId", "Year" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AnnualLeavesRecords_UserId",
                 table: "AnnualLeavesRecords",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRoles_Title",
+                table: "AppRoles",
+                column: "Title",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NonWorkingDays_NonWorkingDate",
+                table: "NonWorkingDays",
+                column: "NonWorkingDate",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoles_Id",
+                table: "ProjectRoles",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_Title",
+                table: "Projects",
+                column: "Title",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectTimes_ProjectId",
@@ -310,9 +335,28 @@ namespace EduWork.DataAccessLayer.Migrations
                 column: "AppRoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkDays_UserId",
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_EntraObjectId",
+                table: "Users",
+                column: "EntraObjectId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkDays_UserId_WorkDate",
                 table: "WorkDays",
-                column: "UserId");
+                columns: new[] { "UserId", "WorkDate" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkDayTimes_WorkDayId",

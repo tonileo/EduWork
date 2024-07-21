@@ -8,8 +8,7 @@ builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
 
-app.Configure(app.Environment, builder.Configuration);
-
-app.MapControllers();
-
-app.Run();
+app.Configure(app.Environment, builder.Configuration)
+    .MigrateDatabase()
+    .SeedData()
+    .Run();

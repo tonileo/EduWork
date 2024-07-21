@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
+using EduWork.DataAccessLayer.Seed;
 using EduWork.WebApi.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +72,8 @@ namespace EduWork.WebApi.Configuration
             services.AddScoped<UserProjectTimeService>();
 
             services.AddDbContext<AppDbContext>();
+
+            services.AddScoped<SeedData>();
 
             services.AddCors(options =>
             {
