@@ -13,60 +13,45 @@ namespace EduWork.DataAccessLayer.Seed
     {
         public void Run()
         {
-            var applyChanges = false;
-
             if (!context.NonWorkingDays.Any())
             {
                 AddNonWorkingDays(context);
-                applyChanges = true;
             }
 
             if (!context.ProjectRoles.Any())
             {
                 AddProjectRoles(context);
-                applyChanges = true;
             }
 
             if (!context.AppRoles.Any())
             {
                 AddAppRoles(context);
-                applyChanges = true;
             }
 
             if (!context.Users.Any())
             {
                 AddUsers(context);
-                applyChanges = true;
             }
 
             if (!context.Projects.Any())
             {
                 AddProjects(context);
-                applyChanges = true;
             }
 
             if (!context.UserProjectRoles.Any())
             {
                 AddUserProjectRoles(context);
-                applyChanges = true;
             }
 
             if (!context.WorkDays.Any())
             {
                 AddWorkDays(context);
-                applyChanges = true;
             }
 
             if (!context.ProjectTimes.Any())
             {
                 AddProjectTimes(context);
-                applyChanges = true;
             }
-
-            //if (applyChanges)
-            //{
-            //    context.SaveChanges();
-            //}
         }
 
         private static void AddNonWorkingDays(AppDbContext context)
