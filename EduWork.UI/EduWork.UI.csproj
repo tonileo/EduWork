@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Features\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+    <None Remove="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
     <None Remove="Interop\ChartJsInterop.js" />
   </ItemGroup>
 
@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Features\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+    <Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
     <Content Include="Interop\ChartJs.cs" />
   </ItemGroup>
 

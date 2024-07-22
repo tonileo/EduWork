@@ -180,17 +180,16 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 </div>
 
 @code {
-    private ProjectTimeResponseDto? projectTimeResponse;
-    private List<UsernamesDto>? usernames;
-
-    private FilterModel filterModel = new FilterModel();
-
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
     [Parameter]
     public bool haveUsername { get; set; }
 
+    private ProjectTimeResponseDto? projectTimeResponse;
+    private List<UsernamesDto>? usernames;
+
+    private FilterModel filterModel = new FilterModel();
 
     protected override async Task OnInitializedAsync()
     {

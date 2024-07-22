@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.CustomValidations;
 
 namespace Common.DTO.ProjectTime
 {
@@ -18,6 +19,7 @@ namespace Common.DTO.ProjectTime
 
         [Required]
         [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti")]
+        [DateNotWeekend(ErrorMessage = "Radni dan ne može biti vikend")]
         public DateTime DateWorkDay { get; set; }
 
         public string? Comment { get; set; }
