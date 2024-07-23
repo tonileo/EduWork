@@ -2,6 +2,7 @@
 
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Components.ProjectTime
+@using EduWork.UI.Shared
 
 @inject HttpClient Http
 
@@ -13,7 +14,7 @@
         <div class="form-container">
             <h3 class="mb-4">Unos projektnog vremena</h3>
 
-            <EditForm Model="@projectTimeRequest" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
+            <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="alert alert-danger" />
 
@@ -23,7 +24,7 @@
 
                         <div class="input-group">
                             <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
-                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @onchange="HandleDateInput" class="form-control" disabled="@(updateForm)" />
+                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" disabled="@(updateForm)" />
                             <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
                         </div>
 
@@ -152,6 +153,8 @@
 
     private List<ProjectTimeDtoTest>? projectTimeDtoTest;
 
+    private EditContext editContext;
+
     private int hours;
 
     private int minutes;
@@ -180,6 +183,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(projectTimeRequest);
+
         projectTimeRequest.TimeSpentMinutes = 450;
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
@@ -250,6 +255,8 @@
         if (projectTimeRequest.DateWorkDay < DateTime.Today || (projectTimeRequest.DateWorkDay == DateTime.Today && change < 0))
         {
             projectTimeRequest.DateWorkDay = projectTimeRequest.DateWorkDay.AddDays(change);
+
+            editContext.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
             await LoadData();
         }
