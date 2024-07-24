@@ -153,20 +153,6 @@ namespace EduWork.DataAccessLayer.Seed
                     Email = "alice.johnson@example.com",
                     EntraObjectId = "entra-003",
                     AppRoleId = 1
-                },
-                new User()
-                {
-                    Username = "bob.brown",
-                    Email = "bob.brown@example.com",
-                    EntraObjectId = "entra-004",
-                    AppRoleId = 2
-                },
-                new User()
-                {
-                    Username = "charlie.davis",
-                    Email = "charlie.davis@example.com",
-                    EntraObjectId = "entra-005",
-                    AppRoleId = 1
                 }
             );
             context.SaveChanges();
@@ -271,18 +257,6 @@ namespace EduWork.DataAccessLayer.Seed
                     UserId = 3,
                     ProjectId = 3,
                     ProjectRoleId = 3
-                },
-                new UserProjectRole()
-                {
-                    UserId = 4,
-                    ProjectId = 4,
-                    ProjectRoleId = 2
-                },
-                new UserProjectRole()
-                {
-                    UserId = 5,
-                    ProjectId = 2,
-                    ProjectRoleId = 1
                 }
             );
             context.SaveChanges();
@@ -308,12 +282,12 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 4),
-                    UserId = 4
+                    UserId = 1
                 },
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 5),
-                    UserId = 5
+                    UserId = 2
                 },
                 new WorkDay()
                 {
@@ -333,7 +307,7 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 9),
-                    UserId = 4
+                    UserId = 3
                 },
                 new WorkDay()
                 {
@@ -353,12 +327,12 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 13),
-                    UserId = 4
+                    UserId = 2
                 },
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 14),
-                    UserId = 5
+                    UserId = 3
                 },
                 new WorkDay()
                 {
@@ -378,12 +352,12 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 18),
-                    UserId = 4
+                    UserId = 1
                 },
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 19),
-                    UserId = 5
+                    UserId = 2
                 },
                 new WorkDay()
                 {
@@ -403,12 +377,12 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 23),
-                    UserId = 4
+                    UserId = 2
                 },
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 24),
-                    UserId = 5
+                    UserId = 1
                 },
                 new WorkDay()
                 {
@@ -428,12 +402,12 @@ namespace EduWork.DataAccessLayer.Seed
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 28),
-                    UserId = 4
+                    UserId = 3
                 },
                 new WorkDay()
                 {
                     WorkDate = new DateOnly(2024, 7, 29),
-                    UserId = 5
+                    UserId = 2
                 },
                 new WorkDay()
                 {
@@ -490,35 +464,35 @@ namespace EduWork.DataAccessLayer.Seed
                 new ProjectTime()
                 {
                     Comment = "Testing and debugging",
-                    TimeSpentMinutes = 465,
+                    TimeSpentMinutes = 310,
                     WorkDayId = 6,
                     ProjectId = 1
                 },
                 new ProjectTime()
                 {
                     Comment = "Client meeting and feedback",
-                    TimeSpentMinutes = 475,
+                    TimeSpentMinutes = 290,
                     WorkDayId = 7,
                     ProjectId = 2
                 },
                 new ProjectTime()
                 {
                     Comment = "Documentation",
-                    TimeSpentMinutes = 450,
+                    TimeSpentMinutes = 120,
                     WorkDayId = 8,
                     ProjectId = 3
                 },
                 new ProjectTime()
                 {
                     Comment = "Prototype development",
-                    TimeSpentMinutes = 460,
+                    TimeSpentMinutes = 80,
                     WorkDayId = 9,
                     ProjectId = 4
                 },
                 new ProjectTime()
                 {
                     Comment = "Integration with existing systems",
-                    TimeSpentMinutes = 470,
+                    TimeSpentMinutes = 110,
                     WorkDayId = 10,
                     ProjectId = 5
                 },
