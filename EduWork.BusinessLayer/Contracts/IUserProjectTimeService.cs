@@ -21,5 +21,6 @@ namespace EduWork.BusinessLayer.Contracts
         public Task<ProjectTimeResponseDto> GetProjectTimesFilter(DateTime? fromDate, DateTime? toDate, string? username, string? projectTitle);
         public Task<ProjectTimeResponseDto> GetMyProjectTimesFilter(string? email, DateTime? fromDate, DateTime? toDate, string? projectTitle);
         public Task<List<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter(string? email, bool? thisMonth, bool? lastMonth, bool? thisQuarter);
+        public Task<List<ProjectTimeHistoryDto>> GetHistoryProjectTimesFilter(bool? thisMonth, bool? lastMonth, bool? thisQuarter, string? username);
     }
 }

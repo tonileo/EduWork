@@ -1,5 +1,7 @@
 ﻿@page "/adminInputHistory"
+@using EduWork.UI.Components.ProjectTime
 
 <PageTitle>Admin povijest unosa</PageTitle>
 
-<InputHistory></InputHistory>
+<InputHistoryComponent ApiEndpoint="api/ProjectTimes/historyFilter/admin"
+                       haveUsername="true"></InputHistoryComponent>

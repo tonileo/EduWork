@@ -1,0 +1,35 @@
+﻿.flex-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+::deep .fixed-size {
+    width: auto;
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.filter {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.btn {
+    flex: 0 0 auto;
+}
+
+.form-control {
+    max-width: 200px;
+}
+
+.table {
+    margin-top: 10px;
+}
+
+    .table th, .table td {
+        padding: 10px;
+    }

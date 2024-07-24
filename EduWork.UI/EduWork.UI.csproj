@@ -34,6 +34,7 @@
     <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
     <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
     <_ContentIncludedByDefault Remove="Shared\ChartComponent.razor" />
+    <_ContentIncludedByDefault Remove="Shared\InputDateOnChange.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +48,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\AdminInputHistory.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Shared\InputDateOnChange.razor" />
   </ItemGroup>
 
 </Project>

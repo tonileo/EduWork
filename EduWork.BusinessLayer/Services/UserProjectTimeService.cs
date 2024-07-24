@@ -383,8 +383,142 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
+                IQueryable<ProjectTime> query = context.ProjectTimes
+                    .Include(k => k.Project)
+                    .Where(pt => pt.WorkDay.User.Email == email)
+                    .Include(w => w.WorkDay)
+                    .AsNoTracking()
+                    .AsQueryable();
+
+                var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var startOfLastMonth = startOfThisMonth.AddMonths(-1);
+                var startOfNextMonth = startOfThisMonth.AddMonths(1);
+                var startOfThisQuarter = new DateTime(DateTime.Now.Year, (DateTime.Now.Month - 3), 1);
+                var startOfNextQuarter = startOfThisQuarter.AddMonths(3);
+
+                DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
+                DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
+                DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
+                DateOnly startOfThisQuarterDateOnly = DateOnly.FromDateTime(startOfThisQuarter);
+                DateOnly startOfNextQuarterDateOnly = DateOnly.FromDateTime(startOfNextQuarter);
+
+                DateOnly startDate;
+                DateOnly endDate;
+
+                if (lastMonth == true)
+                {
+                    startDate = startOfLastMonthDateOnly;
+                    endDate = startOfThisMonthDateOnly;
+                }
+                else if (thisQuarter == true)
+                {
+                    startDate = startOfThisQuarterDateOnly;
+                    endDate = startOfNextQuarterDateOnly;
+                }
+                else
+                {
+                    startDate = startOfThisMonthDateOnly;
+                    endDate = startOfNextMonthDateOnly;
+                }
+
+                query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
+
+                var projectTimes = await query.ToListAsync();
+
+                var allDates = new List<DateOnly>();
+
+                for (var date = startDate; date < endDate; date = date.AddDays(1))
+                {
+                    allDates.Add(date);
+                }
+
+                var groupedProjectTimes = projectTimes
+                .GroupBy(pt => pt.WorkDay.WorkDate)
+                .Select(g => new
+                {
+                    WorkDate = g.Key,
+                    TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
+                    ProjectTimes = g.ToList()
+                });
+
+                var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();
+
+                var holidays = await context.NonWorkingDays.Select(h => h.NonWorkingDate).ToListAsync();
+
+                foreach (var date in allDates)
+                {
+                    var groupedEntry = groupedProjectTimes.FirstOrDefault(g => g.WorkDate == date);
+
+                    var totalTimeSpentMinutes = groupedEntry?.TotalTimeSpentMinutes ?? 0;
+                    var timeSpentHours = totalTimeSpentMinutes / 60;
+                    var timeSpentMinutes = totalTimeSpentMinutes % 60;
+
+                    bool isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday || holidays.Contains(date);
+
+                    if (isWeekend)
+                    {
+                        var dto = new ProjectTimeHistoryDto
+                        {
+                            DateWorkDay = date,
+                            SumTimeSpentHours = 0,
+                            SumTimeSpentMinutes = 0,
+                            IsNonWorkingDay = true,
+                        };
+                        projectTimeHistoryDtos.Add(dto);
+                    }
+                    else
+                    {
+                        if (groupedEntry != null)
+                        {
+                            foreach (var pt in groupedEntry.ProjectTimes)
+                            {
+                                var dto = mapper.Map<ProjectTimeHistoryDto>(pt);
+                                dto.SumTimeSpentHours = timeSpentHours;
+                                dto.SumTimeSpentMinutes = timeSpentMinutes;
+                                dto.IsNonWorkingDay = false;
+                                projectTimeHistoryDtos.Add(dto);
+                            }
+                        }
+                        else
+                        {
+                            var dto = new ProjectTimeHistoryDto
+                            {
+                                DateWorkDay = date,
+                                SumTimeSpentHours = timeSpentHours,
+                                SumTimeSpentMinutes = timeSpentMinutes,
+                                IsNonWorkingDay = false
+                            };
+                            projectTimeHistoryDtos.Add(dto);
+                        }
+                    }
+                }
+                return projectTimeHistoryDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with GetMyProjectTimesFilter" + ex.Message);
+            }
+        }
+
+        public async Task<List<ProjectTimeHistoryDto>> GetHistoryProjectTimesFilter(bool? thisMonth, bool? lastMonth, bool? thisQuarter, string? username)
+        {
+            try
+            {
                 IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
-                .Where(pt => pt.WorkDay.User.Email == email).Include(w => w.WorkDay).AsNoTracking().AsQueryable();
+                .Include(w => w.WorkDay)
+                .Include(s => s.WorkDay.User)
+                .AsNoTracking()
+                .AsQueryable();
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    query = query.Where(a => a.WorkDay.User.Username == username);
+
+                    if (query.Count() == 0)
+                    {
+                        throw new ArgumentException("There is no users with that username");
+                    }
+                }
 
                 var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 var startOfLastMonth = startOfThisMonth.AddMonths(-1);

@@ -1,0 +1,225 @@
+﻿@using Common.DTO
+@using Common.DTO.ProjectTime
+
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+<PageTitle>Povijest unosa</PageTitle>
+
+@if (haveUsername)
+{
+    <div class="flex-container">
+        <h3>Povijest unosa korisnika: </h3>
+
+        @if (usernames == null)
+        {
+            <option>Loading...</option>
+        }
+        else
+        {
+            <InputSelect class="form-control fixed-size" @bind-Value="filterUsername" id="username" @oninput="FilterUser">
+                @foreach (var user in usernames)
+                {
+                    <option value="@user.Username">@user.Username</option>
+                }
+            </InputSelect>
+        }
+    </div>
+}
+else
+{
+    <h3>Moja povijest unosa</h3>
+}
+
+<div class="filter">
+    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(1)">Prošli mjesec</button>
+    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(2)">Trenutni mjesec</button>
+    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(3)">Trenutno tromjesječje</button>
+</div>
+
+<div class="row">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th class="text-center">Radni dan</th>
+                <th class="text-center">Projekt</th>
+                <th class="text-center">Provedno vrijeme</th>
+                <th class="text-center">Komentar</th>
+                <th class="text-center">Ukupno provedno vremena</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (projectTimeHistoryDto == null)
+            {
+                <tr>
+                    <td class="text-center"><em>Loading...</em></td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var projectTimeLog in projectTimeHistoryDto)
+                {
+                    <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))" @onclick="() => ToggleRow(projectTimeLog)">
+                        <td class="text-center">
+                            @if (projectTimeLog.IsNonWorkingDay)
+                            {
+                                @projectTimeLog.DateWorkDay
+                            }
+                            else
+                            {
+                                <a href="@("/inputProjectTime/" + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                    @projectTimeLog.DateWorkDay
+                                </a>
+                            }
+                        </td>
+                        <td class="text-center">@projectTimeLog.TitleProject</td>
+                        <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
+                        <td class="text-center">@projectTimeLog.Comment</td>
+                        <td class="text-center">
+                            <span>@projectTimeLog.SumTimeSpentHours</span> h :
+                            <span>@projectTimeLog.SumTimeSpentMinutes</span> min
+                        </td>
+
+                    </tr>
+
+                    @if (expandedRow == projectTimeLog)
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="expanded-content">
+                                    <p>Details for @projectTimeLog.DateWorkDay:</p>
+                                    <ul>
+                                        <li>Additional Detail 1</li>
+                                        <li>Additional Detail 2</li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string? ApiEndpoint { get; set; }
+
+    [Parameter]
+    public bool haveUsername { get; set; }
+
+    private List<UsernamesDto>? usernames;
+
+    private List<ProjectTimeHistoryDto>? projectTimeHistoryDto;
+    private ProjectTimeDtoTest? selectedProjectTime;
+    private ProjectTimeDtoTest? openedProjectTime;
+    private ProjectTimeHistoryDto? expandedRow;
+
+    private string filterUsername = string.Empty;
+    private string parameters = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (haveUsername)
+        {
+            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>("api/ProjectTimes/usernames");
+
+            filterUsername = usernames.First().Username;
+
+            parameters = $"?username={filterUsername}";
+        }
+
+        parameters = parameters + "";
+
+        await LoadData(parameters);
+    }
+
+    private async Task LoadData(string parameters)
+    {
+        try
+        {
+            if (haveUsername)
+            {
+                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+            }
+            else
+            {
+                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+        }
+
+        StateHasChanged();
+    }
+
+    private async void FilterDate(int filterDate)
+    {
+        parameters = string.Empty;
+
+        if (filterDate == 1)
+        {
+            parameters = "?lastMonth=true";
+        }
+        else if (filterDate == 2)
+        {
+            parameters = "?thisMonth=true";
+        }
+        else if (filterDate == 3)
+        {
+            parameters = "?thisQuarter=true";
+        }
+
+        if (haveUsername)
+        {
+            parameters = parameters + $"&username={filterUsername}";
+        }
+
+        await LoadData(parameters);
+    }
+
+    private async void FilterUser(ChangeEventArgs e)
+    {
+        filterUsername = e.Value?.ToString() ?? string.Empty;
+        parameters = string.IsNullOrEmpty(filterUsername) ? "" : $"?username={filterUsername}";
+
+        await LoadData(parameters);
+    }
+
+    private void ToggleRow(ProjectTimeHistoryDto projectTimeLog)
+    {
+        if (expandedRow == projectTimeLog)
+        {
+            expandedRow = null;
+        }
+        else
+        {
+            expandedRow = projectTimeLog;
+        }
+    }
+
+    private string GetRowColor(int hours, int minutes, bool isNonWorkingDay)
+    {
+        var totalMinutes = hours * 60 + minutes;
+
+        if (isNonWorkingDay)
+        {
+            return "lightgray";
+        }
+        else if (totalMinutes == 0)
+        {
+            return "lightcoral";
+        }
+        else if (totalMinutes >= 450)
+        {
+            return "lightgreen";
+        }
+        else
+        {
+            return "lightgoldenrodyellow";
+        }
+    }
+}
