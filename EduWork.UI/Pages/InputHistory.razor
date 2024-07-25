@@ -1,7 +1,12 @@
 ﻿@page "/inputHistory"
 @using EduWork.UI.Components.ProjectTime
 
-<PageTitle>Povijest unosa</PageTitle>
+<PageTitle>@PROJECT_HISTORY_TITLE</PageTitle>
 
-<InputHistoryComponent ApiEndpoint="api/ProjectTimes/historyFilter"
+<InputHistoryComponent ApiEndpoint=@PROJECT_HISTORY_ENDPOINT
               haveUsername="false"></InputHistoryComponent>
+
+@code {
+    private const string PROJECT_HISTORY_TITLE = "Povijest unosa";
+    private const string PROJECT_HISTORY_ENDPOINT = "api/ProjectTimes/historyFilter";
+}

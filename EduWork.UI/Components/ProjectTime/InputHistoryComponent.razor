@@ -9,7 +9,7 @@
 @if (haveUsername)
 {
     <div class="flex-container">
-        <h3>Povijest unosa korisnika: </h3>
+        <h3>@INPUT_HISTORY_OF_USER_TITLE</h3>
 
         @if (usernames == null)
         {
@@ -28,24 +28,24 @@
 }
 else
 {
-    <h3>Moja povijest unosa</h3>
+    <h3>@MY_INPUT_HISTORY_TITLE</h3>
 }
 
 <div class="filter">
-    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(1)">Prošli mjesec</button>
-    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(2)">Trenutni mjesec</button>
-    <button type="button" class="btn btn-secondary" @onclick="() => FilterDate(3)">Trenutno tromjesječje</button>
+    <button type="button" class="btn @(selectedDateFilter == 1 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(1)">@LAST_MONTH_BUTTON_TEXT</button>
+    <button type="button" class="btn @(selectedDateFilter == 2 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(2)">@CURRENT_MONTH_BUTTON_TEXT</button>
+    <button type="button" class="btn @(selectedDateFilter == 3 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(3)">@CURRENT_QUARTER_BUTTON_TEXT</button>
 </div>
 
 <div class="row">
     <table class="table">
         <thead class="thead-dark">
             <tr>
-                <th class="text-center">Radni dan</th>
-                <th class="text-center">Projekt</th>
-                <th class="text-center">Provedno vrijeme</th>
-                <th class="text-center">Komentar</th>
-                <th class="text-center">Ukupno provedno vremena</th>
+                <th class="text-center">@WORKDAY_TABLE_LABEL</th>
+                <th class="text-center">@PROJECT_TABLE_LABEL</th>
+                <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
+                <th class="text-center">@COMMENT_TABLE_LABEL</th>
+                <th class="text-center">@SUM_OF_TIME_SPENT_TABLE_LABEL</th>
             </tr>
         </thead>
         <tbody>
@@ -67,7 +67,7 @@ else
                             }
                             else
                             {
-                                <a href="@("/inputProjectTime/" + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
                                     @projectTimeLog.DateWorkDay
                                 </a>
                             }
@@ -103,6 +103,27 @@ else
 </div>
 
 @code {
+    private const string INPUT_HISTORY_OF_USER_TITLE = "Povijest unosa korisnika: ";
+    private const string MY_INPUT_HISTORY_TITLE = "Moja povijest unosa";
+    private const string LAST_MONTH_BUTTON_TEXT = "Prošli mjesec";
+    private const string CURRENT_MONTH_BUTTON_TEXT = "Trenutni mjesec";
+    private const string CURRENT_QUARTER_BUTTON_TEXT = "Trenutno tromjesečje";
+    private const string WORKDAY_TABLE_LABEL = "Radni dan";
+    private const string PROJECT_TABLE_LABEL = "Projekt";
+    private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
+    private const string COMMENT_TABLE_LABEL = "Komentar";
+    private const string SUM_OF_TIME_SPENT_TABLE_LABEL = "Ukupno provedno vremena";
+    private const string INPUT_PROJECT_TIME_NAVIGATION = "/inputProjectTime/";
+
+    private const string GET_USERNAMES_ENDPOINT = "api/ProjectTimes/usernames";
+    private const string LAST_MONTH_PARAMS = "?lastMonth=true";
+    private const string THIS_MONTH_PARAMS = "?thisMonth=true";
+    private const string THIS_QUARTER_PARAMS = "?thisQuarter=true";
+    private const string NON_WORKING_DAY_COLOR = "lightgray";
+    private const string ZERO_HOURS_COLOR = "lightcoral";
+    private const string BETWEEN_ZERO_AND_FULL_TIME_COLOR = "lightgoldenrodyellow";
+    private const string FULL_TIME_COLOR = "lightgreen";
+
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
@@ -116,6 +137,7 @@ else
     private ProjectTimeDtoTest? openedProjectTime;
     private ProjectTimeHistoryDto? expandedRow;
 
+    private int selectedDateFilter = 2;
     private string filterUsername = string.Empty;
     private string parameters = string.Empty;
 
@@ -123,7 +145,7 @@ else
     {
         if (haveUsername)
         {
-            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>("api/ProjectTimes/usernames");
+            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(GET_USERNAMES_ENDPOINT);
 
             filterUsername = usernames.First().Username;
 
@@ -158,19 +180,20 @@ else
 
     private async void FilterDate(int filterDate)
     {
+        selectedDateFilter = filterDate;
         parameters = string.Empty;
 
         if (filterDate == 1)
         {
-            parameters = "?lastMonth=true";
+            parameters = LAST_MONTH_PARAMS;
         }
         else if (filterDate == 2)
         {
-            parameters = "?thisMonth=true";
+            parameters = THIS_MONTH_PARAMS;
         }
         else if (filterDate == 3)
         {
-            parameters = "?thisQuarter=true";
+            parameters = THIS_QUARTER_PARAMS;
         }
 
         if (haveUsername)
@@ -184,7 +207,7 @@ else
     private async void FilterUser(ChangeEventArgs e)
     {
         filterUsername = e.Value?.ToString() ?? string.Empty;
-        parameters = string.IsNullOrEmpty(filterUsername) ? "" : $"?username={filterUsername}";
+        parameters = $"?username={filterUsername}";
 
         await LoadData(parameters);
     }
@@ -207,19 +230,19 @@ else
 
         if (isNonWorkingDay)
         {
-            return "lightgray";
+            return NON_WORKING_DAY_COLOR;
         }
         else if (totalMinutes == 0)
         {
-            return "lightcoral";
+            return ZERO_HOURS_COLOR;
         }
         else if (totalMinutes >= 450)
         {
-            return "lightgreen";
+            return FULL_TIME_COLOR;
         }
         else
         {
-            return "lightgoldenrodyellow";
+            return BETWEEN_ZERO_AND_FULL_TIME_COLOR;
         }
     }
 }

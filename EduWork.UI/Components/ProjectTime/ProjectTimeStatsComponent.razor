@@ -26,7 +26,7 @@
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
                 <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
-                           placeholder="Naziv projekta..." />
+                           placeholder=@PROJECT_NAME_PLACEHOLDER />
                 <ValidationMessage For="() => filterModel.ProjectTitle" />
             </div>
         </div>
@@ -42,7 +42,7 @@
                     else
                     {
             <InputSelect class="form-control" @bind-Value="filterModel.Username" id="username">
-                <option value="">Odaberi korisnika...</option>
+                <option value="">@CHOOSE_USER_PLACEHOLDER </option>
                             @foreach (var user in usernames)
                             {
                     <option value="@user.Username">@user.Username</option>
@@ -57,7 +57,7 @@
     </div>
     <div class="col-md-3 col-sm-6">
         <br />
-        <button type="submit" class="btn btn-primary">Filtriraj</button>
+        <button type="submit" class="btn btn-primary">@FILTER_BUTTON_TEXT</button>
     </div>
 </EditForm>
 
@@ -74,8 +74,8 @@
             <table class="table @(haveUsername ? string.Empty : "table-striped")">
                 <thead>
                     <tr>
-                        <th>Projekt</th>
-                        <th style="text-align: right;">Trajanje</th>
+                        <th>@PROJECT_TABLE_LABEL </th>
+                        <th style="text-align: right;">@DURATION_LABEL </th>
                     </tr>
                 </thead>
 
@@ -112,7 +112,7 @@
                         </tr>
                     }
                     <tr>
-                        <td><strong>Ukupno</strong></td>
+                        <td><strong>@IN_TOTAL_LABEL </strong></td>
                         <td style="text-align: right;">
                             <strong><span>@projectTimeResponse.SumAllProjectTimesHours</span>h : <span>@projectTimeResponse.SumAllProjectTimesMinutes</span>min</strong>
                         </td>
@@ -126,22 +126,22 @@
                     {
                         <li style="display: inline-block; margin-right: 15px;">
                             <span class="legend-circle" style="background-color: red;"></span>
-                            <span>Ne plaćen</span>
+                            <span>@NOT_PAYED_LEGEND</span>
                         </li>
 
                         <li style="display: inline-block; margin-right: 15px;">
                             <span class="legend-circle" style="background-color: forestgreen;"></span>
-                            <span>Plaćen</span>
+                            <span>@PAYED_LEGEND </span>
                         </li>
                     }
                     <li style="display: inline-block; margin-right: 15px;">
                         <span class="legend-circle" style="background-color: #2196F3;"></span>
-                        <span>Edukacija</span>
+                        <span>@EDUCATION_LEGEND</span>
                     </li>
 
                     <li style="display: inline-block; margin-right: 15px;">
                         <span class="legend-circle" style="background-color: #757575;"></span>
-                        <span>Završen</span>
+                        <span>@FINISHED_LEGEND</span>
                     </li>
                 </ul>
             </div>
@@ -162,7 +162,7 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 
         <div>
             <div style="margin-bottom: 30px;">
-                <p style="font-size: 18px; margin-bottom: 5px;">Provedeno vremena:</p>
+                <p style="font-size: 18px; margin-bottom: 5px;">@TIME_SPENT_GRAPHIC_LABEL</p>
                 <p style="font-size: 20px;">
                     <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
                 </p>
@@ -180,6 +180,20 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 </div>
 
 @code {
+    private const string PROJECT_NAME_PLACEHOLDER = "Naziv projekta...";
+    private const string CHOOSE_USER_PLACEHOLDER = "Odaberi korisnika...";
+    private const string FILTER_BUTTON_TEXT = "Filtriraj";
+    private const string PROJECT_TABLE_LABEL = "Projekt";
+    private const string DURATION_LABEL = "Trajanje";
+    private const string IN_TOTAL_LABEL = "Ukupno";
+    private const string NOT_PAYED_LEGEND = "Ne plaćen";
+    private const string PAYED_LEGEND = "Plaćen";
+    private const string EDUCATION_LEGEND = "Edukacija";
+    private const string FINISHED_LEGEND = "Završen";
+    private const string TIME_SPENT_GRAPHIC_LABEL = "Provedno vremena: ";
+
+    private const string GET_USERNAMES_ENDPOINT = "api/ProjectTimes/usernames";
+
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
@@ -199,7 +213,7 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 
         if (haveUsername)
         {
-            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>("api/ProjectTimes/usernames");
+            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(@GET_USERNAMES_ENDPOINT);
         }
 
         await LoadProjectTimesAsync();

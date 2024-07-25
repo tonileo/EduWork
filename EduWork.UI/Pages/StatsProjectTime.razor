@@ -2,7 +2,12 @@
 
 @using EduWork.UI.Components.ProjectTime
 
-<PageTitle>User Project Statistics</PageTitle>
+<PageTitle>@PROJECT_STATS_TITLE</PageTitle>
 
-<ProjectTimeStatsComponent ApiEndpoint="api/ProjectTimes/statsFilter"
+<ProjectTimeStatsComponent ApiEndpoint=@PROJECT_STATS_ENDPOINT
                   haveUsername="false" />
+
+@code {
+    private const string PROJECT_STATS_TITLE = "Projektna statistika";
+    private const string PROJECT_STATS_ENDPOINT = "api/ProjectTimes/statsFilter";
+}

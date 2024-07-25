@@ -6,13 +6,13 @@
 
 @inject HttpClient Http
 
-<PageTitle>Unos projektnog vremena</PageTitle>
+<PageTitle>@INPUT_PROJECT_TIME_TITLE</PageTitle>
 
 <div class="flex-container">
     <div class="form-section">
 
         <div class="form-container">
-            <h3 class="mb-4">Unos projektnog vremena</h3>
+            <h3 class="mb-4">@INPUT_PROJECT_TIME_TITLE</h3>
 
             <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
                 <DataAnnotationsValidator />
@@ -20,7 +20,7 @@
 
                 <div>
                     <div class="form-group mb-3">
-                        <label for="date">Radni dan:</label>
+                        <label for="date">@WORKDAY_INPUT_LABEL</label>
 
                         <div class="input-group">
                             <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="titleProject">Projekt:</label>
+                        <label for="titleProject">@PROJECT_INPUT_LABEL</label>
                         <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
                             @if (projects == null)
                             {
@@ -40,7 +40,7 @@
                             }
                             else
                             {
-                                <option value="" disabled selected>-- Odaberi projekt --</option>
+                                <option value="" disabled selected>@CHOOSE_PROJECT_SELECT_OPTION</option>
                                 @foreach (var project in projects)
                                 {
                                     <option value="@project.Title">@project.Title</option>
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="comment">Komentar:</label>
+                    <label for="comment">@COMMENT_INPUT_LABEL</label>
                     <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" />
                     <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
                 </div>
@@ -60,12 +60,12 @@
                 <div class="form-group mb-3">
                     <div class="input-group-horizontal">
                         <div>
-                            <label for="timeSpentHours">Sati:</label>
+                            <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
                             <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required style="width: 80px;" @oninput="UpdateTime" />
                         </div>
 
                         <div>
-                            <label for="timeSpentMinutes">Minute:</label>
+                            <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
                             <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required style="width: 80px;" @oninput="UpdateTime" />
                         </div>
 
@@ -78,8 +78,8 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary me-2">Podnesni</button>
-                    <button type="button" class="btn btn-secondary" @onclick="ClearForm">Očisti</button>
+                    <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
+                    <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
                 </div>
             </EditForm>
         </div>
@@ -89,11 +89,11 @@
         <table class="table table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <th class="text-center">Radni dan</th>
-                    <th class="text-center">Projekt</th>
-                    <th class="text-center">Provedno vrijeme</th>
-                    <th class="text-center">Komentar</th>
-                    <th class="text-center">Akcije</th>
+                    <th class="text-center">@WORKDAY_TABLE_LABEL</th>
+                    <th class="text-center">@PROJECT_TABLE_LABEL</th>
+                    <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
+                    <th class="text-center">@COMMENT_TABLE_LABEL</th>
+                    <th class="text-center">@ACTIONS_TABLE_LABEL</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,7 +106,7 @@
                 else if (!projectTimeDtoTest.Any())
                 {
                     <tr>
-                        <td class="text-center" colspan="5"><em>Nema zapisa za ovaj dan</em></td>
+                        <td class="text-center" colspan="5"><em>@NO_DATA_FOR_THIS_DAY</em></td>
                     </tr>
                 }
                 else
@@ -140,6 +140,28 @@
 </style>
 
 @code {
+    private const string INPUT_PROJECT_TIME_TITLE = "Unos projektnog vremena";
+    private const string WORKDAY_INPUT_LABEL = "Radni dan: ";
+    private const string PROJECT_INPUT_LABEL = "Projekt: ";
+    private const string CHOOSE_PROJECT_SELECT_OPTION = "-- Odaberi projekt --";
+    private const string COMMENT_INPUT_LABEL = "Komentar: ";
+    private const string HOURS_INPUT_LABEL = "Sati: ";
+    private const string MINUTES_INPUT_LABEL = "Minute: ";
+    private const string SUBMIT_BUTTON_TEXT = "Podnesni";
+    private const string CLEAR_BUTTON_TEXT = "Očisti";
+    private const string WORKDAY_TABLE_LABEL = "Radni dan";
+    private const string PROJECT_TABLE_LABEL = "Projekt";
+    private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
+    private const string COMMENT_TABLE_LABEL = "Komentar";
+    private const string ACTIONS_TABLE_LABEL = "Akcije";
+    private const string NO_DATA_FOR_THIS_DAY = "Nema zapisa za ovaj dan";
+
+    private const string GET_ENDPOINT = "api/ProjectTimes?";
+    private const string DELETE_AND_PUT_ENDPOINT = "api/ProjectTimes/";
+    private const string POST_ENDPOINT = "api/ProjectTimes";
+    private const string GET_PROJECTS_ENDPOINT = "api/ProjectTimes/projects";
+    private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+
     [Parameter]
     public DateTime? date { get; set; }
 
@@ -153,7 +175,7 @@
 
     private List<ProjectTimeDtoTest>? projectTimeDtoTest;
 
-    private EditContext editContext;
+    private EditContext? editContext;
 
     private int hours;
 
@@ -189,7 +211,7 @@
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
-        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>("api/ProjectTimes/projects");
+        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
 
         projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
     }
@@ -198,8 +220,8 @@
     {
         try
         {
-            string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay:yyyy-MM-ddTHH:mm:ss}";
-            projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>("api/ProjectTimes?" + parameters);
+            string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
+            projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
 
             StateHasChanged();
         }
@@ -224,7 +246,7 @@
 
     private async void DeleteData(int deleteId)
     {
-        var projectTimeDelete = await Http.DeleteAsync($"api/ProjectTimes/{deleteId}");
+        var projectTimeDelete = await Http.DeleteAsync($"{DELETE_AND_PUT_ENDPOINT}{deleteId}");
 
         await LoadData();
     }
@@ -282,7 +304,7 @@
 
             if (!updateForm)
             {
-                var response = await Http.PostAsJsonAsync("api/ProjectTimes", projectTimeRequest);
+                var response = await Http.PostAsJsonAsync(POST_ENDPOINT, projectTimeRequest);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -291,7 +313,7 @@
             }
             else
             {
-                var response = await Http.PutAsJsonAsync("api/ProjectTimes/" + ProjectTimeLog?.Id, projectTimeRequest);
+                var response = await Http.PutAsJsonAsync(DELETE_AND_PUT_ENDPOINT + ProjectTimeLog?.Id, projectTimeRequest);
 
                 if (!response.IsSuccessStatusCode)
                 {
