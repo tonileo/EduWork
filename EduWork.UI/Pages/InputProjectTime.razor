@@ -24,7 +24,7 @@
 
                         <div class="input-group">
                             <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
-                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" class="form-control" disabled="@(updateForm)" />
+                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class="form-control" disabled="@(updateForm)" />
                             <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
                         </div>
 
@@ -61,12 +61,12 @@
                     <div class="input-group-horizontal">
                         <div>
                             <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
-                            <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required style="width: 80px;" @oninput="UpdateTime" />
+                            <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required @oninput="UpdateTime" />
                         </div>
 
                         <div>
                             <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
-                            <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required style="width: 80px;" @oninput="UpdateTime" />
+                            <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required @oninput="UpdateTime" />
                         </div>
 
                         <div class="range-container">
@@ -130,15 +130,6 @@
     </div>
 </div>
 
-<style>
-    .edit-mode {
-        background-color: #f0f8ff;
-        border: 1px solid #0000ff;
-        padding: 15px;
-        border-radius: 10px;
-    }
-</style>
-
 @code {
     private const string INPUT_PROJECT_TIME_TITLE = "Unos projektnog vremena";
     private const string WORKDAY_INPUT_LABEL = "Radni dan: ";
@@ -147,7 +138,7 @@
     private const string COMMENT_INPUT_LABEL = "Komentar: ";
     private const string HOURS_INPUT_LABEL = "Sati: ";
     private const string MINUTES_INPUT_LABEL = "Minute: ";
-    private const string SUBMIT_BUTTON_TEXT = "Podnesni";
+    private const string SUBMIT_BUTTON_TEXT = "Podnesi";
     private const string CLEAR_BUTTON_TEXT = "Očisti";
     private const string WORKDAY_TABLE_LABEL = "Radni dan";
     private const string PROJECT_TABLE_LABEL = "Projekt";

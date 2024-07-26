@@ -1,7 +1,18 @@
-﻿.flex-container {
+﻿::deep .edit-mode {
+    background-color: #f0f8ff;
+    border: 1px solid #0000ff;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.flex-container {
     display: flex;
     flex-direction: row;
     gap: 20px;
+}
+
+.flex-container {
+    margin-right: 20px;
 }
 
 .form-section {
@@ -22,6 +33,10 @@
     .input-group-horizontal .form-group {
         flex: 1;
         margin: 0 8px;
+    }
+
+    ::deep .input-group-horizontal .form-control {
+        width: 80px;
     }
 
 .range-container {
