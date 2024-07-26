@@ -154,7 +154,7 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 
         @if (projectTimeResponse != null)
         {
-            <canvas id="myChart">
+            <canvas id="myChart" style="margin-right: 40px; max-width: 300px; max-height: 300px;">
                 <ChartComponent Labels="projectTimeResponse.ProjectTimeSums.Select(p => p.TitleProject).ToList()"
                                 Data="projectTimeResponse.ProjectTimeSums.Select(p => p.PercentageTimeSpent).ToList()"
                                 CanvasId="myChart" ChartType="doughnut"></ChartComponent>
@@ -166,7 +166,7 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
         }
 
         <div>
-            <div style="margin-bottom: 30px;">
+            <div style="margin-bottom: 50px;">
                 <p style="font-size: 18px; margin-bottom: 5px;">@TIME_SPENT_GRAPHIC_LABEL</p>
                 <p style="font-size: 20px;">
                     <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
