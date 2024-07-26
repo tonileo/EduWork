@@ -1,6 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using EduWork.UI.Authentication;
-using EduWork.UI.Interop;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

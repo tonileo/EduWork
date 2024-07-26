@@ -1,5 +1,6 @@
 ﻿@using Common.DTO
 @using Common.DTO.ProjectTime
+@using EduWork.UI.Interop
 @using EduWork.UI.Shared
 
 @inject HttpClient Http
@@ -153,7 +154,11 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 
         @if (projectTimeResponse != null)
         {
-            <ChartComponent projectTimeSumDto="projectTimeResponse.ProjectTimeSums"></ChartComponent>
+            <canvas id="myChart">
+                <ChartComponent Labels="projectTimeResponse.ProjectTimeSums.Select(p => p.TitleProject).ToList()"
+                                Data="projectTimeResponse.ProjectTimeSums.Select(p => p.PercentageTimeSpent).ToList()"
+                                CanvasId="myChart" ChartType="doughnut"></ChartComponent>
+            </canvas>
         }
         else
         {

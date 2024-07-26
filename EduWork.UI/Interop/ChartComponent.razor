@@ -1,0 +1,59 @@
+﻿@using Common.DTO.ProjectTime
+@using System.Text.Json
+
+@implements IAsyncDisposable
+@inject IJSRuntime JsRuntime
+
+@code {
+    [Parameter]
+    public List<string>? Labels { get; set; }
+
+    [Parameter]
+    public List<int>? Data { get; set; }
+
+    [Parameter]
+    public string? ChartType { get; set; }
+
+    [Parameter]
+    public string? CanvasId { get; set; }
+
+    private IJSObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Labels != null && Data != null)
+        {
+            try
+            {
+                module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "../Interop/ChartComponent.razor.js");
+
+                var chartData = new
+                {
+                    labels = Labels.ToArray(),
+                    datasets = new[]
+                    {
+                        new
+                        {
+                            label = "%",
+                            data = Data.ToArray()
+                        }
+                    }
+                };
+                await module.InvokeVoidAsync("createChart", CanvasId, ChartType, chartData);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error creating chart: {ex.Message}");
+            }
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}
+

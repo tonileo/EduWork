@@ -39,7 +39,10 @@
 
   <ItemGroup>
     <Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-    <Content Include="Interop\ChartJs.cs" />
+    <Content Include="Interop\ChartComponent.razor.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
