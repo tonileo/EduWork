@@ -36,7 +36,7 @@
                         <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
                             @if (projects == null)
                             {
-                                <option>Loading...</option>
+                                <option>@LOADING_LABEL</option>
                             }
                             else
                             {
@@ -86,6 +86,52 @@
     </div>
 
     <div class="table-section">
+
+        <div>
+            @if (projectTimeDtoTest == null)
+            {
+                <span>@LOADING_LABEL</span>
+            }
+            else if (!projectTimeDtoTest.Any())
+            {
+                <div class="summary-container">
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="100"
+                             aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                            0% Complete
+                        </div>
+                    </div>
+
+                    <div class="divSumOfTimeSpent">
+                        <span class="spanSumOfTimeSpent">
+                            <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
+                            <span>@NO_DATA_FOR_THIS_DAY</span>
+                        </span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                var (progressClass, progressPercentage) = GetRowColor(projectTimeDtoTest[0].SumTimeSpentHours, projectTimeDtoTest[0].SumTimeSpentMinutes);
+
+                <div class="summary-container">
+                    <div class="progress">
+                        <div class="progress-bar @progressClass" role="progressbar" aria-valuenow="100"
+                             aria-valuemin="0" aria-valuemax="100" style="width:@progressPercentage%">
+                            @progressPercentage% Complete
+                        </div>
+                    </div>
+
+                    <div class="divSumOfTimeSpent">
+                        <span class="spanSumOfTimeSpent">
+                            <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
+                            <span>@projectTimeDtoTest[0].SumTimeSpentHours</span> h : <span>@projectTimeDtoTest[0].SumTimeSpentMinutes</span> min
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+
         <table class="table table-striped">
             <thead class="thead-dark">
                 <tr>
@@ -100,7 +146,7 @@
                 @if (projectTimeDtoTest == null)
                 {
                     <tr>
-                        <td class="text-center" colspan="5"><em>Loading...</em></td>
+                        <td class="text-center" colspan="5"><em>@LOADING_LABEL</em></td>
                     </tr>
                 }
                 else if (!projectTimeDtoTest.Any())
@@ -116,7 +162,10 @@
                         <tr>
                             <td class="text-center">@projectTimeLog.DateWorkDay</td>
                             <td class="text-center">@projectTimeLog.TitleProject</td>
-                            <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
+                            <td class="text-center">
+                                <span>@projectTimeLog.Hours</span> h :
+                                <span>@projectTimeLog.Minutes</span> min
+                            </td>
                             <td class="text-center">@projectTimeLog.Comment</td>
                             <td class="text-center">
                                 <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="far fa-edit"></i></button>
@@ -129,6 +178,24 @@
         </table>
     </div>
 </div>
+
+<style>
+    .summary-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .progress {
+        flex-grow: 1;
+    }
+
+    .divSumOfTimeSpent {
+        white-space: nowrap;
+    }
+</style>
+
 
 @code {
     private const string INPUT_PROJECT_TIME_TITLE = "Unos projektnog vremena";
@@ -146,12 +213,17 @@
     private const string COMMENT_TABLE_LABEL = "Komentar";
     private const string ACTIONS_TABLE_LABEL = "Akcije";
     private const string NO_DATA_FOR_THIS_DAY = "Nema zapisa za ovaj dan";
+    private const string SUM_TIME_SPENT = "Ukupno: ";
+    private const string LOADING_LABEL = " Učitavanje podataka...";
 
     private const string GET_ENDPOINT = "api/ProjectTimes?";
     private const string DELETE_AND_PUT_ENDPOINT = "api/ProjectTimes/";
     private const string POST_ENDPOINT = "api/ProjectTimes";
     private const string GET_PROJECTS_ENDPOINT = "api/ProjectTimes/projects";
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+    private const string ZERO_HOURS_COLOR = "lightcoral";
+    private const string BETWEEN_ZERO_AND_FULL_TIME_COLOR = "lightgoldenrodyellow";
+    private const string FULL_TIME_COLOR = "lightgreen";
 
     [Parameter]
     public DateTime? date { get; set; }
@@ -196,6 +268,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday)
+        {
+            projectTimeDtoTest = [];
+        }
         editContext = new EditContext(projectTimeRequest);
 
         projectTimeRequest.TimeSpentMinutes = 450;
@@ -209,16 +285,23 @@
 
     private async Task LoadData()
     {
-        try
+        if (projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Saturday || projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Sunday)
         {
-            string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
-            projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
-
-            StateHasChanged();
+            projectTimeDtoTest = [];
         }
-        catch (Exception ex)
+        else
         {
-            Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+            try
+            {
+                string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
+                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+            }
         }
     }
 
@@ -274,6 +357,22 @@
             await LoadData();
         }
     }
+
+    private (string color, int percentage) GetRowColor(int hours, int minutes)
+    {
+        var totalMinutes = hours * 60 + minutes;
+
+        if (totalMinutes >= 480)
+        {
+            return ("bg-success", 100);
+        }
+        else
+        {
+            int percentage = (totalMinutes * 100) / 480;
+            return ("bg-warning", percentage);
+        }
+    }
+
 
     private async void ClearForm()
     {

@@ -50,13 +50,6 @@ namespace EduWork.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("admin")]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes()
-        {
-            var result = await _userProjectTimeService.GetProjectTimes();
-            return Ok(result);
-        }
-
         [HttpPost]
         public async Task<ActionResult> InputProjectTime([FromServices] IIdentity currentUser, ProjectTimeRequestDto projectTime)
         {

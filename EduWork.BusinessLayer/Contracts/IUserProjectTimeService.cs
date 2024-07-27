@@ -14,7 +14,6 @@ namespace EduWork.BusinessLayer.Contracts
         public Task<List<ProjectSmallDto>> GetProjects(string? email);
         public Task<List<UsernamesDto>> GetUsernames();
         public Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email, DateTime userWorkDay);
-        public Task<List<ProjectTimeDtoTest>> GetProjectTimes();
         public Task InputProjectTime(string email, ProjectTimeRequestDto projectTime);
         public Task UpdateProjectTime(string email, int id, ProjectTimeRequestDto projectTime);
         public Task DeleteProjectTime (int id);

@@ -73,7 +73,10 @@ else
                             }
                         </td>
                         <td class="text-center">@projectTimeLog.TitleProject</td>
-                        <td class="text-center">@projectTimeLog.TimeSpentMinutes</td>
+                        <td class="text-center">
+                            <span>@projectTimeLog.Hours</span> h :
+                            <span>@projectTimeLog.Minutes</span> min
+                        </td>
                         <td class="text-center">@projectTimeLog.Comment</td>
                         <td class="text-center">
                             <span>@projectTimeLog.SumTimeSpentHours</span> h :
@@ -133,8 +136,8 @@ else
     private List<UsernamesDto>? usernames;
 
     private List<ProjectTimeHistoryDto>? projectTimeHistoryDto;
-    private ProjectTimeDtoTest? selectedProjectTime;
-    private ProjectTimeDtoTest? openedProjectTime;
+    private ProjectTimeDtoTest? selectedProjectTime; //testing
+    private ProjectTimeDtoTest? openedProjectTime; //testing
     private ProjectTimeHistoryDto? expandedRow;
 
     private int selectedDateFilter = 2;
@@ -236,7 +239,7 @@ else
         {
             return ZERO_HOURS_COLOR;
         }
-        else if (totalMinutes >= 450)
+        else if (totalMinutes >= 480)
         {
             return FULL_TIME_COLOR;
         }

@@ -9,9 +9,6 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-}
-
-.flex-container {
     margin-right: 20px;
 }
 
@@ -24,13 +21,28 @@
     flex: 2;
 }
 
-.input-group-horizontal {
+::deep .spanSumOfTimeSpent {
+    border: 1px solid;
+    padding: 5px;
+    border-bottom: 0;
+    font-size: 1.1em;
+}
+
+::deep .labelSumOfTimeSpent {
+    font-weight: bold;
+}
+
+::deep .divSumOfTimeSpent {
+    text-align: right;
+}
+
+::deep .input-group-horizontal {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-    .input-group-horizontal .form-group {
+    ::deep .input-group-horizontal .form-group {
         flex: 1;
         margin: 0 8px;
     }
@@ -39,6 +51,6 @@
         width: 80px;
     }
 
-.range-container {
+::deep .range-container {
     flex: 1;
 }

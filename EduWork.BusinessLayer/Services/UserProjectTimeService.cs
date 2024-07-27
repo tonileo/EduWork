@@ -58,20 +58,31 @@ namespace EduWork.BusinessLayer.Services
                 throw new ArgumentException("Work day date can't be in future");
             }
 
+            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+            {
+                throw new ArgumentException("Work day date can't be a weekend");
+            }
+
             DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
 
             var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly).AsNoTracking().ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
-            return userProfiles;
-        }
+            int sumTimeSpentHours = 0;
+            int sumTimeSpentMinutes = 0;
 
-        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes()
-        {
-            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).AsNoTracking().ToListAsync();
+            foreach (var projectTime in userprojectTimes)
+            {
+                sumTimeSpentHours += projectTime.TimeSpentMinutes / 60;
+                sumTimeSpentMinutes += projectTime.TimeSpentMinutes % 60;
+            }
 
-            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+            foreach (var userProfile in userProfiles)
+            {
+                userProfile.SumTimeSpentHours = sumTimeSpentHours;
+                userProfile.SumTimeSpentMinutes = sumTimeSpentMinutes;
+            }
 
             return userProfiles;
         }
