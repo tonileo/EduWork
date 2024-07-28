@@ -6,14 +6,14 @@
 
 <PageTitle>Povijest unosa</PageTitle>
 
-@if (haveUsername)
+@if (isAdmin)
 {
     <div class="flex-container">
         <h3>@INPUT_HISTORY_OF_USER_TITLE</h3>
 
         @if (usernames == null)
         {
-            <option>Loading...</option>
+            <option>@LOADING_LABEL</option>
         }
         else
         {
@@ -42,24 +42,23 @@ else
         <thead class="thead-dark">
             <tr>
                 <th class="text-center">@WORKDAY_TABLE_LABEL</th>
-                <th class="text-center">@PROJECT_TABLE_LABEL</th>
-                <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
-                <th class="text-center">@COMMENT_TABLE_LABEL</th>
                 <th class="text-center">@SUM_OF_TIME_SPENT_TABLE_LABEL</th>
+                <th class="text-center">@PROJECTS_TABLE_LABEL</th>
             </tr>
         </thead>
         <tbody>
-            @if (projectTimeHistoryDto == null)
+            @if (projectTimeHistoryDtoTest == null)
             {
                 <tr>
-                    <td class="text-center"><em>Loading...</em></td>
+                    <td class="text-center"><em>@LOADING_LABEL</em></td>
                 </tr>
             }
             else
             {
-                @foreach (var projectTimeLog in projectTimeHistoryDto)
+                @foreach (var projectTimeLog in projectTimeHistoryDtoTest)
                 {
-                    <tr style="background-color:@(GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay))" @onclick="() => ToggleRow(projectTimeLog)">
+                    var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
+                    <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog)">
                         <td class="text-center">
                             @if (projectTimeLog.IsNonWorkingDay)
                             {
@@ -72,32 +71,33 @@ else
                                 </a>
                             }
                         </td>
-                        <td class="text-center">@projectTimeLog.TitleProject</td>
-                        <td class="text-center">
-                            <span>@projectTimeLog.Hours</span> h :
-                            <span>@projectTimeLog.Minutes</span> min
-                        </td>
-                        <td class="text-center">@projectTimeLog.Comment</td>
+
                         <td class="text-center">
                             <span>@projectTimeLog.SumTimeSpentHours</span> h :
                             <span>@projectTimeLog.SumTimeSpentMinutes</span> min
                         </td>
 
+                        @if (projectTimeLog?.ProjectTitles == null)
+                        {
+                            <td class="text-center"></td>
+                        }
+                        else
+                        {
+                            <td class="text-center">@string.Join(", ", projectTimeLog.ProjectTitles)</td>
+                        }
                     </tr>
 
                     @if (expandedRow == projectTimeLog)
                     {
-                        <tr>
-                            <td colspan="5">
-                                <div class="expanded-content">
-                                    <p>Details for @projectTimeLog.DateWorkDay:</p>
-                                    <ul>
-                                        <li>Additional Detail 1</li>
-                                        <li>Additional Detail 2</li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
+                        if (isAdmin)
+                        {
+                            <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor SelectUsername=@filterUsername></InputHistoryDetailsTable>
+                        }
+                        else
+                        {
+                            <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor></InputHistoryDetailsTable>
+                        }
+                        
                     }
                 }
             }
@@ -117,6 +117,8 @@ else
     private const string COMMENT_TABLE_LABEL = "Komentar";
     private const string SUM_OF_TIME_SPENT_TABLE_LABEL = "Ukupno provedno vremena";
     private const string INPUT_PROJECT_TIME_NAVIGATION = "/inputProjectTime/";
+    private const string LOADING_LABEL = " Učitavanje podataka...";
+    private const string PROJECTS_TABLE_LABEL = "Projekti";
 
     private const string GET_USERNAMES_ENDPOINT = "api/ProjectTimes/usernames";
     private const string LAST_MONTH_PARAMS = "?lastMonth=true";
@@ -130,14 +132,14 @@ else
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
-    [Parameter]
-    public bool haveUsername { get; set; }
+    [CascadingParameter]
+    public bool isAdmin { get; set; }
 
     private List<UsernamesDto>? usernames;
 
     private List<ProjectTimeHistoryDto>? projectTimeHistoryDto;
-    private ProjectTimeDtoTest? selectedProjectTime; //testing
-    private ProjectTimeDtoTest? openedProjectTime; //testing
+
+    private List<ProjectTimeHistoryDto>? projectTimeHistoryDtoTest;
     private ProjectTimeHistoryDto? expandedRow;
 
     private int selectedDateFilter = 2;
@@ -146,7 +148,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (haveUsername)
+        if (isAdmin)
         {
             usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(GET_USERNAMES_ENDPOINT);
 
@@ -164,13 +166,13 @@ else
     {
         try
         {
-            if (haveUsername)
+            if (isAdmin)
             {
-                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+                projectTimeHistoryDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
             }
             else
             {
-                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+                projectTimeHistoryDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
             }
         }
         catch (Exception ex)
@@ -199,7 +201,7 @@ else
             parameters = THIS_QUARTER_PARAMS;
         }
 
-        if (haveUsername)
+        if (isAdmin)
         {
             parameters = parameters + $"&username={filterUsername}";
         }
@@ -218,6 +220,11 @@ else
     private void ToggleRow(ProjectTimeHistoryDto projectTimeLog)
     {
         if (expandedRow == projectTimeLog)
+        {
+            expandedRow = null;
+        }
+        else if (projectTimeLog.IsNonWorkingDay == true || projectTimeLog.DateWorkDay.DayOfWeek == DayOfWeek.Saturday 
+            || projectTimeLog.DateWorkDay.DayOfWeek == DayOfWeek.Sunday || projectTimeLog.SumTimeSpentMinutes == 0 && projectTimeLog.SumTimeSpentHours == 0)
         {
             expandedRow = null;
         }

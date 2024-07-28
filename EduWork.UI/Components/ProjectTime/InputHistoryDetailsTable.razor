@@ -1,0 +1,88 @@
+﻿@using Common.DTO.ProjectTime
+
+@inject HttpClient Http
+
+<tr>
+    <td colspan="3">
+        <table class="table" style="background-color:@RowColor;">
+            <thead>
+                <tr>
+                    <th class="text-center">@PROJECT_TABLE_LABEL</th>
+                    <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
+                    <th class="text-center">@COMMENT_TABLE_LABEL</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (projectTimeDtoTest == null)
+                {
+                    <tr>
+                        <td class="text-center"><em>@LOADING_LABEL</em></td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var projectTImeDetail in projectTimeDtoTest)
+                    {
+                        <tr>
+                            <td class="text-center">@projectTImeDetail.TitleProject</td>
+                            <td class="text-center">
+                                <span>@projectTImeDetail.Hours</span> h :
+                                <span>@projectTImeDetail.Minutes</span> min
+                            </td>
+                            <td class="text-center">@projectTImeDetail.Comment</td>
+                        </tr>
+                    }
+                }   
+            </tbody>
+        </table>
+    </td>
+</tr>
+
+@code {
+    [Parameter]
+    public DateOnly ProjectTimeDate { get; set; }
+
+    [Parameter]
+    public string? RowColor { get; set; }
+
+    [Parameter]
+    public string? SelectUsername { get; set; }
+
+    [CascadingParameter]
+    public bool isAdmin { get; set; }
+
+    public List<ProjectTimeDtoTest>? projectTimeDtoTest;
+
+    private const string PROJECT_TABLE_LABEL = "Projekt";
+    private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
+    private const string COMMENT_TABLE_LABEL = "Komentar";
+    private const string LOADING_LABEL = " Učitavanje podataka...";
+
+    private const string GET_ENDPOINT = "api/ProjectTimes?";
+    private const string GET_ADMIN_ENDPOINT = "api/ProjectTimes/admin?";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            string parameters = $"userWorkDay={ProjectTimeDate}";
+
+            if (isAdmin)
+            {
+                string usernameParameters = $"username={SelectUsername}";
+                parameters = usernameParameters + "&" + parameters;
+
+                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ADMIN_ENDPOINT + parameters);
+            }
+            else
+            {
+                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+        }
+    }
+}

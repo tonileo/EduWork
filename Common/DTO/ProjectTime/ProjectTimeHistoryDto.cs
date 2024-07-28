@@ -8,16 +8,9 @@ namespace Common.DTO.ProjectTime
 {
     public record ProjectTimeHistoryDto
     {
-        public int Id { get; set; }
-        public string? Comment { get; set; }
-        public int TimeSpentMinutes { get; set; }
-        public int Hours { get; set; }
-        public int Minutes { get; set; }
-
-
         public DateOnly DateWorkDay { get; set; }
-        public string? TitleProject { get; set; }
 
+        public List<string>? ProjectTitles { get; set; }
 
         public int SumTimeSpentHours { get; set; }
         public int SumTimeSpentMinutes { get; set; }

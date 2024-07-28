@@ -2,7 +2,6 @@
     background-color: #f0f8ff;
     border: 1px solid #0000ff;
     padding: 15px;
-    border-radius: 10px;
 }
 
 .flex-container {
@@ -14,7 +13,7 @@
 
 .form-section {
     flex: 1;
-    max-width: 600px;
+    min-width: 40%;
 }
 
 .table-section {
@@ -30,10 +29,6 @@
 
 ::deep .labelSumOfTimeSpent {
     font-weight: bold;
-}
-
-::deep .divSumOfTimeSpent {
-    text-align: right;
 }
 
 ::deep .input-group-horizontal {
@@ -53,4 +48,25 @@
 
 ::deep .range-container {
     flex: 1;
+}
+
+::deep .workdayFlex {
+    margin-right: 20px;
+    flex: 1;
+    max-width:40%;
+}
+
+::deep .projectFlex {
+    flex: 1;
+}
+
+.summary-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress {
+    flex-grow: 1;
 }

@@ -11,78 +11,77 @@
 <div class="flex-container">
     <div class="form-section">
 
-        <div class="form-container">
-            <h3 class="mb-4">@INPUT_PROJECT_TIME_TITLE</h3>
+        <h3 class="mb-4">@INPUT_PROJECT_TIME_TITLE</h3>
 
-            <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
-                <DataAnnotationsValidator />
-                <ValidationSummary class="alert alert-danger" />
+        <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
 
-                <div>
-                    <div class="form-group mb-3">
-                        <label for="date">@WORKDAY_INPUT_LABEL</label>
+            <div class="form-group mb-3 d-flex">
+                <div class="workdayFlex">
+                    <label for="date">@WORKDAY_INPUT_LABEL</label>
 
-                        <div class="input-group">
-                            <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
-                            <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class="form-control" disabled="@(updateForm)" />
-                            <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
-                        </div>
-
-                        <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
+                    <div class="input-group">
+                        <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
+                        <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class="form-control" disabled="@(updateForm)" />
+                        <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="titleProject">@PROJECT_INPUT_LABEL</label>
-                        <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
-                            @if (projects == null)
+                    <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
+                </div>
+
+                <div class="projectFlex">
+                    <label for="titleProject">@PROJECT_INPUT_LABEL</label>
+                    <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
+                        @if (projects == null)
+                        {
+                            <option>@LOADING_LABEL</option>
+                        }
+                        else
+                        {
+                            <option value="" disabled selected>@CHOOSE_PROJECT_SELECT_OPTION</option>
+                            @foreach (var project in projects)
                             {
-                                <option>@LOADING_LABEL</option>
+                                <option value="@project.Title">@project.Title</option>
                             }
-                            else
-                            {
-                                <option value="" disabled selected>@CHOOSE_PROJECT_SELECT_OPTION</option>
-                                @foreach (var project in projects)
-                                {
-                                    <option value="@project.Title">@project.Title</option>
-                                }
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => projectTimeRequest.TitleProject)" />
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => projectTimeRequest.TitleProject)" />
+                </div>
+
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="comment">@COMMENT_INPUT_LABEL</label>
+                <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" />
+                <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="input-group-horizontal">
+                    <div>
+                        <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
+                        <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required @oninput="UpdateTime" />
+                    </div>
+
+                    <div>
+                        <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
+                        <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required @oninput="UpdateTime" />
+                    </div>
+
+                    <div class="range-container">
+                        <label for="timeSpentMinutesRange"></label>
+                        <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
                     </div>
                 </div>
+                <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
+            </div>
 
-                <div class="form-group mb-3">
-                    <label for="comment">@COMMENT_INPUT_LABEL</label>
-                    <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" />
-                    <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
-                </div>
-
-                <div class="form-group mb-3">
-                    <div class="input-group-horizontal">
-                        <div>
-                            <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
-                            <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required @oninput="UpdateTime" />
-                        </div>
-
-                        <div>
-                            <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
-                            <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required @oninput="UpdateTime" />
-                        </div>
-
-                        <div class="range-container">
-                            <label for="timeSpentMinutesRange"></label>
-                            <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
-                        </div>
-                    </div>
-                    <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
-                </div>
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
-                    <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
-                </div>
-            </EditForm>
-        </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
+                <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
+            </div>
+        </EditForm>
     </div>
 
     <div class="table-section">
@@ -178,24 +177,6 @@
         </table>
     </div>
 </div>
-
-<style>
-    .summary-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .progress {
-        flex-grow: 1;
-    }
-
-    .divSumOfTimeSpent {
-        white-space: nowrap;
-    }
-</style>
-
 
 @code {
     private const string INPUT_PROJECT_TIME_TITLE = "Unos projektnog vremena";
@@ -331,7 +312,12 @@
         {
             projectTimeRequest.DateWorkDay = Convert.ToDateTime(args.Value);
 
-            await LoadData();
+            editContext.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
+
+            if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday & projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday & projectTimeRequest.DateWorkDay < DateTime.Today)
+            {
+                await LoadData();
+            }
         }
     }
 

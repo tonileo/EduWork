@@ -4,10 +4,13 @@
 
 <PageTitle>@ADMIN_PROJECT_STATS_TITLE</PageTitle>
 
-<ProjectTimeStatsComponent ApiEndpoint=@ADMIN_PROJECT_STATS_ENDPOINT
-                  haveUsername="true" />
+<CascadingValue Value="@isAdmin">
+<ProjectTimeStatsComponent ApiEndpoint=@ADMIN_PROJECT_STATS_ENDPOINT/>
+</CascadingValue>
 
 @code{
+    public bool isAdmin { get; set; } = true;
+
     private const string ADMIN_PROJECT_STATS_TITLE = "Admin projektna statistika";
     private const string ADMIN_PROJECT_STATS_ENDPOINT = "api/ProjectTimes/statsFilter/admin";
 }

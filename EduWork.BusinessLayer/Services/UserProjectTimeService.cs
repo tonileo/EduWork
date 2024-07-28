@@ -87,6 +87,27 @@ namespace EduWork.BusinessLayer.Services
             return userProfiles;
         }
 
+        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes(string? username, DateTime userWorkDay)
+        {
+            if (userWorkDay > DateTime.Today)
+            {
+                throw new ArgumentException("Work day date can't be in future");
+            }
+
+            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+            {
+                throw new ArgumentException("Work day date can't be a weekend");
+            }
+
+            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly).AsNoTracking().ToListAsync();
+
+            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+
+            return userProfiles;
+        }
+
         public async Task InputProjectTime(string? email, ProjectTimeRequestDto projectTime)
         {
             try
@@ -395,11 +416,11 @@ namespace EduWork.BusinessLayer.Services
             try
             {
                 IQueryable<ProjectTime> query = context.ProjectTimes
-                    .Include(k => k.Project)
-                    .Where(pt => pt.WorkDay.User.Email == email)
-                    .Include(w => w.WorkDay)
-                    .AsNoTracking()
-                    .AsQueryable();
+                   .Include(k => k.Project)
+                   .Where(pt => pt.WorkDay.User.Email == email)
+                   .Include(w => w.WorkDay)
+                   .AsNoTracking()
+                   .AsQueryable();
 
                 var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 var startOfLastMonth = startOfThisMonth.AddMonths(-1);
@@ -449,7 +470,7 @@ namespace EduWork.BusinessLayer.Services
                 {
                     WorkDate = g.Key,
                     TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
-                    ProjectTimes = g.ToList()
+                    ProjectTitles = g.Select(s => s.Project.Title).Distinct().ToList()
                 });
 
                 var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();
@@ -466,43 +487,18 @@ namespace EduWork.BusinessLayer.Services
 
                     bool isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday || holidays.Contains(date);
 
-                    if (isWeekend)
+                    var dto = new ProjectTimeHistoryDto
                     {
-                        var dto = new ProjectTimeHistoryDto
-                        {
-                            DateWorkDay = date,
-                            SumTimeSpentHours = 0,
-                            SumTimeSpentMinutes = 0,
-                            IsNonWorkingDay = true,
-                        };
-                        projectTimeHistoryDtos.Add(dto);
-                    }
-                    else
-                    {
-                        if (groupedEntry != null)
-                        {
-                            foreach (var pt in groupedEntry.ProjectTimes)
-                            {
-                                var dto = mapper.Map<ProjectTimeHistoryDto>(pt);
-                                dto.SumTimeSpentHours = timeSpentHours;
-                                dto.SumTimeSpentMinutes = timeSpentMinutes;
-                                dto.IsNonWorkingDay = false;
-                                projectTimeHistoryDtos.Add(dto);
-                            }
-                        }
-                        else
-                        {
-                            var dto = new ProjectTimeHistoryDto
-                            {
-                                DateWorkDay = date,
-                                SumTimeSpentHours = timeSpentHours,
-                                SumTimeSpentMinutes = timeSpentMinutes,
-                                IsNonWorkingDay = false
-                            };
-                            projectTimeHistoryDtos.Add(dto);
-                        }
-                    }
+                        DateWorkDay = date,
+                        SumTimeSpentHours = isWeekend ? 0 : timeSpentHours,
+                        SumTimeSpentMinutes = isWeekend ? 0 : timeSpentMinutes,
+                        IsNonWorkingDay = isWeekend,
+                        ProjectTitles = groupedEntry?.ProjectTitles ?? new List<string>()
+                    };
+
+                    projectTimeHistoryDtos.Add(dto);
                 }
+
                 return projectTimeHistoryDtos;
             }
             catch (Exception ex)
@@ -579,7 +575,7 @@ namespace EduWork.BusinessLayer.Services
                 {
                     WorkDate = g.Key,
                     TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
-                    ProjectTimes = g.ToList()
+                    ProjectTitles = g.Select(s => s.Project.Title).Distinct().ToList()
                 });
 
                 var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();
@@ -596,43 +592,18 @@ namespace EduWork.BusinessLayer.Services
 
                     bool isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday || holidays.Contains(date);
 
-                    if (isWeekend)
+                    var dto = new ProjectTimeHistoryDto
                     {
-                        var dto = new ProjectTimeHistoryDto
-                        {
-                            DateWorkDay = date,
-                            SumTimeSpentHours = 0,
-                            SumTimeSpentMinutes = 0,
-                            IsNonWorkingDay = true,
-                        };
-                        projectTimeHistoryDtos.Add(dto);
-                    }
-                    else
-                    {
-                        if (groupedEntry != null)
-                        {
-                            foreach (var pt in groupedEntry.ProjectTimes)
-                            {
-                                var dto = mapper.Map<ProjectTimeHistoryDto>(pt);
-                                dto.SumTimeSpentHours = timeSpentHours;
-                                dto.SumTimeSpentMinutes = timeSpentMinutes;
-                                dto.IsNonWorkingDay = false;
-                                projectTimeHistoryDtos.Add(dto);
-                            }
-                        }
-                        else
-                        {
-                            var dto = new ProjectTimeHistoryDto
-                            {
-                                DateWorkDay = date,
-                                SumTimeSpentHours = timeSpentHours,
-                                SumTimeSpentMinutes = timeSpentMinutes,
-                                IsNonWorkingDay = false
-                            };
-                            projectTimeHistoryDtos.Add(dto);
-                        }
-                    }
+                        DateWorkDay = date,
+                        SumTimeSpentHours = isWeekend ? 0 : timeSpentHours,
+                        SumTimeSpentMinutes = isWeekend ? 0 : timeSpentMinutes,
+                        IsNonWorkingDay = isWeekend,
+                        ProjectTitles = groupedEntry?.ProjectTitles ?? new List<string>()
+                    };
+
+                    projectTimeHistoryDtos.Add(dto);
                 }
+
                 return projectTimeHistoryDtos;
             }
             catch (Exception ex)

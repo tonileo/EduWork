@@ -3,10 +3,13 @@
 
 <PageTitle>@ADMIN_INPUT_HISTORY_TITLE</PageTitle>
 
-<InputHistoryComponent ApiEndpoint=@ADMIN_INPUT_HISTORY_ENDPOINT
-                       haveUsername="true"></InputHistoryComponent>
+<CascadingValue Value="@isAdmin">
+    <InputHistoryComponent ApiEndpoint=@ADMIN_INPUT_HISTORY_ENDPOINT></InputHistoryComponent>
+</CascadingValue>
 
 @code {
+    public bool isAdmin { get; set; } = true;
+
     private const string ADMIN_INPUT_HISTORY_TITLE = "Admin povijest unosa";
     private const string ADMIN_INPUT_HISTORY_ENDPOINT = "api/ProjectTimes/historyFilter/admin";
 }
