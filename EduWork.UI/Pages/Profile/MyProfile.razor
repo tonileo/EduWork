@@ -1,0 +1,193 @@
+﻿@page "/myProfile"
+@using Common.DTO.Profile
+
+<h3>MyProfile</h3>
+
+@inject HttpClient Http
+@if (userProfile == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <div class="card m-1">
+            <div class="card-header">
+                <div class="d-flex flex-column justify-content-center">
+                    <p><strong>Username: </strong> @userProfile.Username</p>
+                    <p><strong>Email: </strong> @userProfile.Email</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-containers">
+            <div class="grid-item">
+                <div class="card m-1">
+                    <div class="card-header">
+                        <p><strong>Trenutno radi na</strong></p>
+                    </div>
+                    <div class="card-body">
+
+                        <p>@userProfile.Project.Title - @userProfile.Project.Role</p>
+                    </div>
+                </div>
+
+                <div class="card m-1">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <p><strong>Statistika korisnika</strong></p>
+
+                        <InputSelect @bind-Value="selectedDate" @oninput="HandleMonthSelect">
+                            <option value="thisMonth" selected>Ovaj mjesec</option>
+                            <option value="lastMonth">Prošli mjesec</option>
+
+                        </InputSelect>
+                    </div>
+                    <div class="card-body d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <strong><span>@myProfileStats?.SumHoursSpent</span> h : <span>@myProfileStats?.SumMinutesSpent</span> min</strong>
+                            <p style="font-size: 0.8rem">Ukupno sati</p>
+                        </div>
+
+                        <div>
+                            <strong><span>@myProfileStats.CountProjects</span></strong>
+                            <p style="font-size: 0.8rem">Ukupno projekata</p>
+                        </div>
+
+                        <div><p>Saznaj više...</p></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="grid-item">
+                <div class="card m-1">
+                    <div class="card-header">
+                        <p><strong>Godišnji</strong></p>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-container">
+                            <div>
+                                <p style="font-size: 1.3rem; margin-left:5px;">@userProfile.AnnualLeave.LeftLeaveDays</p>
+                                <p>dana ostalo</p>
+                            </div>
+
+                            <p>planirano</p>
+                            <p>od prošle godine</p>
+                            <div style="text-align:center;">
+                                <p style="font-size: 1.6rem;">@userProfile.AnnualLeave.TotalLeaveDays</p>
+                                <p>Ukupno dostupno</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <p><strong>Iskorišteni dani</strong></p>
+                        @foreach (var record in userProfile.AnnualLeaveRecords)
+                        {
+                            <div style="border-bottom: 1px solid; padding: 10px;">@record.StartDate - @record.EndDate</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card m-1">
+                    <div class="card-header">
+                        <p><strong>Bolovanje</strong></p>
+                    </div>
+                    <div class="card-body">
+
+                        <div style="text-align: center;">
+                            <p>Ukupno bolovanja ove godine: </p>
+                            <strong><p style="font-size: 1.4rem;">@userProfile.SickLeaveRecords.Sum(record => record.TotalSickDays)</p></strong>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <p><strong>Dani bolovanja</strong></p>
+                        <div>
+                            @foreach (var record in userProfile.SickLeaveRecords)
+                            {
+                                @foreach (var day in record.SickDays)
+                                {
+                                    <div style="display: inline-block; margin-right: 10px; border: 1px solid; padding: 5px;">@day @day.DayOfWeek</div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .grid-containers {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 5px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+        .grid-container p {
+            margin: 0;
+        }
+
+    .card-header {
+        background-color: #D9EDF8;
+    }
+
+    .card-footer {
+        background-color: #E4F1EE;
+    }
+</style>
+
+@code {
+    private MyProfileDto? userProfile;
+
+    private MyProfileStatsDto? myProfileStats;
+
+    public string selectedDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userProfile = await Http.GetFromJsonAsync<MyProfileDto>($"api/UserProfiles/myProfile");
+
+        await LoadData("");
+    }
+
+    private async Task LoadData(string parameters)
+    {
+        myProfileStats = await Http.GetFromJsonAsync<MyProfileStatsDto>($"api/UserProfiles/myStats{parameters}");
+
+        StateHasChanged();
+    }
+
+    private async void HandleMonthSelect(ChangeEventArgs args)
+    {
+        if (args.Value != null)
+        {
+            selectedDate = args.Value.ToString();
+
+            Console.WriteLine(selectedDate);
+
+            var parameter = "";
+
+            if (selectedDate == "lastMonth")
+            {
+                parameter = "?lastMonth=true";
+            }
+            else
+            {
+                parameter = "?thisMonth=true";
+            }
+
+            await LoadData(parameter);
+        }
+    }
+}

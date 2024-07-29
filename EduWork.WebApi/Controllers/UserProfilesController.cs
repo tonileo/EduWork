@@ -8,10 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using EduWork.BusinessLayer.Services;
-using Common.DTO;
+using Common.DTO.Profile;
+using EduWork.BusinessLayer.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web.Resource;
+using Common.DTO.ProjectTime;
+using EduWork.WebApi.Authentication;
 
 namespace EduWork.WebApi.Controllers
 {
+    [Authorize]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserProfilesController : ControllerBase
@@ -23,112 +31,59 @@ namespace EduWork.WebApi.Controllers
             _userProfileService = userProfileService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllUserProfiles()
+        [HttpGet("currentProject")]
+        public async Task<ActionResult<CurrentUserProjectDto>> GetUserCurrentProject([FromServices] IIdentity currentUser)
         {
-            return await _userProfileService.GetAllUserProfiles();
+            var result = await _userProfileService.GetUserCurrentProject(currentUser.Email);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUsers()
+        {
+            return await _userProfileService.GetUsers();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserProfileDto>> GetUserProfile(int id)
+        public async Task<ActionResult<UserProfileDto>> GetUser(int id)
         {
-            var user = await _userProfileService.GetUserProfile(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
+            var result = await _userProfileService.GetUser(id);
+            return Ok(result);
         }
 
         [HttpGet("sickLeave/{id}")]
         public async Task<ActionResult<IEnumerable<SickLeaveRecordDto>>> GetUserSickLeaveRecords(int id)
         {
-            var userSickLeaveRecords = await _userProfileService.GetUserSickLeaveRecords(id);
-
-            if (!userSickLeaveRecords.Any())
-            {
-                return NotFound();
-            }
-
-            return userSickLeaveRecords;
+            var result = await _userProfileService.GetUserSickLeaveRecords(id);
+            return Ok(result);
         }
 
         [HttpGet("annualLeave/{id}")]
-        public async Task<ActionResult<IEnumerable<AnnualLeaveDto>>> GetUserAnnualLeave(int id)
+        public async Task<ActionResult<IEnumerable<AnnualLeaveDto>>> GetUserAnnualLeaves(int id)
         {
-            var userAnnualLeave = await _userProfileService.GetUserAnnualLeave(id);
-
-            if (!userAnnualLeave.Any())
-            {
-                return NotFound();
-            }
-
-            return userAnnualLeave;
+            var result = await _userProfileService.GetUserAnnualLeaves(id);
+            return Ok(result);
         }
 
-        //// PUT: api/UserProfiles/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutUser(int id, User user)
-        //{
-        //    if (id != user.Id)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpGet("annualLeaveRecords/{id}")]
+        public async Task<ActionResult<IEnumerable<AnnualLeaveRecordDto>>> GetUserAnnualLeaveRecords(int id)
+        {
+            var result = await _userProfileService.GetUserAnnualLeaveRecords(id);
+            return Ok(result);
+        }
 
-        //    _userProfileService.Entry(user).State = EntityState.Modified;
+        [HttpGet("myProfile")]
+        public async Task<ActionResult<MyProfileDto>> GetUserProfile([FromServices] IIdentity currentUser)
+        {
+            var result = await _userProfileService.GetUserProfile(currentUser.Email);
+            return Ok(result);
+        }
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!UserExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        //// POST: api/UserProfiles
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<User>> PostUser(User user)
-        //{
-        //    _context.Users.Add(user);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        //}
-
-        //// DELETE: api/UserProfiles/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteUser(int id)
-        //{
-        //    var user = await _context.Users.FindAsync(id);
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Users.Remove(user);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool UserExists(int id)
-        //{
-        //    return _context.Users.Any(e => e.Id == id);
-        //}
+        [HttpGet("myStats")]
+        public async Task<ActionResult<MyProfileStatsDto>> GetMyProfileStats([FromServices] IIdentity currentUser, bool thisMonth, bool lastMonth)
+        {
+            var result = await _userProfileService.GetMyProfileStats(currentUser.Email, thisMonth, lastMonth);
+            return Ok(result);
+        }
     }
 }

@@ -66,9 +66,16 @@ else
                             }
                             else
                             {
-                                <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
-                                    @projectTimeLog.DateWorkDay
-                                </a>
+                                if (!isAdmin)
+                                {
+                                    <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                        @projectTimeLog.DateWorkDay
+                                    </a>
+                                }
+                                else
+                                {
+                                       @projectTimeLog.DateWorkDay
+                                }
                             }
                         </td>
 

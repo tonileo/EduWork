@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.DTO
+namespace Common.DTO.Profile
 {
-    public record AnnualLeaveRecordDto
+    public record AnnualLeaveDto
     {
         public int Id { get; set; }
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-        public string Comment { get; set; }
+        public int Year { get; set; }
+        public int TotalLeaveDays { get; set; }
+        public int LeftLeaveDays { get; set; }
     }
 }

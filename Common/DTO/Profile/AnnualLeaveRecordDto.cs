@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.DTO
+namespace Common.DTO.Profile
 {
-    public record SickLeaveRecordDto
+    public record AnnualLeaveRecordDto
     {
         public int Id { get; set; }
         public DateOnly StartDate { get; set; }

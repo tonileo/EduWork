@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.DTO;
+using Common.DTO.Profile;
 using Common.DTO.ProjectTime;
 using EduWork.DataAccessLayer.Entites;
 
 namespace EduWork.BusinessLayer
 {
-    public class AutoMapperProfile : Profile
+    public class AutoMapperProjectTime : Profile
     {
-        public AutoMapperProfile() 
+        public AutoMapperProjectTime() 
         {
             CreateMap<Project, ProjectSmallDto>()
            .ForMember(dest => dest.LastChosenTitle, opt => opt.MapFrom(src => ""));
@@ -35,6 +36,20 @@ namespace EduWork.BusinessLayer
             .ForMember(dest => dest.SumAllProjectTimesMinutes, opt => opt.MapFrom(src => src.Sum(pt => pt.TimeSpentMinutes) % 60));
 
             CreateMap<ProjectTimeRequestDto, ProjectTime>();
+        }
+    }
+
+    public class AutoMapperProfile : Profile
+    {
+        public AutoMapperProfile()
+        {
+            CreateMap<User, UserProfileDto>();
+
+            CreateMap<SickLeaveRecord, SickLeaveRecordDto>();
+
+            CreateMap<AnnualLeave, AnnualLeaveDto>();
+
+            CreateMap<AnnualLeaveRecord, AnnualLeaveRecordDto>();
         }
     }
 }
