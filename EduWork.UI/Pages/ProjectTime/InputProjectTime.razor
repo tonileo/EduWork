@@ -11,8 +11,6 @@
 <div class="flex-container">
     <div class="form-section">
 
-        <h3 class="mb-4">@INPUT_PROJECT_TIME_TITLE</h3>
-
         <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
             <DataAnnotationsValidator />
             <ValidationSummary class="alert alert-danger" />
@@ -22,9 +20,9 @@
                     <label for="date">@WORKDAY_INPUT_LABEL</label>
 
                     <div class="input-group">
-                        <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-left"></i></span></button>
+                        <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" disabled="@(updateForm)"><span><i class="bi bi-caret-left-fill"></i></span></button>
                         <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class="form-control" disabled="@(updateForm)" />
-                        <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" class="chevron" disabled="@(updateForm)"><span><i class="fa fa-chevron-right"></i></span></button>
+                        <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" disabled="@(updateForm)"><span><i class="bi bi-caret-right-fill"></i></span></button>
                     </div>
 
                     <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
@@ -167,8 +165,8 @@
                             </td>
                             <td class="text-center">@projectTimeLog.Comment</td>
                             <td class="text-center">
-                                <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="far fa-edit"></i></button>
-                                <button class="btn btn-danger" @onclick="() => DeleteData(projectTimeLog.Id)"><i class="fas fa-trash-alt"></i></button>
+                                <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="bi bi-pencil-square fs-6"></i></button>
+                                <button class="btn btn-danger" @onclick="() => DeleteData(projectTimeLog.Id)"><i class="bi bi-x-lg fs-6"></i></button>
                             </td>
                         </tr>
                     }

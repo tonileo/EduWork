@@ -1,21 +1,23 @@
-﻿@page "/myProfile"
+﻿@page "/myProfile/{username}"
 @using Common.DTO.Profile
 
-<h3>MyProfile</h3>
-
 @inject HttpClient Http
+
 @if (userProfile == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@LABEL_LOADING</em></p>
 }
 else
 {
     <div>
         <div class="card m-1">
             <div class="card-header">
-                <div class="d-flex flex-column justify-content-center">
-                    <p><strong>Username: </strong> @userProfile.Username</p>
-                    <p><strong>Email: </strong> @userProfile.Email</p>
+                <div class="d-flex flex-row align-items-center">
+                    <span id="personIcon" class="bi bi-person-circle" aria-hidden="true"></span>
+                    <div class="d-flex flex-column justify-content-center">
+                        <strong><p id="usernameLabel">@userProfile.Username</p></strong>
+                        <p><strong>@LABEL_EMAIL</strong> @userProfile.Email</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -24,146 +26,162 @@ else
             <div class="grid-item">
                 <div class="card m-1">
                     <div class="card-header">
-                        <p><strong>Trenutno radi na</strong></p>
+                        <p><strong>@HEADER_CURRENT_PROJECT</strong></p>
                     </div>
                     <div class="card-body">
-
                         <p>@userProfile.Project.Title - @userProfile.Project.Role</p>
                     </div>
                 </div>
 
                 <div class="card m-1">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <p><strong>Statistika korisnika</strong></p>
-
+                        <p><strong>@HEADER_USER_STATS</strong></p>
                         <InputSelect @bind-Value="selectedDate" @oninput="HandleMonthSelect">
-                            <option value="thisMonth" selected>Ovaj mjesec</option>
-                            <option value="lastMonth">Prošli mjesec</option>
-
+                            <option value=@SELECTED_THIS_MONTH_VALUE selected>@LABEL_THIS_MONTH</option>
+                            <option value=@SELECTED_LAST_MONTH_VALUE>@LABEL_LAST_MONTH</option>
                         </InputSelect>
                     </div>
                     <div class="card-body d-flex justify-content-between align-items-center">
-
                         <div>
                             <strong><span>@myProfileStats?.SumHoursSpent</span> h : <span>@myProfileStats?.SumMinutesSpent</span> min</strong>
-                            <p style="font-size: 0.8rem">Ukupno sati</p>
+                            <p class="userStatP">@LABEL_TOTAL_HOURS</p>
                         </div>
-
                         <div>
                             <strong><span>@myProfileStats.CountProjects</span></strong>
-                            <p style="font-size: 0.8rem">Ukupno projekata</p>
+                            <p class="userStatP">@LABEL_TOTAL_PROJECTS</p>
                         </div>
-
-                        <div><p>Saznaj više...</p></div>
+                        <div>@LABEL_FIND_OUT_MORE</div>
                     </div>
                 </div>
-
             </div>
 
             <div class="grid-item">
                 <div class="card m-1">
                     <div class="card-header">
-                        <p><strong>Godišnji</strong></p>
+                        <p><strong>@HEADER_ANNUAL_LEAVE</strong></p>
                     </div>
                     <div class="card-body">
-                        <div class="grid-container">
-                            <div>
-                                <p style="font-size: 1.3rem; margin-left:5px;">@userProfile.AnnualLeave.LeftLeaveDays</p>
-                                <p>dana ostalo</p>
-                            </div>
-
-                            <p>planirano</p>
-                            <p>od prošle godine</p>
-                            <div style="text-align:center;">
-                                <p style="font-size: 1.6rem;">@userProfile.AnnualLeave.TotalLeaveDays</p>
-                                <p>Ukupno dostupno</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <p><strong>Iskorišteni dani</strong></p>
-                        @foreach (var record in userProfile.AnnualLeaveRecords)
+                        @if (userProfile.AnnualLeave != null && userProfile.AnnualLeaveRecords != null)
                         {
-                            <div style="border-bottom: 1px solid; padding: 10px;">@record.StartDate - @record.EndDate</div>
+                            <div class="grid-container">
+                                <div>
+                                    <p id="annualDayP">@userProfile.AnnualLeave.LeftLeaveDays</p>
+                                    <p>@LABEL_DAYS_LEFT</p>
+                                </div>
+                                <p>planirano</p>
+                                <p>od prošle godine</p>
+                                <div id="annualLeaveDiv">
+                                    <p id="annualLeaveP">@userProfile.AnnualLeave.TotalLeaveDays</p>
+                                    <p>@LABEL_TOTAL_AVAILABLE</p>
+                                </div>
+                            </div>
                         }
+                        else
+                        {
+                            <p><em>@LABEL_NO_DATA</em></p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <p><strong>@HEADER_USED_DAYS</strong></p>
+
+                        @if (userProfile.AnnualLeaveRecords != null)
+                        {
+                            @foreach (var record in userProfile.AnnualLeaveRecords)
+                            {
+                                <div id="annualDayDiv">@record.StartDate - @record.EndDate</div>
+                            }
+                        }
+
+                        <div>
+                            <button class="btn btn-info" @onclick="AddAnnulLeave"><i class="bi bi-plus-lg fs-6"></i></button>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="card m-1">
                     <div class="card-header">
-                        <p><strong>Bolovanje</strong></p>
+                        <p><strong>@HEADER_SICK_LEAVE</strong></p>
                     </div>
                     <div class="card-body">
-
-                        <div style="text-align: center;">
-                            <p>Ukupno bolovanja ove godine: </p>
-                            <strong><p style="font-size: 1.4rem;">@userProfile.SickLeaveRecords.Sum(record => record.TotalSickDays)</p></strong>
-                        </div>
+                        @if (userProfile.SickLeaveRecords != null)
+                        {
+                            <div id="sickLeaveDiv">
+                                <p>@LABEL_SUM_SICK_DAYS_YEARLY</p>
+                                <strong><p id="sickDaysP">@userProfile.SickLeaveRecords.Sum(record => record.TotalSickDays)</p></strong>
+                            </div>
+                        }
+                        else
+                        {
+                            <p><em>@LABEL_NO_DATA</em></p>
+                        }
                     </div>
-
                     <div class="card-footer">
-                        <p><strong>Dani bolovanja</strong></p>
-                        <div>
-                            @foreach (var record in userProfile.SickLeaveRecords)
-                            {
-                                @foreach (var day in record.SickDays)
+                        <p><strong>@HEADER_SICK_DAYS</strong></p>
+                        @if (userProfile.SickLeaveRecords != null)
+                        {
+                            <div>
+                                @foreach (var record in userProfile.SickLeaveRecords)
                                 {
-                                    <div style="display: inline-block; margin-right: 10px; border: 1px solid; padding: 5px;">@day @day.DayOfWeek</div>
+                                    <div id="annualDayDiv">@record.StartDate - @record.EndDate</div>
                                 }
-                            }
-                        </div>
-                    </div>
+                            </div>
 
+                            <div>
+                                <button class="btn btn-info" @onclick="AddSickDay"><i class="bi bi-plus-lg fs-6"></i></button>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 }
 
-<style>
-    .grid-containers {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 5px;
-    }
-
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-    }
-
-        .grid-container p {
-            margin: 0;
-        }
-
-    .card-header {
-        background-color: #D9EDF8;
-    }
-
-    .card-footer {
-        background-color: #E4F1EE;
-    }
-</style>
-
 @code {
+    [Parameter]
+    public string username { get; set; }
+
     private MyProfileDto? userProfile;
 
     private MyProfileStatsDto? myProfileStats;
 
     public string selectedDate;
 
+    private const string LABEL_EMAIL = "Email: ";
+    private const string HEADER_CURRENT_PROJECT = "Trenutno radi na";
+    private const string HEADER_USER_STATS = "Statistika korisnika";
+    private const string LABEL_LAST_MONTH = "Prošli mjesec";
+    private const string LABEL_THIS_MONTH = "Ovaj mjesec";
+    private const string LABEL_TOTAL_HOURS = "Ukupno sati";
+    private const string LABEL_TOTAL_PROJECTS = "Ukupno projekata";
+    private const string LABEL_FIND_OUT_MORE = "Saznaj više...";
+    private const string HEADER_ANNUAL_LEAVE = "Godišnji";
+    private const string LABEL_DAYS_LEFT = "dana ostalo";
+    private const string LABEL_TOTAL_AVAILABLE = "Ukupno dostupno";
+    private const string HEADER_USED_DAYS = "Iskorišteni dani";
+    private const string HEADER_SICK_LEAVE = "Bolovanje";
+    private const string LABEL_SUM_SICK_DAYS_YEARLY = "Ukupno bolovanja ove godine: ";
+    private const string HEADER_SICK_DAYS = "Dani bolovanja";
+    private const string LABEL_LOADING = " Učitavanje podataka...";
+    private const string LABEL_NO_DATA = " Nema podataka...";
+
+
+    private const string GET_MY_PROFILE_ENDPOINT = "api/UserProfiles/profile/";
+    private const string GET_MY_PROFILE_STATS_ENDPOINT = "api/UserProfiles/stats/";
+    private const string SELECTED_LAST_MONTH_VALUE = "lastMonth";
+    private const string SELECTED_THIS_MONTH_VALUE = "thisMonth";
+
     protected override async Task OnInitializedAsync()
     {
-        userProfile = await Http.GetFromJsonAsync<MyProfileDto>($"api/UserProfiles/myProfile");
+        userProfile = await Http.GetFromJsonAsync<MyProfileDto>($"{GET_MY_PROFILE_ENDPOINT}{username}");
 
         await LoadData("");
     }
 
     private async Task LoadData(string parameters)
     {
-        myProfileStats = await Http.GetFromJsonAsync<MyProfileStatsDto>($"api/UserProfiles/myStats{parameters}");
+        myProfileStats = await Http.GetFromJsonAsync<MyProfileStatsDto>($"{GET_MY_PROFILE_STATS_ENDPOINT}{username}{parameters}");
 
         StateHasChanged();
     }
@@ -178,16 +196,26 @@ else
 
             var parameter = "";
 
-            if (selectedDate == "lastMonth")
+            if (selectedDate == SELECTED_LAST_MONTH_VALUE)
             {
-                parameter = "?lastMonth=true";
+                parameter = $"?{SELECTED_LAST_MONTH_VALUE}=true";
             }
             else
             {
-                parameter = "?thisMonth=true";
+                parameter = $"?{SELECTED_THIS_MONTH_VALUE}=true";
             }
 
             await LoadData(parameter);
         }
+    }
+
+    private void AddAnnulLeave()
+    {
+
+    }
+
+    private void AddSickDay()
+    {
+
     }
 }

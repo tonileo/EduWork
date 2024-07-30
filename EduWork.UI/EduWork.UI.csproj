@@ -33,6 +33,7 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
     <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Profile\Users.razor" />
     <_ContentIncludedByDefault Remove="Shared\ChartComponent.razor" />
     <_ContentIncludedByDefault Remove="Shared\InputDateOnChange.razor" />
   </ItemGroup>
@@ -55,6 +56,14 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Shared\InputDateOnChange.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Profile\Users.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\bootstrap\fonts\bootstrap-icons.woff2" />
   </ItemGroup>
 
 </Project>

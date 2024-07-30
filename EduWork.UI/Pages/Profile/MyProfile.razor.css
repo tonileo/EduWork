@@ -1,0 +1,66 @@
+﻿.grid-containers {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+    .grid-container p {
+        margin: 0;
+    }
+
+#personIcon {
+    font-size: 60px;
+    margin-right: 15px;
+}
+
+#usernameLabel {
+    font-size: 22px;
+}
+
+    .card-header {
+        background-color: #D9EDF8;
+    }
+
+.card-footer {
+    background-color: #E4F1EE;
+}
+
+.userStatP {
+    font-size: 0.8rem;
+}
+
+#annualLeaveDiv {
+    text-align: center;
+}
+
+#annualLeaveP {
+    font-size: 1.6rem;
+}
+
+#annualDayP {
+    font-size: 1.3rem;
+    margin-left: 5px;
+}
+
+#annualDayDiv {
+    border-bottom: 1px solid;
+    padding: 10px;
+}
+
+.btn-info{
+    margin-top:10px;
+}
+
+#sickDaysP {
+    font-size: 1.4rem;
+}
+
+#sickLeaveDiv {
+    text-align: center;
+}

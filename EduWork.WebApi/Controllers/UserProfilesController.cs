@@ -31,59 +31,38 @@ namespace EduWork.WebApi.Controllers
             _userProfileService = userProfileService;
         }
 
-        [HttpGet("currentProject")]
-        public async Task<ActionResult<CurrentUserProjectDto>> GetUserCurrentProject([FromServices] IIdentity currentUser)
+        [HttpGet("projects")]
+        public async Task<ActionResult<IEnumerable<ProjectsProfileDto>>> GetProjects()
         {
-            var result = await _userProfileService.GetUserCurrentProject(currentUser.Email);
+            var result = await _userProfileService.GetProjects();
             return Ok(result);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUserSmallProfiles()
         {
-            return await _userProfileService.GetUsers();
+            return await _userProfileService.GetUserSmallProfiles();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserProfileDto>> GetUser(int id)
+        [HttpGet("profile/{username}")]
+        public async Task<ActionResult<MyProfileDto>> GetUserProfile(string username)
         {
-            var result = await _userProfileService.GetUser(id);
+            var result = await _userProfileService.GetUserProfile(username);
             return Ok(result);
         }
 
-        [HttpGet("sickLeave/{id}")]
-        public async Task<ActionResult<IEnumerable<SickLeaveRecordDto>>> GetUserSickLeaveRecords(int id)
+        [HttpGet("stats/{username}")]
+        public async Task<ActionResult<MyProfileStatsDto>> GetMyProfileStats(string username, bool thisMonth, bool lastMonth)
         {
-            var result = await _userProfileService.GetUserSickLeaveRecords(id);
+            var result = await _userProfileService.GetMyProfileStats(username, thisMonth, lastMonth);
             return Ok(result);
         }
 
-        [HttpGet("annualLeave/{id}")]
-        public async Task<ActionResult<IEnumerable<AnnualLeaveDto>>> GetUserAnnualLeaves(int id)
+        [HttpPost("addAnnualLeave/{username}")]
+        public async Task<ActionResult> AddAnnualLeave(string username, ProfileAnnualRequestDto annualLeave)
         {
-            var result = await _userProfileService.GetUserAnnualLeaves(id);
-            return Ok(result);
-        }
-
-        [HttpGet("annualLeaveRecords/{id}")]
-        public async Task<ActionResult<IEnumerable<AnnualLeaveRecordDto>>> GetUserAnnualLeaveRecords(int id)
-        {
-            var result = await _userProfileService.GetUserAnnualLeaveRecords(id);
-            return Ok(result);
-        }
-
-        [HttpGet("myProfile")]
-        public async Task<ActionResult<MyProfileDto>> GetUserProfile([FromServices] IIdentity currentUser)
-        {
-            var result = await _userProfileService.GetUserProfile(currentUser.Email);
-            return Ok(result);
-        }
-
-        [HttpGet("myStats")]
-        public async Task<ActionResult<MyProfileStatsDto>> GetMyProfileStats([FromServices] IIdentity currentUser, bool thisMonth, bool lastMonth)
-        {
-            var result = await _userProfileService.GetMyProfileStats(currentUser.Email, thisMonth, lastMonth);
-            return Ok(result);
+            await _userProfileService.AddAnnualLeave(username, annualLeave);
+            return Ok();
         }
     }
 }
