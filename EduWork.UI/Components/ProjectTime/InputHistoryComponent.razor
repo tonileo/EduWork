@@ -43,7 +43,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (projectTimeHistoryDtoTest == null)
+            @if (projectTimeHistoryDto == null)
             {
                 <tr>
                     <td class="text-center"><em>@LOADING_LABEL</em></td>
@@ -51,7 +51,7 @@
             }
             else
             {
-                @foreach (var projectTimeLog in projectTimeHistoryDtoTest)
+                @foreach (var projectTimeLog in projectTimeHistoryDto)
                 {
                     var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
                     <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog)">
@@ -141,8 +141,6 @@
     private List<UsernamesDto>? usernames;
 
     private List<ProjectTimeHistoryDto>? projectTimeHistoryDto;
-
-    private List<ProjectTimeHistoryDto>? projectTimeHistoryDtoTest;
     private ProjectTimeHistoryDto? expandedRow;
 
     private int selectedDateFilter = 2;
@@ -171,11 +169,11 @@
         {
             if (isAdmin)
             {
-                projectTimeHistoryDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
             }
             else
             {
-                projectTimeHistoryDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
+                projectTimeHistoryDto = await Http.GetFromJsonAsync<List<ProjectTimeHistoryDto>>($"{ApiEndpoint}{parameters}");
             }
         }
         catch (Exception ex)

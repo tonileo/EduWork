@@ -21,11 +21,12 @@
 
 #usernameLabel {
     font-size: 22px;
+    font-weight:bold;
 }
 
-    .card-header {
-        background-color: #D9EDF8;
-    }
+.card-header {
+    background-color: #D9EDF8;
+}
 
 .card-footer {
     background-color: #E4F1EE;
@@ -59,6 +60,7 @@
 
 #sickDaysP {
     font-size: 1.4rem;
+    font-weight: bold;
 }
 
 #sickLeaveDiv {

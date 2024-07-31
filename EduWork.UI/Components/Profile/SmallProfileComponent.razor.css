@@ -1,1 +1,28 @@
-﻿
+﻿.card {
+    width: 320px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-header {
+    background-color: #D9EDF8;
+}
+
+#personIcon {
+    font-size: 50px;
+}
+
+.card-body {
+    flex: 1;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.margin-left-20 {
+    margin-left: 20px;
+}

@@ -45,7 +45,8 @@ namespace EduWork.BusinessLayer
         {
             CreateMap<Project, ProjectsProfileDto>();
 
-            CreateMap<User, UserProfileDto>();
+            CreateMap<User, UserProfileDto>()
+                .ForMember(dest => dest.Project, opt => opt.Ignore());
 
             CreateMap<SickLeaveRecord, SickLeaveRecordDto>();
 
@@ -54,6 +55,10 @@ namespace EduWork.BusinessLayer
             CreateMap<AnnualLeaveRecord, AnnualLeaveRecordDto>();
 
             CreateMap<ProfileAnnualRequestDto, AnnualLeaveRecord>()
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.StartDate)))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.EndDate)));
+
+            CreateMap<ProfileAnnualRequestDto, SickLeaveRecord>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.StartDate)))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.EndDate)));
         }

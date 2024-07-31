@@ -51,13 +51,39 @@ namespace EduWork.BusinessLayer.Services
             return projectsProfile;
         }
 
-        public async Task<List<UserProfileDto>> GetUserSmallProfiles()
+        public async Task<List<UserProfileDto>> GetUserSmallProfiles(string? username, bool? asc)
         {
-            var users = await context.Users.AsNoTracking().ToListAsync();
+            var query = context.Users.AsNoTracking().AsQueryable();
 
-            var userProfiles = mapper.Map<List<UserProfileDto>>(users);
+            if (!string.IsNullOrEmpty(username))
+            {
+                query = query.Where(u => u.Username.Contains(username));
+            }
 
-            return userProfiles;
+            if (asc != null && asc != true)
+            {
+                query = query.OrderByDescending(u => u.Username);
+            }
+            else
+            {
+                query = query.OrderBy(u => u.Username);
+            }
+
+            var users = await query.ToListAsync();
+
+            var profiles = new List<UserProfileDto>();
+
+            foreach (var user in users)
+            {
+                var project = await GetUserCurrentProject(user.Id);
+
+                var userProfile = mapper.Map<UserProfileDto>(user);
+                userProfile.Project = project;
+
+                profiles.Add(userProfile);
+            }
+
+            return profiles;
         }
 
         public async Task<List<SickLeaveRecordDto>> GetUserSickLeaveRecords(int id)
@@ -99,7 +125,7 @@ namespace EduWork.BusinessLayer.Services
 
         public async Task<MyProfileDto> GetUserProfile(string? username)
         {
-            var user = await context.Users.Where(u => u.Username == username).AsNoTracking().SingleOrDefaultAsync();
+            var user = await context.Users.Where(u => u.Username == username).Include(a => a.AppRole).AsNoTracking().SingleOrDefaultAsync();
 
             if (user == null)
             {
@@ -116,6 +142,7 @@ namespace EduWork.BusinessLayer.Services
             {
                 Id = user.Id,
                 Username = user.Username,
+                AppRoleTitle = user.AppRole.Title,
                 Email = user.Email,
                 Project = projects,
                 AnnualLeave = annualLeave.FirstOrDefault(),
@@ -180,15 +207,40 @@ namespace EduWork.BusinessLayer.Services
                 throw new ArgumentException("Can't request today and days before today as annual leave");
             }
 
-            var dateAvailability = await context.AnnualLeaves
-                .Include(u => u.User)
-                .Where(n => n.User.Username == username)
-                .Where(s => s.Year == DateTime.Now.Year)
-                .SingleOrDefaultAsync();
+            if (annualLeave.StartDate > annualLeave.EndDate)
+            {
+                throw new ArgumentException("Start date can't be after end date");
+            }
+
+            var user = await context.Users
+                .Include(u => u.AnnualLeaveRecords)
+                .Include(a => a.AnnualLeaves)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+
+            var currentYear = DateTime.Now.Year;
+            var dateAvailability = user.AnnualLeaves
+                .SingleOrDefault(al => al.Year == currentYear);
 
             if (dateAvailability == null)
             {
                 throw new InvalidOperationException("Annual leave record not found");
+            }
+
+            var annualLeaveStartDate = DateOnly.FromDateTime(annualLeave.StartDate);
+            var annualLeaveEndDate = DateOnly.FromDateTime(annualLeave.EndDate);
+            var dateOverlap = user.AnnualLeaveRecords
+                .Where(record => annualLeaveStartDate <= record.EndDate && annualLeaveEndDate >= record.StartDate)
+                .ToList();
+
+            if (dateOverlap.Any())
+            {
+                throw new InvalidOperationException("Requested dates overlap with existing sick leave records");
             }
 
             var nonWorkingDays = await context.NonWorkingDays
@@ -213,6 +265,42 @@ namespace EduWork.BusinessLayer.Services
             dateAvailability.Year = DateTime.Now.Year;
             dateAvailability.LeftLeaveDays = newLeftLeaveDays;
 
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddSickDay(string? username, ProfileAnnualRequestDto annualLeave)
+        {
+            if (annualLeave.StartDate > annualLeave.EndDate)
+            {
+                throw new ArgumentException("Start date can't be after end date");
+            }
+
+            var user = await context.Users
+                .Include(u => u.SickLeaveRecords)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+
+            var annualLeaveStartDate = DateOnly.FromDateTime(annualLeave.StartDate);
+            var annualLeaveEndDate = DateOnly.FromDateTime(annualLeave.EndDate);
+
+            var dateOverlap = user.SickLeaveRecords
+                    .Where(record => (annualLeaveStartDate <= record.EndDate && annualLeaveEndDate >= record.StartDate))
+                    .ToList();
+
+            if (dateOverlap.Any())
+            {
+                throw new InvalidOperationException("Requested dates overlap with existing sick leave records");
+            }
+
+            var addAnnual = mapper.Map<SickLeaveRecord>(annualLeave);
+            addAnnual.UserId = user.Id;
+
+            await context.AddAsync(addAnnual);
             await context.SaveChangesAsync();
         }
 

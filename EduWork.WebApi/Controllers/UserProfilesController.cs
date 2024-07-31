@@ -39,9 +39,9 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUserSmallProfiles()
+        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUserSmallProfiles([FromQuery] string? username, [FromQuery] bool? asc)
         {
-            return await _userProfileService.GetUserSmallProfiles();
+            return await _userProfileService.GetUserSmallProfiles(username, asc);
         }
 
         [HttpGet("profile/{username}")]
@@ -62,6 +62,13 @@ namespace EduWork.WebApi.Controllers
         public async Task<ActionResult> AddAnnualLeave(string username, ProfileAnnualRequestDto annualLeave)
         {
             await _userProfileService.AddAnnualLeave(username, annualLeave);
+            return Ok();
+        }
+
+        [HttpPost("addSickDay/{username}")]
+        public async Task<ActionResult> AddSickDay(string username, ProfileAnnualRequestDto annualLeave)
+        {
+            await _userProfileService.AddSickDay(username, annualLeave);
             return Ok();
         }
     }

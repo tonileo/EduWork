@@ -4,7 +4,7 @@
 
 @inject HttpClient Http
 
-@if (users == null || projects == null)
+@if (users == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -12,35 +12,22 @@ else
 {
     <div class="container text-center">
         <div class="d-flex flex-row justify-content-center align-items-center">
-            <input class="m-1 w-50 form-control search-user" placeholder="Enter email..." @onchange="InputChanged" />
+            <InputText class="m-1 w-50 form-control" @bind-Value="inputUsername" placeholder="Enter username..." @oninput="InputChanged" />
 
-            <select class="form-select m-1 w-25 select-project" @onchange="HandleOnChangeProject">
-              <option value="0" selected>All projects</option>
-                @foreach (var project in projects)
-                {
-                    <option value="@project.Id">@project.Title</option>
-                }
-            </select>
-
-            <select class="form-select m-1 w-25 order-select" @onchange="HandleOnChangeSort">
-              <option value="1" selected>Username A-Z</option>
-              <option value="2">Username Z-A</option>
-            </select>
-
-            <button class="btn btn-primary m-1 filter" @onclick="FilterUsers">Search</button>
+            <InputSelect @bind-Value="ascending" @oninput="SelectChanged">
+                <option selected value="true">Uzlazno</option>
+                <option value="false">Silazno</option>
+            </InputSelect>
         </div>
     </div>
 
     <div class="container my-4">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-5">
-            @if (filteredUsers != null)
+            @foreach (var user in users)
             {
-                @foreach (var user in filteredUsers)
-                {
-                    <div class="col">
-                        <SmallProfileComponent User=@user></SmallProfileComponent>
-                    </div>
-                }
+                <div class="col">
+                    <SmallProfileComponent User=@user></SmallProfileComponent>
+                </div>
             }
         </div>
     </div>
@@ -48,71 +35,48 @@ else
 
 @code {
     private List<UserProfileDto>? users = new List<UserProfileDto>();
-    private List<ProjectsProfileDto>? projects = new List<ProjectsProfileDto>();
-    private List<UserProfileDto>? filteredUsers;
-    string searchString = "";
+    private List<ProjectsProfileDto> projects = new List<ProjectsProfileDto>();
 
-    private string SortSelected { get; set; } = "1";
-    private string ProjectSelected { get; set; } = "0";
+    private string? inputUsername;
+    private bool? ascending = true;
+    private string? parameters;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            users = await Http.GetFromJsonAsync<List<UserProfileDto>>("api/UserProfiles");
             projects = await Http.GetFromJsonAsync<List<ProjectsProfileDto>>("api/UserProfiles/projects");
 
-        }catch(Exception e)
+            await LoadData();
+        }
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
-
-        filteredUsers = users;
     }
 
-    private void InputChanged(ChangeEventArgs e)
+    private async Task LoadData()
     {
-        if(e.Value == null){ 
-            return; 
-        }
-        searchString = e.Value.ToString().ToLower();
-        FilterUsers();
+        var sendParameter = "?username=" + inputUsername;
+        var ascParameter = "&asc=" + ascending;
+        parameters = sendParameter + ascParameter;
+
+        users = await Http.GetFromJsonAsync<List<UserProfileDto>>($"api/UserProfiles{parameters}");
+        
+        StateHasChanged();
     }
 
-    private void FilterUsers()
+    private async void InputChanged(ChangeEventArgs args)
     {
-        if (string.IsNullOrWhiteSpace(searchString))
-        {
-            filteredUsers = users;
-        }
-        else
-        {
-            filteredUsers = users?.Where(u => u.Email.Contains(searchString)).ToList();
-        }
+        inputUsername = (args.Value).ToString();
 
-        if (ProjectSelected != "0")
-        {
-            // filteredUsers = filteredUsers.Where(fu => fu.Projects.Any(p => p.Id == int.Parse(ProjectSelected))).ToList();
-        }
-
-        if (SortSelected == "1")
-        {
-            filteredUsers = filteredUsers.OrderBy(fu => fu.Username).ToList();
-        }
-        else
-        {
-            filteredUsers = filteredUsers.OrderByDescending(fu => fu.Username).ToList();
-        }
+        await LoadData();
     }
 
-    private void HandleOnChangeSort(ChangeEventArgs args)
+    private async void SelectChanged(ChangeEventArgs args)
     {
-        SortSelected = args.Value.ToString();
-    }
+        ascending = Convert.ToBoolean(args.Value);
 
-    private void HandleOnChangeProject(ChangeEventArgs args)
-    {
-        ProjectSelected = args.Value.ToString();
+        await LoadData();
     }
-
 }

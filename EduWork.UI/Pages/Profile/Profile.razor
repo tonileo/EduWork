@@ -1,4 +1,4 @@
-﻿@page "/myProfile/{username}"
+﻿@page "/profile/{username}"
 @using Common.DTO.Profile
 
 @inject HttpClient Http
@@ -15,7 +15,8 @@ else
                 <div class="d-flex flex-row align-items-center">
                     <span id="personIcon" class="bi bi-person-circle" aria-hidden="true"></span>
                     <div class="d-flex flex-column justify-content-center">
-                        <strong><p id="usernameLabel">@userProfile.Username</p></strong>
+                        <p id="usernameLabel">@userProfile.Username</p>
+                        <p><strong>Uloga: </strong> @userProfile.AppRoleTitle</p>
                         <p><strong>@LABEL_EMAIL</strong> @userProfile.Email</p>
                     </div>
                 </div>
@@ -29,7 +30,7 @@ else
                         <p><strong>@HEADER_CURRENT_PROJECT</strong></p>
                     </div>
                     <div class="card-body">
-                        <p>@userProfile.Project.Title - @userProfile.Project.Role</p>
+                        <p>@userProfile.Project?.Title - @userProfile.Project?.Role</p>
                     </div>
                 </div>
 
@@ -47,7 +48,7 @@ else
                             <p class="userStatP">@LABEL_TOTAL_HOURS</p>
                         </div>
                         <div>
-                            <strong><span>@myProfileStats.CountProjects</span></strong>
+                            <strong><span>@myProfileStats?.CountProjects</span></strong>
                             <p class="userStatP">@LABEL_TOTAL_PROJECTS</p>
                         </div>
                         <div>@LABEL_FIND_OUT_MORE</div>
@@ -92,6 +93,19 @@ else
                             }
                         }
 
+                        @if (buttonAnnulLeave){
+                            <div id="annualDayDiv">
+                                <InputDate @bind-Value="profileAnnualRequestDto.StartDate" />
+                                -
+                                <InputDate @bind-Value="profileAnnualRequestDto.EndDate" />
+
+                                <InputTextArea @bind-Value="profileAnnualRequestDto.Comment" placeholder="Komentar..." rows="1" />
+
+                                <button class="btn btn-success" @onclick="Submit"><i class="bi bi-check-lg fs-6"></i></button>
+                                <button class="btn btn-danger" @onclick="Cancel"><i class="bi bi-x-lg fs-6"></i></button>
+                            </div>
+                        }
+
                         <div>
                             <button class="btn btn-info" @onclick="AddAnnulLeave"><i class="bi bi-plus-lg fs-6"></i></button>
                         </div>
@@ -108,7 +122,7 @@ else
                         {
                             <div id="sickLeaveDiv">
                                 <p>@LABEL_SUM_SICK_DAYS_YEARLY</p>
-                                <strong><p id="sickDaysP">@userProfile.SickLeaveRecords.Sum(record => record.TotalSickDays)</p></strong>
+                                <p id="sickDaysP">@userProfile.SickLeaveRecords.Sum(record => record.TotalSickDays)</p>
                             </div>
                         }
                         else
@@ -127,6 +141,20 @@ else
                                 }
                             </div>
 
+                            @if (buttonSickDay)
+                            {
+                                <div id="annualDayDiv">
+                                    <InputDate @bind-Value="profileAnnualRequestDto.StartDate" />
+                                    -
+                                    <InputDate @bind-Value="profileAnnualRequestDto.EndDate" />
+
+                                    <InputTextArea @bind-Value="profileAnnualRequestDto.Comment" placeholder="Komentar..." rows="1" />
+
+                                    <button class="btn btn-success" @onclick="Submit"><i class="bi bi-check-lg fs-6"></i></button>
+                                    <button class="btn btn-danger" @onclick="Cancel"><i class="bi bi-x-lg fs-6"></i></button>
+                                </div>
+                            }
+
                             <div>
                                 <button class="btn btn-info" @onclick="AddSickDay"><i class="bi bi-plus-lg fs-6"></i></button>
                             </div>
@@ -140,13 +168,18 @@ else
 
 @code {
     [Parameter]
-    public string username { get; set; }
+    public string? username { get; set; }
 
     private MyProfileDto? userProfile;
 
     private MyProfileStatsDto? myProfileStats;
 
-    public string selectedDate;
+    private ProfileAnnualRequestDto profileAnnualRequestDto = new ProfileAnnualRequestDto();
+
+    public string? selectedDate;
+
+    public bool buttonAnnulLeave = false;
+    public bool buttonSickDay = false;
 
     private const string LABEL_EMAIL = "Email: ";
     private const string HEADER_CURRENT_PROJECT = "Trenutno radi na";
@@ -174,13 +207,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        userProfile = await Http.GetFromJsonAsync<MyProfileDto>($"{GET_MY_PROFILE_ENDPOINT}{username}");
-
         await LoadData("");
     }
 
     private async Task LoadData(string parameters)
     {
+        profileAnnualRequestDto.StartDate = DateTime.Today.AddMonths(+1);
+        profileAnnualRequestDto.EndDate = DateTime.Today.AddMonths(+1).AddDays(+7);
+
+        userProfile = await Http.GetFromJsonAsync<MyProfileDto>($"{GET_MY_PROFILE_ENDPOINT}{username}");
         myProfileStats = await Http.GetFromJsonAsync<MyProfileStatsDto>($"{GET_MY_PROFILE_STATS_ENDPOINT}{username}{parameters}");
 
         StateHasChanged();
@@ -211,11 +246,46 @@ else
 
     private void AddAnnulLeave()
     {
-
+        buttonAnnulLeave = true;
+        buttonSickDay = false;
     }
 
     private void AddSickDay()
     {
+        buttonSickDay = true;
+        buttonAnnulLeave = false;
+    }
 
+    private void Cancel()
+    {
+        profileAnnualRequestDto.StartDate = DateTime.Today.AddMonths(+1);
+        profileAnnualRequestDto.EndDate = DateTime.Today.AddMonths(+1).AddDays(+7);
+
+        buttonAnnulLeave = false;
+        buttonSickDay = false;
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (buttonAnnulLeave)
+            {
+                var request = await Http.PostAsJsonAsync($"api/UserProfiles/addAnnualLeave/{username}", profileAnnualRequestDto);
+            }
+            else
+            {
+                var request = await Http.PostAsJsonAsync($"api/UserProfiles/addSickDay/{username}", profileAnnualRequestDto);
+            }
+
+            buttonAnnulLeave = false;
+            buttonSickDay = false;
+
+            await LoadData("");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
     }
 }

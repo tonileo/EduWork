@@ -29,8 +29,9 @@ namespace EduWork.BusinessLayer.Services
                 .Include(s => s.Project)
                 .Include(a => a.WorkDay)
                 .Where(g => g.WorkDay.User.Email == email)
-                .OrderByDescending(pt => pt.Id)
-                .FirstOrDefaultAsync();
+                .OrderByDescending(pt => pt.WorkDay.WorkDate)
+                .ThenByDescending(pt => pt.Id)
+                .FirstAsync();
 
             var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
 
@@ -65,7 +66,12 @@ namespace EduWork.BusinessLayer.Services
 
             DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
 
-            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly).AsNoTracking().ToListAsync();
+            var userprojectTimes = await context.ProjectTimes
+                .Include(s => s.Project)
+                .Include(a => a.WorkDay)
+                .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                .AsNoTracking()
+                .ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
@@ -101,7 +107,12 @@ namespace EduWork.BusinessLayer.Services
 
             DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
 
-            var userprojectTimes = await context.ProjectTimes.Include(s => s.Project).Include(a => a.WorkDay).Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly).AsNoTracking().ToListAsync();
+            var userprojectTimes = await context.ProjectTimes
+                .Include(s => s.Project)
+                .Include(a => a.WorkDay)
+                .Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                .AsNoTracking()
+                .ToListAsync();
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 

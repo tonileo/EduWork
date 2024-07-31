@@ -10,44 +10,20 @@
                     <span id="personIcon" class="bi bi-person-vcard" aria-hidden="true"></span>
                     <div class="d-flex flex-column margin-left-20">
                         <p class="card-title">@User.Username</p>
-                        <p class="card-text"><strong>Email:</strong> @User.Email</p>
                     </div>
                 </div>
                 
             </div>
             <div class="card-body">
+                <p>@User.Project.Title - @User.Project.Role</p>
+            </div>
+
+            <div class="card-footer">
                 <button class="btn btn-primary" @onclick="NavigateToProfile">View Profile</button>
             </div>
         </div>
     </div>
 }
-
-<style>
-    .card {
-        width: 320px;
-        min-height: 200px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    #personIcon{
-        font-size: 50px;
-    }
-
-    .card-body {
-        flex: 1;
-    }
-
-    .card-title{
-        font-weight: bold;
-        font-size: 22px;
-    }
-
-    .margin-left-20 {
-        margin-left: 20px;
-    }
-</style>
 
 @code {
     [Parameter]
@@ -57,7 +33,7 @@
     {
         if (User != null)
         {
-            NavigationManager.NavigateTo($"/myProfile/{User.Username}");
+            NavigationManager.NavigateTo($"/profile/{User.Username}");
         }
     }
 }
