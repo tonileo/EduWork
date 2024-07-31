@@ -44,10 +44,14 @@ else
                     </div>
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <strong><span>@myProfileStats?.SumHoursSpent</span> h : <span>@myProfileStats?.SumMinutesSpent</span> min</strong>
-                            <p class="userStatP">@LABEL_TOTAL_HOURS</p>
+                            <span id="smallicon" class="bi bi-clock" aria-hidden="true"></span>
+                            <div>
+                                <strong><span>@myProfileStats?.SumHoursSpent</span> h : <span>@myProfileStats?.SumMinutesSpent</span> min</strong>
+                                <p class="userStatP">@LABEL_TOTAL_HOURS</p>
+                            </div>
                         </div>
                         <div>
+                            <span id="smallicon" class="bi bi-kanban" aria-hidden="true"></span>
                             <strong><span>@myProfileStats?.CountProjects</span></strong>
                             <p class="userStatP">@LABEL_TOTAL_PROJECTS</p>
                         </div>

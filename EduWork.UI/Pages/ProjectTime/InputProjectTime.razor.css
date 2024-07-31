@@ -69,4 +69,6 @@
 
 .progress {
     flex-grow: 1;
+    height: 23px;
+    font-size: 0.9em;
 }

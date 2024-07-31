@@ -75,19 +75,17 @@ namespace EduWork.BusinessLayer.Services
 
             var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
 
-            int sumTimeSpentHours = 0;
-            int sumTimeSpentMinutes = 0;
+            int sumTimeSpent = 0;
 
             foreach (var projectTime in userprojectTimes)
             {
-                sumTimeSpentHours += projectTime.TimeSpentMinutes / 60;
-                sumTimeSpentMinutes += projectTime.TimeSpentMinutes % 60;
+                sumTimeSpent += projectTime.TimeSpentMinutes;
             }
 
             foreach (var userProfile in userProfiles)
             {
-                userProfile.SumTimeSpentHours = sumTimeSpentHours;
-                userProfile.SumTimeSpentMinutes = sumTimeSpentMinutes;
+                userProfile.SumTimeSpentHours = sumTimeSpent / 60;
+                userProfile.SumTimeSpentMinutes = sumTimeSpent % 60;
             }
 
             return userProfiles;

@@ -6,7 +6,7 @@
 
 @if (users == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@LABEL_LOADING</em></p>
 }
 else
 {
@@ -14,9 +14,9 @@ else
         <div class="d-flex flex-row justify-content-center align-items-center">
             <InputText class="m-1 w-50 form-control" @bind-Value="inputUsername" placeholder="Enter username..." @oninput="InputChanged" />
 
-            <InputSelect @bind-Value="ascending" @oninput="SelectChanged">
-                <option selected value="true">Uzlazno</option>
-                <option value="false">Silazno</option>
+            <InputSelect id="userInputSelect" class="form-control" @bind-Value="ascending" @oninput="SelectChanged">
+                <option selected value="true">@LABEL_SORT_ASC</option>
+                <option value="false">@LABEL_SORT_DESC</option>
             </InputSelect>
         </div>
     </div>
@@ -34,6 +34,13 @@ else
 }
 
 @code {
+    private const string LABEL_LOADING = "Učitavanje podataka...";
+    private const string LABEL_SORT_ASC = "Uzlazno";
+    private const string LABEL_SORT_DESC = "Silazno";
+
+    private const string ENDPOINT_GET_PROJECTS = "api/UserProfiles/projects";
+    private const string ENDPOINT_GET_USER_PROFILES = "api/UserProfiles";
+
     private List<UserProfileDto>? users = new List<UserProfileDto>();
     private List<ProjectsProfileDto> projects = new List<ProjectsProfileDto>();
 
@@ -45,7 +52,7 @@ else
     {
         try
         {
-            projects = await Http.GetFromJsonAsync<List<ProjectsProfileDto>>("api/UserProfiles/projects");
+            projects = await Http.GetFromJsonAsync<List<ProjectsProfileDto>>(ENDPOINT_GET_PROJECTS);
 
             await LoadData();
         }
@@ -61,7 +68,7 @@ else
         var ascParameter = "&asc=" + ascending;
         parameters = sendParameter + ascParameter;
 
-        users = await Http.GetFromJsonAsync<List<UserProfileDto>>($"api/UserProfiles{parameters}");
+        users = await Http.GetFromJsonAsync<List<UserProfileDto>>($"{ENDPOINT_GET_USER_PROFILES}{parameters}");
         
         StateHasChanged();
     }
