@@ -1,0 +1,77 @@
+﻿@using Common.DTO.ProjectTime
+
+@inject HttpClient Http
+
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th class="text-center">@WORKDAY_TABLE_LABEL</th>
+            <th class="text-center">@PROJECT_TABLE_LABEL</th>
+            <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
+            <th class="text-center">@COMMENT_TABLE_LABEL</th>
+            <th class="text-center">@ACTIONS_TABLE_LABEL</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (projectTimeTableData == null)
+        {
+            <tr>
+                <td class="text-center" colspan="5"><em>@LOADING_LABEL</em></td>
+            </tr>
+        }
+        else if (!projectTimeTableData.Any())
+        {
+            <tr>
+                <td class="text-center" colspan="5"><em>@NO_DATA_FOR_THIS_DAY</em></td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var projectTimeLog in projectTimeTableData)
+            {
+                <tr>
+                    <td class="text-center">@projectTimeLog.DateWorkDay</td>
+                    <td class="text-center">@projectTimeLog.TitleProject</td>
+                    <td class="text-center">
+                        <span>@projectTimeLog.Hours</span> h :
+                        <span>@projectTimeLog.Minutes</span> min
+                    </td>
+                    <td class="text-center">@projectTimeLog.Comment</td>
+                    <td class="text-center">
+                        <button class="btn btn-info" @onclick="() => OnEditData.InvokeAsync(projectTimeLog)"><i class="bi bi-pencil-square fs-6"></i></button>
+                        <button class="btn btn-danger" @onclick="() => DeleteData(projectTimeLog.Id)"><i class="bi bi-x-lg fs-6"></i></button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<InputProjectTimeDto>? projectTimeTableData { get; set; }
+
+    [Parameter]
+    public EventCallback OnLoadData { get; set; }
+
+    [Parameter]
+    public EventCallback<InputProjectTimeDto> OnEditData { get; set; }
+
+    private const string WORKDAY_TABLE_LABEL = "Radni dan";
+    private const string PROJECT_TABLE_LABEL = "Projekt";
+    private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
+    private const string COMMENT_TABLE_LABEL = "Komentar";
+    private const string ACTIONS_TABLE_LABEL = "Akcije";
+    private const string NO_DATA_FOR_THIS_DAY = "Nema zapisa za ovaj dan";
+    private const string SUM_TIME_SPENT = "Ukupno: ";
+    private const string LOADING_LABEL = " Učitavanje podataka...";
+
+    private const string DELETE_AND_PUT_ENDPOINT = "api/ProjectTimes/";
+
+    private async void DeleteData(int deleteId)
+    {
+        var projectTimeDelete = await Http.DeleteAsync($"{DELETE_AND_PUT_ENDPOINT}{deleteId}");
+
+        await OnLoadData.InvokeAsync();
+    }
+}

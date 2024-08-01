@@ -5,68 +5,13 @@
 
 @inject HttpClient Http
 
-<EditForm Model="@filterModel" OnValidSubmit="LoadProjectTimesAsync">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="row">
-        <div class="col-md-3 col-sm-6">
-            <div class="form-group">
-                <InputDate class="form-control" @bind-Value="filterModel.FromDate" id="fromDate" />
-                <ValidationMessage For="() => filterModel.FromDate" />
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="form-group">
-                <InputDate class="form-control" @bind-Value="filterModel.ToDate" id="toDate" />
-                <ValidationMessage For="() => filterModel.ToDate" />
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="form-group">
-                <InputText class="form-control" @bind-Value="filterModel.ProjectTitle" id="projectTitle"
-                           placeholder=@PROJECT_NAME_PLACEHOLDER />
-                <ValidationMessage For="() => filterModel.ProjectTitle" />
-            </div>
-        </div>
-
-        @if (isAdmin)
-        {
-            <div class="col-md-3 col-sm-6">
-                <div class="form-group">
-                    @if (usernames == null)
-                    {
-            <option>Loading...</option>
-                    }
-                    else
-                    {
-            <InputSelect class="form-control" @bind-Value="filterModel.Username" id="username">
-                <option value="">@CHOOSE_USER_PLACEHOLDER </option>
-                            @foreach (var user in usernames)
-                            {
-                    <option value="@user.Username">@user.Username</option>
-                            }
-            </InputSelect>
-            <ValidationMessage For="() => filterModel.Username" />
-                    }
-        </div>
-        </div>
-        }
-
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <br />
-        <button type="submit" class="btn btn-primary">@FILTER_BUTTON_TEXT</button>
-    </div>
-</EditForm>
+<ProjectTimeStatsFormComponent FilterModel="filterModel" OnValidSubmit="LoadProjectTimesAsync"></ProjectTimeStatsFormComponent>
 
 <br>
 <div class="row">
     <div class="col-md-6">
 
-        @if (projectTimeResponse == null)
+        @if (projectTimeResponse?.ProjectTimeSums == null)
         {
             <p><em>Loading...</em></p>
         }
@@ -152,7 +97,7 @@
     <div class="col-md-6" style="background-color: lightcyan; padding: 20px; border-radius: 8px; display: flex;
 flex-direction: row; justify-content: space-between; height: 100%; margin-top: 20px;">
 
-        @if (projectTimeResponse != null)
+        @if (projectTimeResponse?.ProjectTimeSums != null)
         {
             <canvas id="myChart" style="margin-right: 40px; max-width: 300px; max-height: 300px;">
                 <ChartComponent Labels="projectTimeResponse.ProjectTimeSums.Select(p => p.TitleProject).ToList()"
@@ -185,9 +130,6 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
 </div>
 
 @code {
-    private const string PROJECT_NAME_PLACEHOLDER = "Naziv projekta...";
-    private const string CHOOSE_USER_PLACEHOLDER = "Odaberi korisnika...";
-    private const string FILTER_BUTTON_TEXT = "Filtriraj";
     private const string PROJECT_TABLE_LABEL = "Projekt";
     private const string DURATION_LABEL = "Trajanje";
     private const string IN_TOTAL_LABEL = "Ukupno";
@@ -197,8 +139,6 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
     private const string FINISHED_LEGEND = "Završen";
     private const string TIME_SPENT_GRAPHIC_LABEL = "Provedno vremena: ";
 
-    private const string GET_USERNAMES_ENDPOINT = "api/ProjectTimes/usernames";
-
     [Parameter]
     public string? ApiEndpoint { get; set; }
 
@@ -206,7 +146,6 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
     public bool isAdmin { get; set; }
 
     private ProjectTimeResponseDto? projectTimeResponse;
-    private List<UsernamesDto>? usernames;
 
     private FilterModel filterModel = new FilterModel();
 
@@ -215,11 +154,6 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
         filterModel.FromDate = DateTime.Today.AddMonths(-1);
 
         filterModel.ToDate = DateTime.Today;
-
-        if (isAdmin)
-        {
-            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(@GET_USERNAMES_ENDPOINT);
-        }
 
         await LoadProjectTimesAsync();
     }

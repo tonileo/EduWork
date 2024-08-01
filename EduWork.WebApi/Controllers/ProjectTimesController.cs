@@ -44,14 +44,28 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetMyProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
+        public async Task<ActionResult<InputProjectTimeResponseDto>> GetMyInputProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
+        {
+            var result = await _userProjectTimeService.GetMyInputProjectTimes(currentUser.Email, userWorkDay);
+            return Ok(result);
+        }
+
+        [HttpGet("overtime")]
+        public async Task<ActionResult<OvertimeDto>> GetOverTime([FromServices] IIdentity currentUser)
+        {
+            var result = await _userProjectTimeService.GetOverTime(currentUser.Email);
+            return Ok(result);
+        }
+
+        [HttpGet("history")]
+        public async Task<ActionResult<InputProjectTimeDto>> GetMyProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
         {
             var result = await _userProjectTimeService.GetMyProjectTimes(currentUser.Email, userWorkDay);
             return Ok(result);
         }
 
-        [HttpGet("admin")]
-        public async Task<ActionResult<IEnumerable<ProjectTimeDtoTest>>> GetProjectTimes(string username, [FromQuery] DateTime userWorkDay)
+        [HttpGet("history/admin")]
+        public async Task<ActionResult<IEnumerable<InputProjectTimeDto>>> GetProjectTimes(string username, [FromQuery] DateTime userWorkDay)
         {
             var result = await _userProjectTimeService.GetProjectTimes(username, userWorkDay);
             return Ok(result);

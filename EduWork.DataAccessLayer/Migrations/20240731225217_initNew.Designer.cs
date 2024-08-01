@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduWork.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240724194646_init")]
-    partial class init
+    [Migration("20240731225217_initNew")]
+    partial class initNew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -355,30 +355,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.ToTable("WorkDays");
                 });
 
-            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDayTime", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("WorkDayId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkDayId");
-
-                    b.ToTable("WorkDayTimes");
-                });
-
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.AnnualLeave", b =>
                 {
                     b.HasOne("EduWork.DataAccessLayer.Entites.User", "User")
@@ -480,17 +456,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDayTime", b =>
-                {
-                    b.HasOne("EduWork.DataAccessLayer.Entites.WorkDay", "WorkDay")
-                        .WithMany("WorkDayTimes")
-                        .HasForeignKey("WorkDayId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WorkDay");
-                });
-
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.AppRole", b =>
                 {
                     b.Navigation("Users");
@@ -524,8 +489,6 @@ namespace EduWork.DataAccessLayer.Migrations
             modelBuilder.Entity("EduWork.DataAccessLayer.Entites.WorkDay", b =>
                 {
                     b.Navigation("ProjectTimes");
-
-                    b.Navigation("WorkDayTimes");
                 });
 #pragma warning restore 612, 618
         }

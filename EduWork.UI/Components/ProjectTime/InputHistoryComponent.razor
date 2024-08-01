@@ -62,7 +62,7 @@
                             }
                             else
                             {
-                                if (!isAdmin)
+                                if (!isAdmin && projectTimeLog.DateWorkDay <= DateOnly.FromDateTime(DateTime.Today))
                                 {
                                     <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
                                         @projectTimeLog.DateWorkDay
@@ -214,6 +214,8 @@
     {
         filterUsername = e.Value?.ToString() ?? string.Empty;
         parameters = $"?username={filterUsername}";
+
+        selectedDateFilter = 2;
 
         await LoadData(parameters);
     }

@@ -28,7 +28,6 @@ namespace EduWork.DataAccessLayer
         public DbSet<User> Users { get; set; }
         public DbSet<UserProjectRole> UserProjectRoles { get; set; }
         public DbSet<WorkDay> WorkDays { get; set; }
-        public DbSet<WorkDayTime> WorkDayTimes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

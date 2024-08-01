@@ -85,11 +85,11 @@
     <div class="table-section">
 
         <div>
-            @if (projectTimeDtoTest == null)
+            @if (InputProjectTimeResponseDto == null)
             {
                 <span>@LOADING_LABEL</span>
             }
-            else if (!projectTimeDtoTest.Any())
+            else if (InputProjectTimeResponseDto.SumTimeSpentMinutes == 0 && InputProjectTimeResponseDto.SumTimeSpentHours == 0)
             {
                 <div class="summary-container">
                     <div class="progress">
@@ -109,7 +109,7 @@
             }
             else
             {
-                var (progressClass, progressPercentage) = GetRowColor(projectTimeDtoTest[0].SumTimeSpentHours, projectTimeDtoTest[0].SumTimeSpentMinutes);
+                var (progressClass, progressPercentage) = GetRowColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
 
                 <div class="summary-container">
                     <div class="progress">
@@ -122,57 +122,29 @@
                     <div class="divSumOfTimeSpent">
                         <span class="spanSumOfTimeSpent">
                             <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
-                            <span>@projectTimeDtoTest[0].SumTimeSpentHours</span> h : <span>@projectTimeDtoTest[0].SumTimeSpentMinutes</span> min
+                            <span>@InputProjectTimeResponseDto.SumTimeSpentHours</span> h : <span>@InputProjectTimeResponseDto.SumTimeSpentMinutes</span> min
                         </span>
+                    </div>
+
+
+                    <div class="divSumOfTimeSpent">
+                        @if (overtime == null)
+                        {
+                            <span class="spanSumOfTimeSpent">@LOADING_LABEL</span>
+                        }
+                        else
+                        {
+                            <span class="spanSumOfTimeSpent">
+                                <label class="labelSumOfTimeSpent">@LABEL_OVERTIME</label>
+                                <span>@overtime.OvertimeHours</span> h : <span>@overtime.OvertimeMinutes</span> min
+                            </span>
+                        }
                     </div>
                 </div>
             }
         </div>
 
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th class="text-center">@WORKDAY_TABLE_LABEL</th>
-                    <th class="text-center">@PROJECT_TABLE_LABEL</th>
-                    <th class="text-center">@TIME_SPENT_TABLE_LABEL</th>
-                    <th class="text-center">@COMMENT_TABLE_LABEL</th>
-                    <th class="text-center">@ACTIONS_TABLE_LABEL</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (projectTimeDtoTest == null)
-                {
-                    <tr>
-                        <td class="text-center" colspan="5"><em>@LOADING_LABEL</em></td>
-                    </tr>
-                }
-                else if (!projectTimeDtoTest.Any())
-                {
-                    <tr>
-                        <td class="text-center" colspan="5"><em>@NO_DATA_FOR_THIS_DAY</em></td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var projectTimeLog in projectTimeDtoTest)
-                    {
-                        <tr>
-                            <td class="text-center">@projectTimeLog.DateWorkDay</td>
-                            <td class="text-center">@projectTimeLog.TitleProject</td>
-                            <td class="text-center">
-                                <span>@projectTimeLog.Hours</span> h :
-                                <span>@projectTimeLog.Minutes</span> min
-                            </td>
-                            <td class="text-center">@projectTimeLog.Comment</td>
-                            <td class="text-center">
-                                <button class="btn btn-info" @onclick="() => EditData(projectTimeLog)"><i class="bi bi-pencil-square fs-6"></i></button>
-                                <button class="btn btn-danger" @onclick="() => DeleteData(projectTimeLog.Id)"><i class="bi bi-x-lg fs-6"></i></button>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
+        <InputProjectTimeTableComponent projectTimeTableData="InputProjectTimeResponseDto?.InputProjectTimeDto" OnLoadData="LoadData" OnEditData="EditData" />
     </div>
 </div>
 
@@ -186,19 +158,15 @@
     private const string MINUTES_INPUT_LABEL = "Minute: ";
     private const string SUBMIT_BUTTON_TEXT = "Podnesi";
     private const string CLEAR_BUTTON_TEXT = "Očisti";
-    private const string WORKDAY_TABLE_LABEL = "Radni dan";
-    private const string PROJECT_TABLE_LABEL = "Projekt";
-    private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
-    private const string COMMENT_TABLE_LABEL = "Komentar";
-    private const string ACTIONS_TABLE_LABEL = "Akcije";
     private const string NO_DATA_FOR_THIS_DAY = "Nema zapisa za ovaj dan";
     private const string SUM_TIME_SPENT = "Ukupno: ";
+    private const string LABEL_OVERTIME = " Prekovremeno: ";
     private const string LOADING_LABEL = " Učitavanje podataka...";
 
     private const string GET_ENDPOINT = "api/ProjectTimes?";
-    private const string DELETE_AND_PUT_ENDPOINT = "api/ProjectTimes/";
     private const string POST_ENDPOINT = "api/ProjectTimes";
     private const string GET_PROJECTS_ENDPOINT = "api/ProjectTimes/projects";
+    private const string PUT_ENDPOINT = "api/ProjectTimes/";
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ss";
     private const string ZERO_HOURS_COLOR = "lightcoral";
     private const string BETWEEN_ZERO_AND_FULL_TIME_COLOR = "lightgoldenrodyellow";
@@ -209,18 +177,18 @@
 
     public bool updateForm { get; set; }
 
-    public ProjectTimeDtoTest? ProjectTimeLog { get; set; }
-
-    private List<ProjectTimeDtoTest>? projectTimeDtoTest;
+    public InputProjectTimeDto? ProjectTimeLog { get; set; }
+    private InputProjectTimeResponseDto? InputProjectTimeResponseDto;
 
     private List<ProjectSmallDto>? projects;
 
     public ProjectTimeRequestDto projectTimeRequest = new ProjectTimeRequestDto();
 
+    public OvertimeDto? overtime;
+
     private EditContext? editContext;
 
     private int hours;
-
     private int minutes;
 
     private int rangeValue
@@ -249,7 +217,7 @@
     {
         if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday)
         {
-            projectTimeDtoTest = [];
+            InputProjectTimeResponseDto.InputProjectTimeDto = [];
         }
         editContext = new EditContext(projectTimeRequest);
 
@@ -259,6 +227,8 @@
 
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
 
+        overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
+
         projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
     }
 
@@ -266,14 +236,14 @@
     {
         if (projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Saturday || projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Sunday)
         {
-            projectTimeDtoTest = [];
+            InputProjectTimeResponseDto.InputProjectTimeDto = [];
         }
         else
         {
             try
             {
                 string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
-                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
+                InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
 
                 StateHasChanged();
             }
@@ -284,7 +254,7 @@
         }
     }
 
-    private void EditData(ProjectTimeDtoTest projectTimeLog)
+    private void EditData(InputProjectTimeDto projectTimeLog)
     {
         ProjectTimeLog = projectTimeLog;
         projectTimeRequest.TitleProject = projectTimeLog.TitleProject;
@@ -297,20 +267,13 @@
         updateForm = true;
     }
 
-    private async void DeleteData(int deleteId)
-    {
-        var projectTimeDelete = await Http.DeleteAsync($"{DELETE_AND_PUT_ENDPOINT}{deleteId}");
-
-        await LoadData();
-    }
-
     private async void HandleDateInput(ChangeEventArgs args)
     {
         if (args.Value != null)
         {
             projectTimeRequest.DateWorkDay = Convert.ToDateTime(args.Value);
 
-            editContext.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
+            editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
             if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday & projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday & projectTimeRequest.DateWorkDay < DateTime.Today)
             {
@@ -336,7 +299,7 @@
         {
             projectTimeRequest.DateWorkDay = projectTimeRequest.DateWorkDay.AddDays(change);
 
-            editContext.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
+            editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
             await LoadData();
         }
@@ -387,7 +350,7 @@
             }
             else
             {
-                var response = await Http.PutAsJsonAsync(DELETE_AND_PUT_ENDPOINT + ProjectTimeLog?.Id, projectTimeRequest);
+                var response = await Http.PutAsJsonAsync(PUT_ENDPOINT + ProjectTimeLog?.Id, projectTimeRequest);
 
                 if (!response.IsSuccessStatusCode)
                 {

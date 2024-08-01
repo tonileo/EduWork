@@ -20,7 +20,7 @@ namespace EduWork.BusinessLayer
 
             CreateMap<User, UsernamesDto>();
 
-            CreateMap<ProjectTime, ProjectTimeDtoTest>()
+            CreateMap<ProjectTime, InputProjectTimeDto>()
             .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
             .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate))
             .ForMember(dest => dest.Hours, opt => opt.MapFrom(src => src.TimeSpentMinutes / 60))

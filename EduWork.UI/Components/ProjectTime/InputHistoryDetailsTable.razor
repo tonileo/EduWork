@@ -14,7 +14,7 @@
             </thead>
 
             <tbody>
-                @if (projectTimeDtoTest == null)
+                @if (inputProjectTimeDto == null)
                 {
                     <tr>
                         <td class="text-center"><em>@LOADING_LABEL</em></td>
@@ -22,7 +22,7 @@
                 }
                 else
                 {
-                    @foreach (var projectTImeDetail in projectTimeDtoTest)
+                    @foreach (var projectTImeDetail in inputProjectTimeDto)
                     {
                         <tr>
                             <td class="text-center">@projectTImeDetail.TitleProject</td>
@@ -33,7 +33,7 @@
                             <td class="text-center">@projectTImeDetail.Comment</td>
                         </tr>
                     }
-                }   
+                }
             </tbody>
         </table>
     </td>
@@ -52,15 +52,15 @@
     [CascadingParameter]
     public bool isAdmin { get; set; }
 
-    public List<ProjectTimeDtoTest>? projectTimeDtoTest;
+    public List<InputProjectTimeDto>? inputProjectTimeDto;    
 
     private const string PROJECT_TABLE_LABEL = "Projekt";
     private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
     private const string COMMENT_TABLE_LABEL = "Komentar";
     private const string LOADING_LABEL = " Učitavanje podataka...";
 
-    private const string GET_ENDPOINT = "api/ProjectTimes?";
-    private const string GET_ADMIN_ENDPOINT = "api/ProjectTimes/admin?";
+    private const string GET_ENDPOINT = "api/ProjectTimes/history?";
+    private const string GET_ADMIN_ENDPOINT = "api/ProjectTimes/history/admin?";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -73,11 +73,11 @@
                 string usernameParameters = $"username={SelectUsername}";
                 parameters = usernameParameters + "&" + parameters;
 
-                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ADMIN_ENDPOINT + parameters);
+                inputProjectTimeDto = await Http.GetFromJsonAsync<List<InputProjectTimeDto>>(GET_ADMIN_ENDPOINT + parameters);
             }
             else
             {
-                projectTimeDtoTest = await Http.GetFromJsonAsync<List<ProjectTimeDtoTest>>(GET_ENDPOINT + parameters);
+                inputProjectTimeDto = await Http.GetFromJsonAsync<List<InputProjectTimeDto>>(GET_ENDPOINT + parameters);
             }
         }
         catch (Exception ex)

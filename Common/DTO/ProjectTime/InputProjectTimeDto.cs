@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.DTO.ProjectTime
 {
-    public record ProjectTimeDtoTest
+    public record InputProjectTimeDto
     {
         public int Id { get; set; }
         public string? Comment { get; set; }
@@ -18,8 +17,5 @@ namespace Common.DTO.ProjectTime
 
         public DateOnly DateWorkDay { get; set; }
         public string? TitleProject { get; set; }
-
-        public int SumTimeSpentHours { get; set; }
-        public int SumTimeSpentMinutes { get; set; }
     }
 }

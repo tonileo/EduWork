@@ -21,7 +21,6 @@ namespace EduWork.DataAccessLayer.Entites
         public virtual User User { get; set; }
 
 
-        public virtual ICollection<WorkDayTime> WorkDayTimes { get; set; } = [];
         public virtual ICollection<ProjectTime> ProjectTimes { get; set; } = [];
     }
 }

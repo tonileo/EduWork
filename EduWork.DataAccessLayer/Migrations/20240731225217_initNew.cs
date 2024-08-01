@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduWork.DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class initNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -243,27 +243,6 @@ namespace EduWork.DataAccessLayer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "WorkDayTimes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    WorkDayId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WorkDayTimes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WorkDayTimes_WorkDays_WorkDayId",
-                        column: x => x.WorkDayId,
-                        principalTable: "WorkDays",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AnnualLeaves_UserId_Year",
                 table: "AnnualLeaves",
@@ -357,11 +336,6 @@ namespace EduWork.DataAccessLayer.Migrations
                 table: "WorkDays",
                 columns: new[] { "UserId", "WorkDate" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WorkDayTimes_WorkDayId",
-                table: "WorkDayTimes",
-                column: "WorkDayId");
         }
 
         /// <inheritdoc />
@@ -386,16 +360,13 @@ namespace EduWork.DataAccessLayer.Migrations
                 name: "UserProjectRoles");
 
             migrationBuilder.DropTable(
-                name: "WorkDayTimes");
+                name: "WorkDays");
 
             migrationBuilder.DropTable(
                 name: "ProjectRoles");
 
             migrationBuilder.DropTable(
                 name: "Projects");
-
-            migrationBuilder.DropTable(
-                name: "WorkDays");
 
             migrationBuilder.DropTable(
                 name: "Users");

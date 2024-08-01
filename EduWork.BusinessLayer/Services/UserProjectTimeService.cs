@@ -52,7 +52,7 @@ namespace EduWork.BusinessLayer.Services
             return userprojects;
         }
 
-        public async Task<List<ProjectTimeDtoTest>> GetMyProjectTimes(string? email, DateTime userWorkDay)
+        public async Task<InputProjectTimeResponseDto> GetMyInputProjectTimes(string? email, DateTime userWorkDay)
         {
             if (userWorkDay > DateTime.Today)
             {
@@ -73,25 +73,109 @@ namespace EduWork.BusinessLayer.Services
                 .AsNoTracking()
                 .ToListAsync();
 
-            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+            var userProfiles = new InputProjectTimeResponseDto
+            {
+                InputProjectTimeDto = new List<InputProjectTimeDto>()
+            };
 
             int sumTimeSpent = 0;
 
             foreach (var projectTime in userprojectTimes)
             {
+                var inputProjectTimeDto = new InputProjectTimeDto
+                {
+                    Id = projectTime.Id,
+                    Comment = projectTime.Comment,
+                    TimeSpentMinutes = projectTime.TimeSpentMinutes,
+                    Hours = projectTime.TimeSpentMinutes / 60,
+                    Minutes = projectTime.TimeSpentMinutes % 60,
+
+                    DateWorkDay = projectTime.WorkDay.WorkDate,
+                    TitleProject = projectTime.Project.Title
+                };
+
+                userProfiles.InputProjectTimeDto.Add(inputProjectTimeDto);
+
                 sumTimeSpent += projectTime.TimeSpentMinutes;
             }
 
-            foreach (var userProfile in userProfiles)
-            {
-                userProfile.SumTimeSpentHours = sumTimeSpent / 60;
-                userProfile.SumTimeSpentMinutes = sumTimeSpent % 60;
-            }
+            userProfiles.SumTimeSpentHours = sumTimeSpent / 60;
+            userProfiles.SumTimeSpentMinutes = sumTimeSpent % 60;
 
             return userProfiles;
         }
 
-        public async Task<List<ProjectTimeDtoTest>> GetProjectTimes(string? username, DateTime userWorkDay)
+        public async Task<OvertimeDto> GetOverTime(string? email)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
+
+            var workDays = await context.WorkDays
+                .Include(w => w.ProjectTimes)
+                .Include(u => u.User)
+                .Where(s => s.User.Email == email)
+                .Where(d => d.WorkDate < today && d.WorkDate >= firstDayOfMonth)
+                .AsNoTracking()
+                .ToListAsync();
+
+            int overtime = 0;
+
+            foreach (var day in workDays)
+            {
+                Console.WriteLine("day" + day.WorkDate);
+
+                int totalHoursWorked = day.ProjectTimes.Sum(pt => pt.TimeSpentMinutes);
+
+                Console.WriteLine("total" + totalHoursWorked / 60 + " " + totalHoursWorked % 60);
+
+                overtime += (totalHoursWorked - 480);
+
+            }
+
+            int overtimeHours = overtime / 60;
+            int overtimeMinutes = overtime % 60;
+
+            if (overtime < 0 && overtimeMinutes != 0)
+            {
+                overtimeMinutes *= (-1);
+            }
+
+            var result = new OvertimeDto
+            {
+                OvertimeHours = overtimeHours,
+                OvertimeMinutes = overtimeMinutes
+            };
+
+            return result;
+        }
+
+        public async Task<List<InputProjectTimeDto>> GetMyProjectTimes(string? email, DateTime userWorkDay)
+        {
+            if (userWorkDay > DateTime.Today)
+            {
+                throw new ArgumentException("Work day date can't be in future");
+            }
+
+            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+            {
+                throw new ArgumentException("Work day date can't be a weekend");
+            }
+
+            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+            var userprojectTimes = await context.ProjectTimes
+                .Include(s => s.Project)
+                .Include(a => a.WorkDay)
+                .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
+
+            return userProfiles;
+        }
+
+        public async Task<List<InputProjectTimeDto>> GetProjectTimes(string? username, DateTime userWorkDay)
         {
             if (userWorkDay > DateTime.Today)
             {
@@ -112,7 +196,7 @@ namespace EduWork.BusinessLayer.Services
                 .AsNoTracking()
                 .ToListAsync();
 
-            var userProfiles = mapper.Map<List<ProjectTimeDtoTest>>(userprojectTimes);
+            var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
 
             return userProfiles;
         }

@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
     <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
     <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
     <_ContentIncludedByDefault Remove="Pages\Profile\Users.razor" />
@@ -64,6 +65,10 @@
 
   <ItemGroup>
     <None Include="wwwroot\css\bootstrap\fonts\bootstrap-icons.woff2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
   </ItemGroup>
 
 </Project>

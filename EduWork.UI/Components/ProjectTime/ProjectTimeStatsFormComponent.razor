@@ -1,0 +1,94 @@
+﻿@using Common.DTO
+@using Common.DTO.ProjectTime
+@using EduWork.UI.Shared
+
+@inject HttpClient Http
+
+<EditForm Model="@FilterModel" OnValidSubmit="OnValidSubmitHandler">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <InputDate class="form-control" @bind-Value="FilterModel.FromDate" id="fromDate" />
+                <ValidationMessage For="() => FilterModel.FromDate" />
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <InputDate class="form-control" @bind-Value="FilterModel.ToDate" id="toDate" />
+                <ValidationMessage For="() => FilterModel.ToDate" />
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <InputText class="form-control" @bind-Value="FilterModel.ProjectTitle" id="projectTitle"
+                           placeholder=@PROJECT_NAME_PLACEHOLDER />
+                <ValidationMessage For="() => FilterModel.ProjectTitle" />
+            </div>
+        </div>
+
+        @if (isAdmin)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    @if (usernames == null)
+                    {
+                        <option>Loading...</option>
+                    }
+                    else
+                    {
+                        <InputSelect class="form-control" @bind-Value="FilterModel.Username" id="username">
+                            <option value="">@CHOOSE_USER_PLACEHOLDER</option>
+                                        @foreach (var user in usernames)
+                                        {
+                                            <option value="@user.Username">@user.Username</option>
+                                        }
+                        </InputSelect>
+                        <ValidationMessage For="() => FilterModel.Username" />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <br />
+        <button type="submit" class="btn btn-primary">@FILTER_BUTTON_TEXT</button>
+    </div>
+</EditForm>
+
+@code {
+    private const string PROJECT_NAME_PLACEHOLDER = "Naziv projekta...";
+    private const string CHOOSE_USER_PLACEHOLDER = "Odaberi korisnika...";
+    private const string FILTER_BUTTON_TEXT = "Filtriraj";
+
+    private const string GET_USERNAMES_ENDPOINT = "api/ProjectTimes/usernames";
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    public FilterModel? FilterModel { get; set; }
+
+    [CascadingParameter]
+    public bool isAdmin { get; set; }
+
+    private List<UsernamesDto>? usernames;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (isAdmin)
+        {
+            usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(@GET_USERNAMES_ENDPOINT);
+        }
+    }
+
+    private async Task OnValidSubmitHandler()
+    {
+        await OnValidSubmit.InvokeAsync();
+    }
+}
