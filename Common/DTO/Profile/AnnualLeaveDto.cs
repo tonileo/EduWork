@@ -13,5 +13,8 @@ namespace Common.DTO.Profile
         public int Year { get; set; }
         public int TotalLeaveDays { get; set; }
         public int LeftLeaveDays { get; set; }
+
+        public int LeftLeaveDaysLastYear { get; set; }
+        public int PlannedLeaveDays { get; set; }
     }
 }

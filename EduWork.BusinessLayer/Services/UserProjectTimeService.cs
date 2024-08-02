@@ -122,14 +122,9 @@ namespace EduWork.BusinessLayer.Services
 
             foreach (var day in workDays)
             {
-                Console.WriteLine("day" + day.WorkDate);
-
                 int totalHoursWorked = day.ProjectTimes.Sum(pt => pt.TimeSpentMinutes);
 
-                Console.WriteLine("total" + totalHoursWorked / 60 + " " + totalHoursWorked % 60);
-
                 overtime += (totalHoursWorked - 480);
-
             }
 
             int overtimeHours = overtime / 60;

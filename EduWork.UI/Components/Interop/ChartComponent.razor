@@ -25,7 +25,7 @@
         {
             try
             {
-                module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "../Interop/ChartComponent.razor.js");
+                module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "../Components/Interop/ChartComponent.razor.js");
 
                 var chartData = new
                 {

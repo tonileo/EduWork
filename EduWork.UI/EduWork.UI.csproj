@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <None Remove="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-    <None Remove="Interop\ChartJsInterop.js" />
+    <None Remove="Components\Interop\ChartJsInterop.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-    <Content Include="Interop\ChartComponent.razor.js">
+    <Content Include="Components\Interop\ChartComponent.razor.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

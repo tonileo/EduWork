@@ -10,6 +10,7 @@ using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EduWork.BusinessLayer.Services
 {
@@ -22,20 +23,19 @@ namespace EduWork.BusinessLayer.Services
                 .Include(a => a.WorkDay)
                 .Where(g => g.WorkDay.User.Id == id)
                 .OrderByDescending(pt => pt.WorkDay.WorkDate)
-                .Select(m => m.Project.Title)
-                .FirstOrDefaultAsync();
+                .ThenByDescending(pt => pt.Id)
+                .FirstAsync();
 
             var userProjectTimeRole = await context.UserProjectRoles
                 .Include(s => s.User)
                 .Include(u => u.ProjectRole)
-                .Where(g => g.User.Id == id)
-                .Where(b => b.Project.Title == userProjectTime)
+                .Where(g => g.User.Id == id && g.Project.Title == userProjectTime.Project.Title)
                 .Select(m => m.ProjectRole.Title)
                 .FirstOrDefaultAsync();
 
             var userProjects = new CurrentUserProjectDto
             {
-                Title = userProjectTime,
+                Title = userProjectTime.Project.Title,
                 Role = userProjectTimeRole
             };
 
@@ -88,7 +88,9 @@ namespace EduWork.BusinessLayer.Services
 
         public async Task<List<SickLeaveRecordDto>> GetUserSickLeaveRecords(int id)
         {
-            var sickLeaveRecord = await context.SickLeaveRecords.Where(s => s.UserId == id).AsNoTracking().ToListAsync();
+            var currentYear = DateTime.Today.Year;
+
+            var sickLeaveRecord = await context.SickLeaveRecords.Where(s => s.UserId == id && s.StartDate.Year == currentYear && s.EndDate.Year == currentYear).AsNoTracking().ToListAsync();
 
             var userSickLeave = new List<SickLeaveRecordDto>();
 
@@ -105,18 +107,50 @@ namespace EduWork.BusinessLayer.Services
             return userSickLeave;
         }
 
-        public async Task<List<AnnualLeaveDto>> GetUserAnnualLeaves(int id)
+        public async Task<AnnualLeaveDto> GetUserAnnualLeaves(int id)
         {
-            var annualLeave = await context.AnnualLeaves.Where(s => s.UserId == id).AsNoTracking().ToListAsync();
+            var currentYear = DateTime.Today.Year;
+            var lastYear = DateTime.Today.AddYears(-1).Year;
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
-            var userAnnualLeave = mapper.Map<List<AnnualLeaveDto>>(annualLeave);
+            var annualLeave = await context.AnnualLeaves.Where(s => s.UserId == id && s.Year == currentYear).AsNoTracking().SingleOrDefaultAsync();
+            var annualLeaveLastYear = await context.AnnualLeaves.Where(s => s.UserId == id && s.Year == lastYear).AsNoTracking().SingleOrDefaultAsync();
+
+            var annualLeaveRecord = await context.AnnualLeavesRecords.Where(s => s.UserId == id && s.StartDate > today).AsNoTracking().ToListAsync();
+
+            var leftLeaveDaysLastYear = 0;
+            if (annualLeaveLastYear != null && annualLeaveLastYear.LeftLeaveDays != 0)
+            {
+                leftLeaveDaysLastYear = annualLeaveLastYear.LeftLeaveDays;
+            }
+
+            var nonWorkingDays = await context.NonWorkingDays
+                .AsNoTracking()
+                .Select(u => u.NonWorkingDate)
+                .ToListAsync();
+
+            var plannedLeaveDays = 0;
+            foreach (var leave in annualLeaveRecord)
+            {
+                var startDateTime = leave.StartDate.ToDateTime(TimeOnly.MinValue);
+                var endDateTime = leave.EndDate.ToDateTime(TimeOnly.MinValue);
+
+                plannedLeaveDays += CountWorkingDays(startDateTime, endDateTime, nonWorkingDays);
+            }
+
+            var userAnnualLeave = mapper.Map<AnnualLeaveDto>(annualLeave);
+            userAnnualLeave.LeftLeaveDays += leftLeaveDaysLastYear;
+            userAnnualLeave.LeftLeaveDaysLastYear = leftLeaveDaysLastYear;
+            userAnnualLeave.PlannedLeaveDays = plannedLeaveDays;
 
             return userAnnualLeave;
         }
 
         public async Task<List<AnnualLeaveRecordDto>> GetUserAnnualLeaveRecords(int id)
         {
-            var annualLeave = await context.AnnualLeavesRecords.Where(s => s.UserId == id).AsNoTracking().ToListAsync();
+            var currentYear = DateTime.Today.Year;
+
+            var annualLeave = await context.AnnualLeavesRecords.Where(s => s.UserId == id && s.StartDate.Year == currentYear && s.EndDate.Year == currentYear).AsNoTracking().ToListAsync();
 
             var userAnnualLeave = mapper.Map<List<AnnualLeaveRecordDto>>(annualLeave);
 
@@ -135,7 +169,6 @@ namespace EduWork.BusinessLayer.Services
             var projects = await GetUserCurrentProject(user.Id);
             var sickLeaveRecords = await GetUserSickLeaveRecords(user.Id);
             var annualLeaves = await GetUserAnnualLeaves(user.Id);
-            var annualLeave = from al in annualLeaves where al.Year == DateTime.Now.Year select al;
             var annualLeaveRecords = await GetUserAnnualLeaveRecords(user.Id);
 
             var userProfile = new MyProfileDto()
@@ -145,7 +178,7 @@ namespace EduWork.BusinessLayer.Services
                 AppRoleTitle = user.AppRole.Title,
                 Email = user.Email,
                 Project = projects,
-                AnnualLeave = annualLeave.FirstOrDefault(),
+                AnnualLeave = annualLeaves,
                 AnnualLeaveRecords = annualLeaveRecords,
                 SickLeaveRecords = sickLeaveRecords
             };
@@ -215,7 +248,6 @@ namespace EduWork.BusinessLayer.Services
             var user = await context.Users
                 .Include(u => u.AnnualLeaveRecords)
                 .Include(a => a.AnnualLeaves)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null)
@@ -224,8 +256,7 @@ namespace EduWork.BusinessLayer.Services
             }
 
             var currentYear = DateTime.Now.Year;
-            var dateAvailability = user.AnnualLeaves
-                .SingleOrDefault(al => al.Year == currentYear);
+            var dateAvailability = user.AnnualLeaves.SingleOrDefault(al => al.Year == currentYear);
 
             if (dateAvailability == null)
             {
@@ -248,22 +279,48 @@ namespace EduWork.BusinessLayer.Services
                 .Select(u => u.NonWorkingDate)
                 .ToListAsync();
 
-            var difference = CountWorkingDays(annualLeave.StartDate, annualLeave.EndDate, nonWorkingDays);
+            var numDaysAnnualLeave = CountWorkingDays(annualLeave.StartDate, annualLeave.EndDate, nonWorkingDays);
 
-            if (difference > dateAvailability.LeftLeaveDays)
+            var lastYear = DateTime.Today.AddYears(-1).Year;
+            var annualLeaveLastYear = user.AnnualLeaves.SingleOrDefault(al => al.Year == lastYear);
+
+            var sumLeftLeaveDays = dateAvailability.LeftLeaveDays;
+
+            if (annualLeaveLastYear != null)
+            {
+                sumLeftLeaveDays = dateAvailability.LeftLeaveDays + annualLeaveLastYear.LeftLeaveDays;
+            }
+
+            if (numDaysAnnualLeave > sumLeftLeaveDays)
             {
                 throw new ArgumentException("Don't have that many days available");
             }
-
-            var newLeftLeaveDays = dateAvailability.LeftLeaveDays - difference;
 
             var addAnnual = mapper.Map<AnnualLeaveRecord>(annualLeave);
             addAnnual.UserId = dateAvailability.UserId;
 
             await context.AddAsync(addAnnual);
 
-            dateAvailability.Year = DateTime.Now.Year;
-            dateAvailability.LeftLeaveDays = newLeftLeaveDays;
+            if (annualLeaveLastYear != null && annualLeaveLastYear.LeftLeaveDays > 0)
+            {
+                if (annualLeaveLastYear.LeftLeaveDays > numDaysAnnualLeave)
+                {
+                    annualLeaveLastYear.LeftLeaveDays -= numDaysAnnualLeave;
+
+                    numDaysAnnualLeave = 0;
+                }
+                else
+                {
+                    numDaysAnnualLeave -= annualLeaveLastYear.LeftLeaveDays;
+
+                    annualLeaveLastYear.LeftLeaveDays = 0;
+                }
+            }
+
+            if (numDaysAnnualLeave != 0)
+            {
+                dateAvailability.LeftLeaveDays -= numDaysAnnualLeave;
+            }
 
             await context.SaveChangesAsync();
         }

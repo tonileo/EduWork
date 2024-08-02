@@ -15,7 +15,7 @@
     }
 
 #personIcon {
-    font-size: 60px;
+    font-size: 80px;
     margin-right: 15px;
 }
 
@@ -44,10 +44,11 @@
 
 #annualLeaveDiv {
     text-align: center;
+    border: 3px dashed #D9EDF8;
 }
 
 #annualLeaveP {
-    font-size: 1.6rem;
+    font-size: 1.9rem;
 }
 
 #annualDayP {

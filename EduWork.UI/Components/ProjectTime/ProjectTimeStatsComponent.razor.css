@@ -1,4 +1,4 @@
-﻿::deep .legend-circle {
+﻿.legend-circle {
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -6,15 +6,106 @@
     margin-right: 5px;
     vertical-align: middle;
 }
+    .legend-circle.red {
+        background-color: red;
+    }
 
-::deep .education-row {
+    .legend-circle.forestgreen {
+        background-color: forestgreen;
+    }
+
+    .legend-circle.blue {
+        background-color: #2196F3;
+    }
+
+    .legend-circle.gray {
+        background-color: #757575;
+    }
+
+    .legend-circle.black {
+        background-color: black;
+    }
+
+.education-row {
     background-color: #E0F7FA;
 }
 
-::deep .finished-row {
+.finished-row {
     color: gray;
 }
 
-::deep .table-striped tbody tr:nth-child(odd) {
+.table-striped tbody tr:nth-child(odd) {
     background-color: lightcyan;
 }
+
+.alignRight {
+    text-align: right;
+}
+
+#legendDiv {
+    margin-top: 20px;
+}
+
+#legendList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.legendItem {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+#graphicDiv {
+    background-color: lightcyan;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%;
+    margin-top: 20px;
+}
+
+
+#percentageTimeDiv {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+    border-radius: 8px;
+    padding-right: 20px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+}
+
+#percentageTimeP {
+    font-size: 24px;
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+#titleProjectP {
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+#timeSpentDiv {
+    margin-bottom: 50px;
+}
+
+#graphicLabel {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+#totalTimeP {
+    font-size: 20px;
+}
+
+canvas {
+    margin-right: 40px;
+    max-width: 300px;
+    max-height: 300px;
+}
+

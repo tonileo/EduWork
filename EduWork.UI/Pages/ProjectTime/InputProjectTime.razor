@@ -79,68 +79,49 @@
                 <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
                 <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
             </div>
+
         </EditForm>
     </div>
 
     <div class="table-section">
-
-        <div>
+        <div class="summary-container">
             @if (InputProjectTimeResponseDto == null)
             {
                 <span>@LOADING_LABEL</span>
-            }
-            else if (InputProjectTimeResponseDto.SumTimeSpentMinutes == 0 && InputProjectTimeResponseDto.SumTimeSpentHours == 0)
-            {
-                <div class="summary-container">
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="100"
-                             aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                            0% Complete
-                        </div>
-                    </div>
-
-                    <div class="divSumOfTimeSpent">
-                        <span class="spanSumOfTimeSpent">
-                            <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
-                            <span>@NO_DATA_FOR_THIS_DAY</span>
-                        </span>
-                    </div>
-                </div>
             }
             else
             {
                 var (progressClass, progressPercentage) = GetRowColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
 
-                <div class="summary-container">
-                    <div class="progress">
-                        <div class="progress-bar @progressClass" role="progressbar" aria-valuenow="100"
-                             aria-valuemin="0" aria-valuemax="100" style="width:@progressPercentage%">
-                            @progressPercentage% Complete
-                        </div>
-                    </div>
 
-                    <div class="divSumOfTimeSpent">
-                        <span class="spanSumOfTimeSpent">
-                            <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
-                            <span>@InputProjectTimeResponseDto.SumTimeSpentHours</span> h : <span>@InputProjectTimeResponseDto.SumTimeSpentMinutes</span> min
-                        </span>
-                    </div>
-
-
-                    <div class="divSumOfTimeSpent">
-                        @if (overtime == null)
-                        {
-                            <span class="spanSumOfTimeSpent">@LOADING_LABEL</span>
-                        }
-                        else
-                        {
-                            <span class="spanSumOfTimeSpent">
-                                <label class="labelSumOfTimeSpent">@LABEL_OVERTIME</label>
-                                <span>@overtime.OvertimeHours</span> h : <span>@overtime.OvertimeMinutes</span> min
-                            </span>
-                        }
+                <div class="progress">
+                    <div class="progress-bar @progressClass" role="progressbar" aria-valuenow="100"
+                         aria-valuemin="0" aria-valuemax="100" style="width:@progressPercentage%">
+                        @progressPercentage% Complete
                     </div>
                 </div>
+
+                <div class="divSumOfTimeSpent">
+                    @if (overtime == null)
+                    {
+                        <span class="spanSumOfTimeSpent">@LOADING_LABEL</span>
+                    }
+                    else
+                    {
+                        <span class="spanSumOfTimeSpent">
+                            <label class="labelSumOfTimeSpent">@LABEL_OVERTIME</label>
+                            <span>@overtime.OvertimeHours</span> h : <span>@overtime.OvertimeMinutes</span> min
+                        </span>
+                    }
+                </div>
+
+                <div class="divSumOfTimeSpent">
+                    <span class="spanSumOfTimeSpent">
+                        <label class="labelSumOfTimeSpent">@SUM_TIME_SPENT</label>
+                        <span>@InputProjectTimeResponseDto.SumTimeSpentHours</span> h : <span>@InputProjectTimeResponseDto.SumTimeSpentMinutes</span> min
+                    </span>
+                </div>
+
             }
         </div>
 
@@ -243,7 +224,9 @@
             try
             {
                 string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
+
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
+                overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
 
                 StateHasChanged();
             }
@@ -319,7 +302,6 @@
             return ("bg-warning", percentage);
         }
     }
-
 
     private async void ClearForm()
     {

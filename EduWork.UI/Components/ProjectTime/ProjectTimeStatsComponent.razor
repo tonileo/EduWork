@@ -1,6 +1,6 @@
 ﻿@using Common.DTO
 @using Common.DTO.ProjectTime
-@using EduWork.UI.Interop
+@using EduWork.UI.Components.Interop
 @using EduWork.UI.Shared
 
 @inject HttpClient Http
@@ -13,7 +13,7 @@
 
         @if (projectTimeResponse?.ProjectTimeSums == null)
         {
-            <p><em>Loading...</em></p>
+            <p><em>@LOADING_LABEL</em></p>
         }
         else
         {
@@ -21,7 +21,7 @@
                 <thead>
                     <tr>
                         <th>@PROJECT_TABLE_LABEL </th>
-                        <th style="text-align: right;">@DURATION_LABEL </th>
+                        <th class="alignRight">@DURATION_LABEL </th>
                     </tr>
                 </thead>
 
@@ -34,59 +34,59 @@
                                 {
                                     @if (!sum.IsPayable)
                                     {
-                                        <span class="legend-circle" style="background-color: red;"></span>
+                                        <span class="legend-circle red"></span>
                                     }
                                     else
                                     {
-                                        <span class="legend-circle" style="background-color: forestgreen;"></span>
+                                        <span class="legend-circle forestgreen"></span>
                                     }
                                 }
                                 else
                                 {
                                     @if (sum.IsEducation)
                                     {
-                                        <span class="legend-circle" style="background-color: #2196F3;"></span>
+                                        <span class="legend-circle blue"></span>
                                     }
                                     else
                                     {
-                                        <span class="legend-circle" style="background-color: black;"></span>
+                                        <span class="legend-circle black"></span>
                                     }
                                 }
                                 @sum.TitleProject
                             </td>
-                            <td style="text-align: right;"><span>@sum.SumTimeSpentHours</span>h : <span>@sum.SumTimeSpentMinutes</span>min</td>
+                            <td class="alignRight"><span>@sum.SumTimeSpentHours</span>h : <span>@sum.SumTimeSpentMinutes</span>min</td>
                         </tr>
                     }
                     <tr>
                         <td><strong>@IN_TOTAL_LABEL </strong></td>
-                        <td style="text-align: right;">
+                        <td class="alignRight">
                             <strong><span>@projectTimeResponse.SumAllProjectTimesHours</span>h : <span>@projectTimeResponse.SumAllProjectTimesMinutes</span>min</strong>
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <div style="margin-top: 20px;">
-                <ul style="list-style-type: none; padding: 0;">
+            <div id="legendDiv">
+                <ul id="legendList">
                     @if (isAdmin)
                     {
-                        <li style="display: inline-block; margin-right: 15px;">
-                            <span class="legend-circle" style="background-color: red;"></span>
+                        <li class="legendItem">
+                            <span class="legend-circle red"></span>
                             <span>@NOT_PAYED_LEGEND</span>
                         </li>
 
-                        <li style="display: inline-block; margin-right: 15px;">
-                            <span class="legend-circle" style="background-color: forestgreen;"></span>
+                        <li class="legendItem">
+                            <span class="legend-circle forestgreen"></span>
                             <span>@PAYED_LEGEND </span>
                         </li>
                     }
-                    <li style="display: inline-block; margin-right: 15px;">
-                        <span class="legend-circle" style="background-color: #2196F3;"></span>
+                    <li class="legendItem">
+                        <span class="legend-circle blue"></span>
                         <span>@EDUCATION_LEGEND</span>
                     </li>
 
-                    <li style="display: inline-block; margin-right: 15px;">
-                        <span class="legend-circle" style="background-color: #757575;"></span>
+                    <li class="legendItem">
+                        <span class="legend-circle gray"></span>
                         <span>@FINISHED_LEGEND</span>
                     </li>
                 </ul>
@@ -94,12 +94,11 @@
         }
     </div>
 
-    <div class="col-md-6" style="background-color: lightcyan; padding: 20px; border-radius: 8px; display: flex;
-flex-direction: row; justify-content: space-between; height: 100%; margin-top: 20px;">
+    <div id = "graphicDiv" class="col-md-6">
 
         @if (projectTimeResponse?.ProjectTimeSums != null)
         {
-            <canvas id="myChart" style="margin-right: 40px; max-width: 300px; max-height: 300px;">
+            <canvas id="myChart">
                 <ChartComponent Labels="projectTimeResponse.ProjectTimeSums.Select(p => p.TitleProject).ToList()"
                                 Data="projectTimeResponse.ProjectTimeSums.Select(p => p.PercentageTimeSpent).ToList()"
                                 CanvasId="myChart" ChartType="doughnut"></ChartComponent>
@@ -107,21 +106,21 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
         }
         else
         {
-            <p>Loading...</p>
+            <p>@LOADING_LABEL</p>
         }
 
         <div>
-            <div style="margin-bottom: 50px;">
-                <p style="font-size: 18px; margin-bottom: 5px;">@TIME_SPENT_GRAPHIC_LABEL</p>
-                <p style="font-size: 20px;">
+            <div id="timeSpentDiv">
+                <p id="graphicLabel">@TIME_SPENT_GRAPHIC_LABEL</p>
+                <p id="totalTimeP">
                     <strong><span>@projectTimeResponse?.SumAllProjectTimesHours</span> h : <span>@projectTimeResponse?.SumAllProjectTimesMinutes</span> min</strong>
                 </p>
             </div>
             @foreach (var percentageTime in projectTimeResponse?.ProjectTimeSums ?? Enumerable.Empty<ProjectTimeSumDto>())
             {
-                <div style="display: inline-block; vertical-align: top; margin-right: 20px; border-radius: 8px; padding-right: 20px; box-shadow: 3px 3px 5px rgba(0,0,0,0.4);">
-                    <p style="font-size: 24px; margin-bottom: 5px; margin-top: 0;">@percentageTime.PercentageTimeSpent%</p>
-                    <strong><p style="font-size: 14px; margin-bottom: 5px; margin-top: 5px;">@percentageTime.TitleProject</p></strong>
+                <div id="percentageTimeDiv">
+                    <p id="percentageTimeP">@percentageTime.PercentageTimeSpent%</p>
+                    <p id ="titleProjectP">@percentageTime.TitleProject</p>
                 </div>
             }
         </div>
@@ -138,6 +137,7 @@ flex-direction: row; justify-content: space-between; height: 100%; margin-top: 2
     private const string EDUCATION_LEGEND = "Edukacija";
     private const string FINISHED_LEGEND = "Završen";
     private const string TIME_SPENT_GRAPHIC_LABEL = "Provedno vremena: ";
+    private const string LOADING_LABEL = " Učitavanje podataka...";
 
     [Parameter]
     public string? ApiEndpoint { get; set; }
