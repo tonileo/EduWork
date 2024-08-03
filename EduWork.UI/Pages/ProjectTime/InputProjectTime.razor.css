@@ -6,18 +6,30 @@
 
 .flex-container {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
-    margin-right: 20px;
+    flex-direction: column;
+    gap: 50px;
 }
 
 .form-section {
     flex: 1;
-    min-width: 40%;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .table-section {
     flex: 2;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.horizontal-flex {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    align-items: flex-start;
 }
 
 ::deep .spanSumOfTimeSpent {
@@ -31,33 +43,33 @@
     font-weight: bold;
 }
 
-::deep .input-group-horizontal {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-    ::deep .input-group-horizontal .form-group {
-        flex: 1;
-        margin: 0 8px;
-    }
-
-    ::deep .input-group-horizontal .form-control {
-        width: 80px;
-    }
-
 ::deep .range-container {
     flex: 1;
 }
 
 ::deep .workdayFlex {
-    margin-right: 20px;
     flex: 1;
-    max-width:40%;
+    max-width: 250px;
+    min-width: 200px;
 }
 
-::deep .projectFlex {
+::deep .divFlex {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+::deep .formBtn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    max-width: 150px;
+}
+
+::deep .timeSpentField {
+    flex: 0 0 auto;
+    max-width: 60px;
 }
 
 .summary-container {

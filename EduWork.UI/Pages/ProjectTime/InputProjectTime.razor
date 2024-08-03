@@ -9,26 +9,30 @@
 <PageTitle>@INPUT_PROJECT_TIME_TITLE</PageTitle>
 
 <div class="flex-container">
-    <div class="form-section">
 
+    <div class="form-section">
         <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
             <DataAnnotationsValidator />
             <ValidationSummary class="alert alert-danger" />
 
-            <div class="form-group mb-3 d-flex">
+            <div class="form-group mb-3 d-flex horizontal-flex">
                 <div class="workdayFlex">
                     <label for="date">@WORKDAY_INPUT_LABEL</label>
 
                     <div class="input-group">
-                        <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" disabled="@(updateForm)"><span><i class="bi bi-caret-left-fill"></i></span></button>
+                        <button type="button" id="subtractDateButton" @onclick="() => ChangeDate(-1)" disabled="@(updateForm)">
+                            <span><i class="bi bi-caret-left-fill"></i></span>
+                        </button>
                         <InputDate id="date" @bind-Value="projectTimeRequest.DateWorkDay" @oninput="HandleDateInput" class="form-control" disabled="@(updateForm)" />
-                        <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" disabled="@(updateForm)"><span><i class="bi bi-caret-right-fill"></i></span></button>
+                        <button type="button" id="addDateButton" @onclick="() => ChangeDate(1)" disabled="@(updateForm)">
+                            <span><i class="bi bi-caret-right-fill"></i></span>
+                        </button>
                     </div>
 
                     <ValidationMessage For="@(() => projectTimeRequest.DateWorkDay)" />
                 </div>
 
-                <div class="projectFlex">
+                <div class="divFlex">
                     <label for="titleProject">@PROJECT_INPUT_LABEL</label>
                     <InputSelect id="titleProject" @bind-Value="projectTimeRequest.TitleProject" class="form-control">
                         @if (projects == null)
@@ -47,39 +51,35 @@
                     <ValidationMessage For="@(() => projectTimeRequest.TitleProject)" />
                 </div>
 
-            </div>
-
-            <div class="form-group mb-3">
-                <label for="comment">@COMMENT_INPUT_LABEL</label>
-                <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="5" />
-                <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
-            </div>
-
-            <div class="form-group mb-3">
-                <div class="input-group-horizontal">
-                    <div>
-                        <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
-                        <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required @oninput="UpdateTime" />
-                    </div>
-
-                    <div>
-                        <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
-                        <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required @oninput="UpdateTime" />
-                    </div>
-
-                    <div class="range-container">
-                        <label for="timeSpentMinutesRange"></label>
-                        <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
-                    </div>
+                <div>
+                    <label></label>
+                    <InputTextArea id="comment" @bind-Value="projectTimeRequest.Comment" class="form-control" rows="1" placeholder="@COMMENT_INPUT_LABEL" />
+                    <ValidationMessage For="@(() => projectTimeRequest.Comment)" />
                 </div>
-                <ValidationMessage For="@(() => projectTimeRequest.TimeSpentMinutes)" />
-            </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
-                <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
-            </div>
+                <div class="timeSpentField">
+                    <label for="timeSpentHours">@HOURS_INPUT_LABEL</label>
+                    <InputNumber id="timeSpentHours" @bind-Value="hours" class="form-control" min="0" required @oninput="UpdateTime" />
+                </div>
 
+                <div class="timeSpentField">
+                    <label for="timeSpentMinutes">@MINUTES_INPUT_LABEL</label>
+                    <InputNumber id="timeSpentMinutes" @bind-Value="minutes" class="form-control" min="0" max="59" required @oninput="UpdateTime" />
+                </div>
+
+                <div class="range-container">
+                    <label for="timeSpentMinutesRange"></label>
+                    <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
+                </div>
+
+                <div class="formBtn">
+                    <button type="submit" class="btn btn-primary me-2">@SUBMIT_BUTTON_TEXT</button>
+                </div>
+
+                <div class="formBtn">
+                    <button type="button" class="btn btn-secondary" @onclick="ClearForm">@CLEAR_BUTTON_TEXT</button>
+                </div>
+            </div>
         </EditForm>
     </div>
 
@@ -91,7 +91,7 @@
             }
             else
             {
-                var (progressClass, progressPercentage) = GetRowColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
+                var (progressClass, progressPercentage) = GetProgessColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
 
 
                 <div class="progress">
@@ -196,10 +196,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday)
-        {
-            InputProjectTimeResponseDto.InputProjectTimeDto = [];
-        }
         editContext = new EditContext(projectTimeRequest);
 
         projectTimeRequest.TimeSpentMinutes = 450;
@@ -215,11 +211,7 @@
 
     private async Task LoadData()
     {
-        if (projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Saturday || projectTimeRequest.DateWorkDay.DayOfWeek == DayOfWeek.Sunday)
-        {
-            InputProjectTimeResponseDto.InputProjectTimeDto = [];
-        }
-        else
+        if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday && projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday)
         {
             try
             {
@@ -234,6 +226,11 @@
             {
                 Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
             }
+        }
+        else
+        {
+            InputProjectTimeResponseDto = new InputProjectTimeResponseDto();
+            InputProjectTimeResponseDto.InputProjectTimeDto = [];
         }
     }
 
@@ -288,7 +285,7 @@
         }
     }
 
-    private (string color, int percentage) GetRowColor(int hours, int minutes)
+    private (string color, int percentage) GetProgessColor(int hours, int minutes)
     {
         var totalMinutes = hours * 60 + minutes;
 
