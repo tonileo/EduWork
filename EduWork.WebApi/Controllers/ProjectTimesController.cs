@@ -13,6 +13,7 @@ using EduWork.BusinessLayer.Services;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.WebApi.Authentication;
 using Common.DTO.ProjectTime;
+using Common.DTO;
 
 namespace EduWork.WebApi.Controllers
 {
@@ -37,7 +38,7 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet("usernames")]
-        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetUsernames()
+        public async Task<ActionResult<IEnumerable<UsernamesDto>>> GetUsernames()
         {
             var result = await _userProjectTimeService.GetUsernames();
             return Ok(result);
