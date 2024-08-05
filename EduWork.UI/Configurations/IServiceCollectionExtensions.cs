@@ -16,8 +16,6 @@ namespace EduWork.UI.Configurations
             configuration.GetSection(ClientAzureAdOptions.Section).Bind(azureAdOptions);
             configuration.GetSection(DownstreamApiOptions.Section).Bind(downstreamApiOptions);
 
-            //services.AddScoped<ChartJs>();
-
             services.AddScoped(sp =>
             {
                 var authorizationMessageHandler = sp.GetRequiredService<AuthorizationMessageHandler>();
@@ -36,7 +34,6 @@ namespace EduWork.UI.Configurations
             services.AddMsalAuthentication<RemoteAuthenticationState, UserAccount>(options =>
             {
                 configuration.Bind(ClientAzureAdOptions.Section, options.ProviderOptions.Authentication);
-                //options.ProviderOptions.LoginMode = "redirect";
                 options.ProviderOptions.LoginMode = "popup";
                 options.ProviderOptions.DefaultAccessTokenScopes.Add(downstreamApiOptions.Scope);
                 options.ProviderOptions.Cache.CacheLocation = "localStorage";

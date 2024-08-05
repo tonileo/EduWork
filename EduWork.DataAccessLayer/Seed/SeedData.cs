@@ -52,6 +52,23 @@ namespace EduWork.DataAccessLayer.Seed
             {
                 AddProjectTimes(context);
             }
+
+
+
+            if (!context.AnnualLeaves.Any())
+            {
+                AddAnnualLeaves(context);
+            }
+
+            if (!context.AnnualLeavesRecords.Any())
+            {
+                AddAnnualLeavesRecords(context);
+            }
+
+            if (!context.SickLeaveRecords.Any())
+            {
+                AddSickLeaveRecords(context);
+            }
         }
 
         private static void AddNonWorkingDays(AppDbContext context)
@@ -193,8 +210,8 @@ namespace EduWork.DataAccessLayer.Seed
                     Description = "A summer project for interns.",
                     IsFinished = false,
                     IsPrivate = false,
-                    IsEducation = true,
-                    IsPayable = false,
+                    IsEducation = false,
+                    IsPayable = true,
                     DevOpsProjectId = "gamma789"
                 },
                 new Project()
@@ -206,7 +223,7 @@ namespace EduWork.DataAccessLayer.Seed
                     IsFinished = false,
                     IsPrivate = true,
                     IsEducation = false,
-                    IsPayable = true,
+                    IsPayable = false,
                     DevOpsProjectId = "delta012"
                 },
                 new Project()
@@ -220,18 +237,6 @@ namespace EduWork.DataAccessLayer.Seed
                     IsEducation = true,
                     IsPayable = false,
                     DevOpsProjectId = "epsilon345"
-                },
-                new Project()
-                {
-                    Title = "Project Zeta",
-                    StartDate = new DateOnly(2024, 2, 1),
-                    EndDate = new DateOnly(2024, 12, 1),
-                    Description = "A special initiative for environmental sustainability.",
-                    IsFinished = false,
-                    IsPrivate = false,
-                    IsEducation = true,
-                    IsPayable = true,
-                    DevOpsProjectId = "zeta678"
                 }
             );
             context.SaveChanges();
@@ -418,6 +423,162 @@ namespace EduWork.DataAccessLayer.Seed
                 {
                     WorkDate = new DateOnly(2024, 7, 31),
                     UserId = 2
+                },
+
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 1),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 2),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 3),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 4),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 5),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 6),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 7),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 8),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 9),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 10),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 11),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 12),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 13),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 14),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 15),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 16),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 17),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 18),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 19),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 20),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 21),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 22),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 23),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 24),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 25),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 26),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 27),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 28),
+                    UserId = 3
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 29),
+                    UserId = 2
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 30),
+                    UserId = 1
+                },
+                new WorkDay()
+                {
+                    WorkDate = new DateOnly(2024, 8, 31),
+                    UserId = 2
                 }
             );
             context.SaveChanges();
@@ -459,7 +620,7 @@ namespace EduWork.DataAccessLayer.Seed
                     Comment = "Code implementation",
                     TimeSpentMinutes = 455,
                     WorkDayId = 5,
-                    ProjectId = 5
+                    ProjectId = 1
                 },
                 new ProjectTime()
                 {
@@ -494,7 +655,7 @@ namespace EduWork.DataAccessLayer.Seed
                     Comment = "Integration with existing systems",
                     TimeSpentMinutes = 110,
                     WorkDayId = 10,
-                    ProjectId = 5
+                    ProjectId = 2
                 },
                 new ProjectTime()
                 {
@@ -529,7 +690,7 @@ namespace EduWork.DataAccessLayer.Seed
                     Comment = "Bug fixing",
                     TimeSpentMinutes = 450,
                     WorkDayId = 15,
-                    ProjectId = 5
+                    ProjectId = 3
                 },
                 new ProjectTime()
                 {
@@ -564,9 +725,117 @@ namespace EduWork.DataAccessLayer.Seed
                     Comment = "Research and development",
                     TimeSpentMinutes = 465,
                     WorkDayId = 20,
-                    ProjectId = 5
+                    ProjectId = 4
                 }
             );
+            context.SaveChanges();
+        }
+
+        private void AddAnnualLeaves(AppDbContext context)
+        {
+            context.AnnualLeaves.AddRange(
+                new AnnualLeave()
+                {
+                    Year = 2024,
+                    TotalLeaveDays = 20,
+                    LeftLeaveDays = 16,
+                    UserId = 1
+                },
+                new AnnualLeave()
+                {
+                    Year = 2024,
+                    TotalLeaveDays = 18,
+                    LeftLeaveDays = 14,
+                    UserId = 2
+                },
+                new AnnualLeave()
+                {
+                    Year = 2024,
+                    TotalLeaveDays = 22,
+                    LeftLeaveDays = 18,
+                    UserId = 3
+                },
+                new AnnualLeave()
+                {
+                    Year = 2023,
+                    TotalLeaveDays = 20,
+                    LeftLeaveDays = 2,
+                    UserId = 1
+                },
+                new AnnualLeave()
+                {
+                    Year = 2023,
+                    TotalLeaveDays = 18,
+                    LeftLeaveDays = 1,
+                    UserId = 2
+                },
+                new AnnualLeave()
+                {
+                    Year = 2023,
+                    TotalLeaveDays = 22,
+                    LeftLeaveDays = 0,
+                    UserId = 3
+                }
+            );
+
+            context.SaveChanges();
+        }
+
+        private void AddAnnualLeavesRecords(AppDbContext context)
+        {
+            context.AnnualLeavesRecords.AddRange(
+               new AnnualLeaveRecord()
+               {
+                   StartDate = new DateOnly(2024, 8, 7),
+                   EndDate = new DateOnly(2024, 8, 14),
+                   Comment = "A research",
+                   UserId = 1
+               },
+               new AnnualLeaveRecord()
+               {
+                   StartDate = new DateOnly(2024, 8, 8),
+                   EndDate = new DateOnly(2024, 8, 14),
+                   Comment = "A research",
+                   UserId = 2
+               },
+               new AnnualLeaveRecord()
+               {
+                   StartDate = new DateOnly(2024, 8, 9),
+                   EndDate = new DateOnly(2024, 8, 14),
+                   Comment = "A research",
+                   UserId = 3
+               }
+            );
+
+            context.SaveChanges();
+        }
+
+        private void AddSickLeaveRecords(AppDbContext context)
+        {
+            context.SickLeaveRecords.AddRange(
+               new SickLeaveRecord()
+               {
+                   StartDate = new DateOnly(2024, 2, 2),
+                   EndDate = new DateOnly(2024, 2, 4),
+                   Comment = "A research",
+                   UserId = 1
+               },
+                new SickLeaveRecord()
+                {
+                    StartDate = new DateOnly(2024, 3, 2),
+                    EndDate = new DateOnly(2024, 3, 4),
+                    Comment = "A research",
+                    UserId = 2
+                },
+                 new SickLeaveRecord()
+                 {
+                     StartDate = new DateOnly(2024, 4, 2),
+                     EndDate = new DateOnly(2024, 4, 4),
+                     Comment = "A research",
+                     UserId = 3
+                 }
+            );
+
             context.SaveChanges();
         }
     }

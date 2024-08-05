@@ -1,10 +1,13 @@
-﻿@page "/inputProjectTime/{date:datetime?}"
+﻿@page "/{date:datetime?}"
 
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Components.ProjectTime
 @using EduWork.UI.Shared
+@using Microsoft.AspNetCore.Authorization
 
 @inject HttpClient Http
+
+@attribute [Authorize]
 
 <PageTitle>@INPUT_PROJECT_TIME_TITLE</PageTitle>
 
