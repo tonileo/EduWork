@@ -281,6 +281,10 @@ namespace EduWork.DataAccessLayer.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -291,9 +295,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasIndex("AppRoleId");
 
                     b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("EntraObjectId")
                         .IsUnique();
 
                     b.HasIndex("Username")

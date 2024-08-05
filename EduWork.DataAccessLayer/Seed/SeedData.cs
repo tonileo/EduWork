@@ -154,6 +154,7 @@ namespace EduWork.DataAccessLayer.Seed
                 {
                     Username = "john.doe",
                     Email = "john.doe@example.com",
+                    Password = "$2a$11$AplGAfsGlEFkxSviX4XP/.Rqgi6c0I4Lgr2PVns5CS.O/1rcsXWnO",
                     EntraObjectId = "entra-001",
                     AppRoleId = 1
                 },
@@ -161,6 +162,7 @@ namespace EduWork.DataAccessLayer.Seed
                 {
                     Username = "jane.smith",
                     Email = "jane.smith@example.com",
+                    Password = "$2a$11$V7okUEf6msZqD6q.g8JynOiktb72Zxk19ww/zxa2ntTBMUS.15XuS",
                     EntraObjectId = "entra-002",
                     AppRoleId = 2
                 },
@@ -168,6 +170,7 @@ namespace EduWork.DataAccessLayer.Seed
                 {
                     Username = "alice.johnson",
                     Email = "alice.johnson@example.com",
+                    Password = "$2a$11$AplGAfsGlEFkxSviX4XP/.Rqgi6c0I4Lgr2PVns5CS.O/1rcsXWnO",
                     EntraObjectId = "entra-003",
                     AppRoleId = 1
                 }

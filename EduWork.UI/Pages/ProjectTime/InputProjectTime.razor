@@ -1,10 +1,11 @@
 ﻿@page "/{date:datetime?}"
 
+@using Blazored.LocalStorage
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Components.ProjectTime
-@using EduWork.UI.Shared
 @using Microsoft.AspNetCore.Authorization
 
+@inject ILocalStorageService localStorage
 @inject HttpClient Http
 
 @attribute [Authorize]
@@ -205,6 +206,9 @@
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
+        string token = await localStorage.GetItemAsStringAsync("auth")!;
+        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
 
         overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
@@ -218,6 +222,9 @@
         {
             try
             {
+                string token = await localStorage.GetItemAsStringAsync("auth")!;
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                 string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
 
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);

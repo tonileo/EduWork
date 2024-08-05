@@ -1,5 +1,10 @@
 ﻿using System.Reflection.Metadata.Ecma335;
-using EduWork.UI.Authentication;
+using System.Security.Principal;
+using Blazored.LocalStorage;
+using Common.Contracts;
+using Common.Services;
+using EduWork.UI.States;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -8,36 +13,18 @@ namespace EduWork.UI.Configurations
 {
     public static class IServiceCollectionExtensions
     {
-        public static IServiceCollection ConfigureServices(this IServiceCollection services, WebAssemblyHostConfiguration configuration)
+        public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
-            var azureAdOptions = new ClientAzureAdOptions();
-            var downstreamApiOptions = new DownstreamApiOptions();
+            services.AddCascadingAuthenticationState();
+            services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7104/") });
 
-            configuration.GetSection(ClientAzureAdOptions.Section).Bind(azureAdOptions);
-            configuration.GetSection(DownstreamApiOptions.Section).Bind(downstreamApiOptions);
+            services.AddScoped<IAccount, AccountService>();
 
-            services.AddScoped(sp =>
-            {
-                var authorizationMessageHandler = sp.GetRequiredService<AuthorizationMessageHandler>();
-                authorizationMessageHandler.InnerHandler = new HttpClientHandler();
+            services.AddAuthorizationCore();
 
-                authorizationMessageHandler = authorizationMessageHandler.ConfigureHandler(
-                    authorizedUrls: new[] { downstreamApiOptions.BaseUrl },
-                    scopes: new[] { downstreamApiOptions.Scope });
+            services.AddBlazoredLocalStorage();
 
-                return new HttpClient(authorizationMessageHandler)
-                {
-                    BaseAddress = new Uri(downstreamApiOptions.BaseUrl ?? string.Empty)
-                };
-            });
-
-            services.AddMsalAuthentication<RemoteAuthenticationState, UserAccount>(options =>
-            {
-                configuration.Bind(ClientAzureAdOptions.Section, options.ProviderOptions.Authentication);
-                options.ProviderOptions.LoginMode = "popup";
-                options.ProviderOptions.DefaultAccessTokenScopes.Add(downstreamApiOptions.Scope);
-                options.ProviderOptions.Cache.CacheLocation = "localStorage";
-            }).AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, UserAccount, UserAccountFactory>();
+            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
             return services;
         }

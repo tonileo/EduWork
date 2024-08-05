@@ -1,0 +1,20 @@
+﻿@page "/logout"
+
+@using EduWork.UI.States
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager navigationManager
+
+@attribute [Authorize]
+
+<h1>Logout</h1>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null!);
+
+        navigationManager.NavigateTo("login", forceLoad: true);
+    }
+}

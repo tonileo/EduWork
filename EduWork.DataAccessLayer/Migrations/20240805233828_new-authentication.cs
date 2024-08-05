@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduWork.DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class initNew : Migration
+    public partial class newauthentication : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,6 +82,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntraObjectId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     AppRoleId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -317,12 +318,6 @@ namespace EduWork.DataAccessLayer.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_EntraObjectId",
-                table: "Users",
-                column: "EntraObjectId",
                 unique: true);
 
             migrationBuilder.CreateIndex(

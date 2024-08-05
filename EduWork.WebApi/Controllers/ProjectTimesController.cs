@@ -31,7 +31,7 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet("projects")]
-        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects([FromServices] IIdentity currentUser)
+        public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects([FromServices] IIdentityClaim currentUser)
         {
             var result = await _userProjectTimeService.GetProjects(currentUser.Email);
             return Ok(result);
@@ -45,21 +45,21 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<InputProjectTimeResponseDto>> GetMyInputProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
+        public async Task<ActionResult<InputProjectTimeResponseDto>> GetMyInputProjectTimes([FromServices] IIdentityClaim currentUser, [FromQuery] DateTime userWorkDay)
         {
             var result = await _userProjectTimeService.GetMyInputProjectTimes(currentUser.Email, userWorkDay);
             return Ok(result);
         }
 
         [HttpGet("overtime")]
-        public async Task<ActionResult<OvertimeDto>> GetOverTime([FromServices] IIdentity currentUser)
+        public async Task<ActionResult<OvertimeDto>> GetOverTime([FromServices] IIdentityClaim currentUser)
         {
             var result = await _userProjectTimeService.GetOverTime(currentUser.Email);
             return Ok(result);
         }
 
         [HttpGet("history")]
-        public async Task<ActionResult<InputProjectTimeDto>> GetMyProjectTimes([FromServices] IIdentity currentUser, [FromQuery] DateTime userWorkDay)
+        public async Task<ActionResult<InputProjectTimeDto>> GetMyProjectTimes([FromServices] IIdentityClaim currentUser, [FromQuery] DateTime userWorkDay)
         {
             var result = await _userProjectTimeService.GetMyProjectTimes(currentUser.Email, userWorkDay);
             return Ok(result);
@@ -73,14 +73,14 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> InputProjectTime([FromServices] IIdentity currentUser, ProjectTimeRequestDto projectTime)
+        public async Task<ActionResult> InputProjectTime([FromServices] IIdentityClaim currentUser, ProjectTimeRequestDto projectTime)
         {
             await _userProjectTimeService.InputProjectTime(currentUser.Email, projectTime);
             return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentity currentUser, int id, ProjectTimeRequestDto projectTime)
+        public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentityClaim currentUser, int id, ProjectTimeRequestDto projectTime)
         {
             await _userProjectTimeService.UpdateProjectTime(currentUser.Email, id, projectTime);
             return Ok();
@@ -103,7 +103,7 @@ namespace EduWork.WebApi.Controllers
 
         [HttpGet]
         [Route("statsFilter")]
-        public async Task<ActionResult<ProjectTimeResponseDto>> GetMyProjectTimesFilter([FromServices] IIdentity currentUser, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? projectTitle)
+        public async Task<ActionResult<ProjectTimeResponseDto>> GetMyProjectTimesFilter([FromServices] IIdentityClaim currentUser, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? projectTitle)
         {
             var result = await _userProjectTimeService.GetMyProjectTimesFilter(currentUser.Email, fromDate, toDate, projectTitle);
             return Ok(result);
@@ -111,7 +111,7 @@ namespace EduWork.WebApi.Controllers
 
         [HttpGet]
         [Route("historyFilter")]
-        public async Task<ActionResult<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter([FromServices] IIdentity currentUser, [FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter)
+        public async Task<ActionResult<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter([FromServices] IIdentityClaim currentUser, [FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter)
         {
             var result = await _userProjectTimeService.GetMyHistoryProjectTimesFilter(currentUser.Email, thisMonth, lastMonth, thisQuarter);
             return Ok(result);

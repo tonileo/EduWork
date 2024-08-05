@@ -1,6 +1,7 @@
 ﻿using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 namespace EduWork.WebApi.Configuration
 {
@@ -10,19 +11,19 @@ namespace EduWork.WebApi.Configuration
         {
             if (enviroment.IsDevelopment())
             {
-                var swaggerOptions = new SwaggerOptions();
-                configuration.GetSection(SwaggerOptions.Section).Bind(swaggerOptions);
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                app.UseSwaggerUI();
+
+                app.UseCors(policy =>
                 {
-                    c.OAuthClientId(swaggerOptions.ClientId);
-                    c.OAuthUsePkce();
+                    policy.WithOrigins("https://localhost:7041")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithHeaders(HeaderNames.ContentType);
                 });
             }
 
             app.UseHttpsRedirection();
-
-            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

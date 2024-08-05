@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using System.Security.Principal;
+using System.Text;
+using Common.DTO.Contracts;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
@@ -7,6 +9,7 @@ using EduWork.WebApi.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace EduWork.WebApi.Configuration
@@ -15,58 +18,67 @@ namespace EduWork.WebApi.Configuration
     {
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(configuration.GetSection(AzureAdOptions.Section))
-                .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddMicrosoftGraph(configuration.GetSection("MicrosoftGraph"))
-                .AddInMemoryTokenCaches();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                };
+            });
+
+            services.AddScoped<IUser, UserRepo>();
 
             services.AddControllers();
 
-            var swaggerOptions = new SwaggerOptions();
-            configuration.GetSection(SwaggerOptions.Section).Bind(swaggerOptions);
-
-            var azureAdOptions = new AzureAdOptions();
-            configuration.GetSection(AzureAdOptions.Section).Bind(azureAdOptions);
-
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(
-                c =>
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger Azure Entra", Version = "v1" });
-                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                    {
-                        Description = "Oauth2.0 which uses AuthorizationCode flow",
-                        Name = "oauth2.0",
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
-                        {
-                            AuthorizationCode = new OpenApiOAuthFlow
-                            {
-                                AuthorizationUrl = new Uri(swaggerOptions.AuthorizationUrl),
-                                TokenUrl = new Uri(swaggerOptions.TokenUrl),
-                                Scopes = new Dictionary<string, string>
-                                {
-                                    {swaggerOptions.Scope, "Access API as User" }
-                                }
-                            }
-                        }
-                    });
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                    {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference{Type = ReferenceType.SecurityScheme, Id = "oauth2"}
-                            },
-                            new[]{ swaggerOptions.Scope }
-                        }
-                    });
+                    Version = "v1",
+                    Title = "ASP.NET 8 Web API",
+                    Description = "Authentication with JWT"
                 });
+
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddHttpContextAccessor();
-            services.AddTransient<Authentication.IIdentity, Identity>();
+            services.AddTransient<IIdentityClaim, IdentityClaim>();
 
             services.AddScoped<UserProfileService>();
             services.AddScoped<UserProjectTimeService>();

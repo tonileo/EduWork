@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduWork.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240731225217_initNew")]
-    partial class initNew
+    [Migration("20240805233828_new-authentication")]
+    partial class newauthentication
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -284,6 +284,10 @@ namespace EduWork.DataAccessLayer.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -294,9 +298,6 @@ namespace EduWork.DataAccessLayer.Migrations
                     b.HasIndex("AppRoleId");
 
                     b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("EntraObjectId")
                         .IsUnique();
 
                     b.HasIndex("Username")

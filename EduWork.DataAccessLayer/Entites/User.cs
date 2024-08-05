@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,6 +23,9 @@ namespace EduWork.DataAccessLayer.Entites
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [PasswordPropertyText]
+        public string? Password { get; set; } = string.Empty;
+
         [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
         public string EntraObjectId { get; set; } = string.Empty;
 

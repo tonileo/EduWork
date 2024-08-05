@@ -17,9 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="8.0.6" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,8 +37,6 @@
     <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
     <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
     <_ContentIncludedByDefault Remove="Pages\Profile\Users.razor" />
-    <_ContentIncludedByDefault Remove="Shared\ChartComponent.razor" />
-    <_ContentIncludedByDefault Remove="Shared\InputDateOnChange.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,15 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Shared\ChartComponent.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <UpToDateCheckInput Remove="Pages\AdminInputHistory.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Shared\InputDateOnChange.razor" />
   </ItemGroup>
 
   <ItemGroup>

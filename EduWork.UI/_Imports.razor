@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using Common.Contracts
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
@@ -9,3 +10,6 @@
 @using Microsoft.JSInterop
 @using EduWork.UI
 @using EduWork.UI.Layout
+
+@inject IAccount AccountService
+@inject AuthenticationStateProvider AuthStateProvider

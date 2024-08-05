@@ -22,10 +22,6 @@ namespace EduWork.DataAccessLayer.Configurations
                 .IsUnique();
 
             builder
-                .HasIndex(z => z.EntraObjectId)
-                .IsUnique();
-
-            builder
                 .HasOne(b => b.AppRole)
                 .WithMany(s => s.Users)
                 .HasForeignKey(c => c.AppRoleId)

@@ -1,0 +1,66 @@
+﻿@page "/login"
+@using Common.DTO
+@using EduWork.UI.States
+
+@inject NavigationManager NavManger
+
+<h1>Login</h1>
+
+<div class="loginForm">
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info mb-3">@message</div>
+    }
+    <EditForm Model="@loginDto" OnValidSubmit="@HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <label>Email:</label>
+        <InputText type="email" @bind-Value="loginDto.Email" placeholder="john.doe@example.com" />
+        <br />
+        <label>Password:</label>
+        <InputText type="password" @bind-Value="loginDto.Password" placeholder="string" />
+        <br />
+
+        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-danger" @onclick="LoginAdmin">Login as Admin</button>
+        <button type="submit" class="btn btn-success" @onclick="LoginUser">Login as User</button>
+    </EditForm>
+</div>
+
+@code {
+    LoginDto loginDto = new();
+
+    string? message = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        var result = await AccountService.LogInAccountAsync(loginDto);
+        if (result.Flag)
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(result.Token);
+            NavManger.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            message = result.Message;
+        }
+    }
+
+    private async Task LoginAdmin()
+    {
+        loginDto.Email = "john.doe@example.com";
+        loginDto.Password = "admin123";
+
+        await HandleLogin();
+    }
+
+    private async Task LoginUser()
+    {
+        loginDto.Email = "jane.smith@example.com";
+        loginDto.Password = "user123";
+
+        await HandleLogin();
+    }
+}
