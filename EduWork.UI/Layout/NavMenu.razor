@@ -11,24 +11,24 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Input project time
+                <span class="bi bi-clock customIcon" aria-hidden="true"></span> Input project time
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="myInputHistory">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Input history
+                <span class="bi bi-clock-history customIcon" aria-hidden="true"></span> Input history
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="myStatsProjectTime">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Project statistics
+                <span class="bi bi-graph-up customIcon" aria-hidden="true"></span> Project statistics
             </NavLink>
         </div>
 
         <AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="@($"profile/{context.User.Identity?.Name}")">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My profile
+                    <span class="bi bi-person customIcon" aria-hidden="true"></span> My profile
             </NavLink>
         </div>
         </AuthorizeView>
@@ -36,21 +36,28 @@
         <hr class="nav-separator">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="users">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Users
+                <span class="bi bi-people-fill customIcon" aria-hidden="true"></span> Users
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="adminInputHistory">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin input history
+                <span class="bi bi-clock-history customIcon" aria-hidden="true"></span> Admin input history
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="adminStatsProjectTime">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin project statistics
+                <span class="bi bi-graph-up customIcon" aria-hidden="true"></span> Admin project statistics
             </NavLink>
         </div>
     </nav>
 </div>
+
+<style>
+    .nav-item {
+        font-size: 0.9rem;
+        padding-bottom: 0.5rem;
+    }
+</style>
 
 @code {
     private bool collapseNavMenu = true;
