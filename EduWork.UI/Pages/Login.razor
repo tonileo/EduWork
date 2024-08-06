@@ -1,8 +1,9 @@
-﻿@page "/login"
+﻿@page "/"
 @using Common.DTO
 @using EduWork.UI.States
 
-@inject NavigationManager NavManger
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <h1>Login</h1>
 
@@ -15,16 +16,14 @@
         <DataAnnotationsValidator />
         <ValidationSummary class="alert alert-danger" />
 
-        <label>Email:</label>
-        <InputText type="email" @bind-Value="loginDto.Email" placeholder="john.doe@example.com" />
-        <br />
-        <label>Password:</label>
-        <InputText type="password" @bind-Value="loginDto.Password" placeholder="string" />
-        <br />
+        <label for="email">Email:</label>
+        <InputText id="email" type="email" @bind-Value="loginDto.Email" placeholder="john.doe@example.com" autocomplete="email" />
+        <label for="password">Password:</label>
+        <InputText id="password" type="password" @bind-Value="loginDto.Password" placeholder="admin123" autocomplete="current-password" />
 
         <button type="submit" class="btn btn-primary">Login</button>
-        <button type="submit" class="btn btn-danger" @onclick="LoginAdmin">Login as Admin</button>
         <button type="submit" class="btn btn-success" @onclick="LoginUser">Login as User</button>
+        <button type="submit" class="btn btn-danger" @onclick="LoginAdmin">Login as Admin</button>
     </EditForm>
 </div>
 
@@ -33,6 +32,17 @@
 
     string? message = string.Empty;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            NavManager.NavigateTo("/inputProjectTime", forceLoad: true);
+        }
+    }
+
     private async Task HandleLogin()
     {
         var result = await AccountService.LogInAccountAsync(loginDto);
@@ -40,7 +50,7 @@
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(result.Token);
-            NavManger.NavigateTo("/", forceLoad: true);
+            NavManager.NavigateTo("/inputProjectTime", forceLoad: true);
         }
         else
         {
@@ -48,18 +58,18 @@
         }
     }
 
-    private async Task LoginAdmin()
-    {
-        loginDto.Email = "john.doe@example.com";
-        loginDto.Password = "admin123";
-
-        await HandleLogin();
-    }
-
     private async Task LoginUser()
     {
         loginDto.Email = "jane.smith@example.com";
         loginDto.Password = "user123";
+
+        await HandleLogin();
+    }
+
+    private async Task LoginAdmin()
+    {
+        loginDto.Email = "john.doe@example.com";
+        loginDto.Password = "admin123";
 
         await HandleLogin();
     }

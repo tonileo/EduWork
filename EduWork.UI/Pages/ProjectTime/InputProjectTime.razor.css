@@ -1,4 +1,8 @@
-﻿::deep .edit-mode {
+﻿body {
+    background: #f9f9f9;
+}
+
+::deep .edit-mode {
     background-color: #f0f8ff;
     border: 1px solid #0000ff;
     padding: 15px;
@@ -16,6 +20,7 @@
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background: white;
 }
 
 .table-section {
@@ -23,6 +28,7 @@
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background: white;
 }
 
 .horizontal-flex {

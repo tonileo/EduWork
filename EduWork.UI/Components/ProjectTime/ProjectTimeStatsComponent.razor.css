@@ -1,4 +1,12 @@
-﻿.legend-circle {
+﻿.divClass {
+    background: white;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.legend-circle {
     display: inline-block;
     width: 15px;
     height: 15px;

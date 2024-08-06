@@ -18,7 +18,6 @@ using Common.DTO;
 namespace EduWork.WebApi.Controllers
 {
     [Authorize]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectTimesController : ControllerBase
@@ -37,6 +36,7 @@ namespace EduWork.WebApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("usernames")]
         public async Task<ActionResult<IEnumerable<UsernamesDto>>> GetUsernames()
         {
@@ -65,6 +65,7 @@ namespace EduWork.WebApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("history/admin")]
         public async Task<ActionResult<IEnumerable<InputProjectTimeDto>>> GetProjectTimes(string username, [FromQuery] DateTime userWorkDay)
         {
@@ -93,32 +94,30 @@ namespace EduWork.WebApi.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("statsFilter/admin")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("statsFilter/admin")]
         public async Task<ActionResult<ProjectTimeResponseDto>> GetProjectTimesFilter([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? username, [FromQuery] string? projectTitle)
         {
             var result = await _userProjectTimeService.GetProjectTimesFilter(fromDate, toDate, username, projectTitle);
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("statsFilter")]
+        [HttpGet("statsFilter")]
         public async Task<ActionResult<ProjectTimeResponseDto>> GetMyProjectTimesFilter([FromServices] IIdentityClaim currentUser, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] string? projectTitle)
         {
             var result = await _userProjectTimeService.GetMyProjectTimesFilter(currentUser.Email, fromDate, toDate, projectTitle);
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("historyFilter")]
+        [HttpGet("historyFilter")]
         public async Task<ActionResult<ProjectTimeHistoryDto>> GetMyHistoryProjectTimesFilter([FromServices] IIdentityClaim currentUser, [FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter)
         {
             var result = await _userProjectTimeService.GetMyHistoryProjectTimesFilter(currentUser.Email, thisMonth, lastMonth, thisQuarter);
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("historyFilter/admin")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("historyFilter/admin")]
         public async Task<ActionResult<ProjectTimeHistoryDto>> GetHistoryProjectTimesFilter([FromQuery] bool? thisMonth, [FromQuery] bool? lastMonth, [FromQuery] bool? thisQuarter, [FromQuery] string? username)
         {
             var result = await _userProjectTimeService.GetHistoryProjectTimesFilter(thisMonth, lastMonth, thisQuarter, username);

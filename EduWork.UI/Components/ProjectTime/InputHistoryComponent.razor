@@ -6,6 +6,7 @@
 
 <PageTitle>Povijest unosa</PageTitle>
 
+<div class="divClass">
 @if (isAdmin)
 {
     <div class="flex-container">
@@ -32,7 +33,10 @@
     <button type="button" class="btn @(selectedDateFilter == 2 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(2)">@CURRENT_MONTH_BUTTON_TEXT</button>
     <button type="button" class="btn @(selectedDateFilter == 3 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(3)">@CURRENT_QUARTER_BUTTON_TEXT</button>
 </div>
+</div>
 
+<br />
+<div class="divClass">
 <div class="row">
     <table class="table">
         <thead class="thead-dark">
@@ -107,6 +111,7 @@
         </tbody>
     </table>
 </div>
+</div>
 
 @code {
     private const string INPUT_HISTORY_OF_USER_TITLE = "Povijest unosa korisnika: ";
@@ -119,7 +124,7 @@
     private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
     private const string COMMENT_TABLE_LABEL = "Komentar";
     private const string SUM_OF_TIME_SPENT_TABLE_LABEL = "Ukupno provedno vremena";
-    private const string INPUT_PROJECT_TIME_NAVIGATION = "/";
+    private const string INPUT_PROJECT_TIME_NAVIGATION = "/inputProjectTime/";
     private const string LOADING_LABEL = " Učitavanje podataka...";
     private const string PROJECTS_TABLE_LABEL = "Projekti";
 

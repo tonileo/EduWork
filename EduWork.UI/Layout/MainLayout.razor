@@ -10,7 +10,8 @@
             <AuthorizeView>
                 <Authorized>
                     <span>Hello, @context.User.Identity?.Name!</span>
-                    @* <span>Hello, @context.User.Claims.FirstOrDefault(s=> s.Type == ClaimTypes.Role)!.Value </span> *@
+                    @* <span>[@context.User.Claims.FirstOrDefault(s=> s.Type == ClaimTypes.Role)!.Value]</span> *@
+
                     <a href="logout">Logout</a>
                 </Authorized>
                 <NotAuthorized>

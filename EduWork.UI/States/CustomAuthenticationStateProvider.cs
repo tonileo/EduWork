@@ -8,64 +8,69 @@ namespace EduWork.UI.States
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         private const string LocalStorageKey = "auth";
+        private readonly ILocalStorageService localStorageService;
+        private readonly ClaimsPrincipal anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+
         public CustomAuthenticationStateProvider(ILocalStorageService localStorageService)
         {
             this.localStorageService = localStorageService;
         }
-        private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
-        private readonly ILocalStorageService localStorageService;
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             string token = await localStorageService.GetItemAsStringAsync(LocalStorageKey)!;
-            if (string.IsNullOrEmpty(token))
-                return await Task.FromResult(new AuthenticationState(anonymous));
+            if (string.IsNullOrEmpty(token) || await IsTokenExpired(token))
+                return new AuthenticationState(anonymous);
 
-            var (username, email) = GetClaims(token);
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
-                return await Task.FromResult(new AuthenticationState(anonymous));
+            var claims = GetClaims(token);
+            if (claims == null || claims.Identity.IsAuthenticated == false)
+                return new AuthenticationState(anonymous);
 
-            var claims = SetClaimPrincipal(username, email);
-            if (claims is null)
-                return await Task.FromResult(new AuthenticationState(anonymous));
-            else
-                return await Task.FromResult(new AuthenticationState(claims));
+            return new AuthenticationState(claims);
         }
 
-        public static (string, string) GetClaims(string jwtToken)
+        private async Task<bool> IsTokenExpired(string token)
         {
-            if (string.IsNullOrEmpty(jwtToken)) return (null!, null!);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            if (jwtToken != null && jwtToken.ValidTo < DateTime.UtcNow)
+            {
+                await localStorageService.RemoveItemAsync(LocalStorageKey);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static ClaimsPrincipal GetClaims(string jwtToken)
+        {
+            if (string.IsNullOrEmpty(jwtToken)) return null;
 
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwtToken);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)?.Value),
+                new Claim(ClaimTypes.Email, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)?.Value)
+            };
 
-            var username = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)!.Value;
-            var email = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)!.Value;
+            var roles = token.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
-            return (username, email);
-        }
-
-        public static ClaimsPrincipal SetClaimPrincipal(string username, string email)
-        {
-            if (username is null || email is null) return new ClaimsPrincipal();
-            return new ClaimsPrincipal(new ClaimsIdentity(
-            [
-                new(ClaimTypes.Name, username!),
-                new(ClaimTypes.Email, email!)
-                ], "JwtAuth"));
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, "JwtAuth"));
         }
 
         public async Task UpdateAuthenticationState(string jwtToken)
         {
-            var claims = new ClaimsPrincipal();
+            ClaimsPrincipal claims;
             if (!string.IsNullOrEmpty(jwtToken))
             {
-                var (username, email) = GetClaims(jwtToken);
-                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
-                    return;
-
-                var setClaims = SetClaimPrincipal(username, email);
-                if (setClaims is null)
+                claims = GetClaims(jwtToken);
+                if (claims == null || claims.Identity.IsAuthenticated == false)
                     return;
 
                 await localStorageService.SetItemAsStringAsync(LocalStorageKey, jwtToken);
@@ -73,7 +78,9 @@ namespace EduWork.UI.States
             else
             {
                 await localStorageService.RemoveItemAsync(LocalStorageKey);
+                claims = anonymous;
             }
+
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claims)));
         }
     }

@@ -19,7 +19,6 @@ using EduWork.WebApi.Authentication;
 namespace EduWork.WebApi.Controllers
 {
     [Authorize]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserProfilesController : ControllerBase
@@ -38,6 +37,7 @@ namespace EduWork.WebApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetUserSmallProfiles([FromQuery] string? username, [FromQuery] bool? asc)
         {

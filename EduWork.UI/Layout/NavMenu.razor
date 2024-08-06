@@ -11,7 +11,7 @@
     <nav class="flex-column">
         <AuthorizeView>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/inputProjectTime" Match="NavLinkMatch.All">
                 <span class="bi bi-clock customIcon" aria-hidden="true"></span> Input project time
             </NavLink>
         </div>
@@ -31,7 +31,9 @@
                     <span class="bi bi-person customIcon" aria-hidden="true"></span> My profile
             </NavLink>
         </div>
+        </AuthorizeView>
 
+        <AuthorizeView Roles="Admin">
         <hr class="nav-separator">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="users">
