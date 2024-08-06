@@ -58,7 +58,7 @@ namespace EduWork.BusinessLayer.Services
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddMinutes(1),
+                expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: credentials
             );
 
