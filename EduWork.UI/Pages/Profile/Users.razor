@@ -1,8 +1,11 @@
 ﻿@page "/users"
 @using Common.DTO.Profile
 @using EduWork.UI.Components.Profile
+@using Microsoft.AspNetCore.Authorization
 
 @inject HttpClient Http
+
+@attribute [Authorize]
 
 @if (users == null)
 {

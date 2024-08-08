@@ -1,4 +1,4 @@
-﻿@page "/inputProjectTime/{date:datetime?}"
+﻿@page "/{date:datetime?}"
 
 @using Blazored.LocalStorage
 @using Common.DTO.ProjectTime
@@ -88,20 +88,25 @@
     </div>
 
     <div class="table-section">
-        <div class="summary-container">
-            @if (InputProjectTimeResponseDto == null)
-            {
-                <span>@LOADING_LABEL</span>
-            }
-            else
-            {
-                var (progressClass, progressPercentage) = GetProgessColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
-
+        @if (InputProjectTimeResponseDto == null)
+        {
+            <span>@LOADING_LABEL</span>
+        }
+        else if (nonWorkingDay)
+        {
+            <div id="nonWorkingDayDiv">@ITS_NON_WORKING_DAY</div>
+        }
+        else
+        {
+            <div class="summary-container">
+                @{
+                    var (progressClass, progressPercentage, completeLabel) = GetProgessColor(InputProjectTimeResponseDto.SumTimeSpentHours, InputProjectTimeResponseDto.SumTimeSpentMinutes);
+                }
 
                 <div class="progress">
                     <div class="progress-bar @progressClass" role="progressbar" aria-valuenow="100"
                          aria-valuemin="0" aria-valuemax="100" style="width:@progressPercentage%">
-                        @progressPercentage% Complete
+                        @completeLabel% Complete
                     </div>
                 </div>
 
@@ -126,10 +131,11 @@
                     </span>
                 </div>
 
-            }
-        </div>
 
-        <InputProjectTimeTableComponent projectTimeTableData="InputProjectTimeResponseDto?.InputProjectTimeDto" OnLoadData="LoadData" OnEditData="EditData" />
+            </div>
+
+            <InputProjectTimeTableComponent projectTimeTableData="InputProjectTimeResponseDto?.InputProjectTimeDto" OnLoadData="LoadData" OnEditData="EditData" />
+        }
     </div>
 </div>
 
@@ -147,6 +153,7 @@
     private const string SUM_TIME_SPENT = "Ukupno: ";
     private const string LABEL_OVERTIME = " Prekovremeno: ";
     private const string LOADING_LABEL = " Učitavanje podataka...";
+    private const string ITS_NON_WORKING_DAY = "It's non working day";
 
     private const string GET_ENDPOINT = "api/ProjectTimes?";
     private const string POST_ENDPOINT = "api/ProjectTimes";
@@ -161,6 +168,8 @@
     public DateTime? date { get; set; }
 
     public bool updateForm { get; set; }
+
+    public bool nonWorkingDay { get; set; } = false;
 
     public InputProjectTimeDto? ProjectTimeLog { get; set; }
     private InputProjectTimeResponseDto? InputProjectTimeResponseDto;
@@ -206,9 +215,6 @@
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
-        string token = await localStorage.GetItemAsStringAsync("auth")!;
-        Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
 
         overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
@@ -218,13 +224,14 @@
 
     private async Task LoadData()
     {
-        if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday && projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday)
+        editContext = new EditContext(projectTimeRequest);
+
+        if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday && projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday && projectTimeRequest.DateWorkDay <= DateTime.Today)
         {
+            nonWorkingDay = false;
+
             try
             {
-                string token = await localStorage.GetItemAsStringAsync("auth")!;
-                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
                 string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
 
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
@@ -239,8 +246,7 @@
         }
         else
         {
-            InputProjectTimeResponseDto = new InputProjectTimeResponseDto();
-            InputProjectTimeResponseDto.InputProjectTimeDto = [];
+            nonWorkingDay = true;
         }
     }
 
@@ -265,10 +271,7 @@
 
             editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
-            if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday & projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday & projectTimeRequest.DateWorkDay < DateTime.Today)
-            {
-                await LoadData();
-            }
+            await LoadData();
         }
     }
 
@@ -295,18 +298,23 @@
         }
     }
 
-    private (string color, int percentage) GetProgessColor(int hours, int minutes)
+    private (string color, int percentage, int completeLabel) GetProgessColor(int hours, int minutes)
     {
         var totalMinutes = hours * 60 + minutes;
 
         if (totalMinutes >= 480)
         {
-            return ("bg-success", 100);
+            return ("bg-success", 100, 100);
+        }
+
+        else if (totalMinutes > 0)
+        {
+            int percentage = (totalMinutes * 100) / 480;
+            return ("bg-warning", percentage, percentage);
         }
         else
         {
-            int percentage = (totalMinutes * 100) / 480;
-            return ("bg-warning", percentage);
+            return ("bg-danger", 100, 0);
         }
     }
 

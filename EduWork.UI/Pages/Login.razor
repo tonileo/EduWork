@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/login"
 @using Common.DTO
 @using EduWork.UI.States
 
@@ -32,17 +32,6 @@
 
     string? message = string.Empty;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            NavManager.NavigateTo("/inputProjectTime", forceLoad: true);
-        }
-    }
-
     private async Task HandleLogin()
     {
         var result = await AccountService.LogInAccountAsync(loginDto);
@@ -50,12 +39,10 @@
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(result.Token);
-            NavManager.NavigateTo("/inputProjectTime", forceLoad: true);
+            NavManager.NavigateTo("/", forceLoad: true);
         }
         else
-        {
             message = result.Message;
-        }
     }
 
     private async Task LoginUser()

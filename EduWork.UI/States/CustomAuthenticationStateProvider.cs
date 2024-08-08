@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,9 +12,12 @@ namespace EduWork.UI.States
         private readonly ILocalStorageService localStorageService;
         private readonly ClaimsPrincipal anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
-        public CustomAuthenticationStateProvider(ILocalStorageService localStorageService)
+        private readonly HttpClient httpClient;
+
+        public CustomAuthenticationStateProvider(ILocalStorageService localStorageService, HttpClient httpClient)
         {
             this.localStorageService = localStorageService;
+            this.httpClient = httpClient;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -25,6 +29,8 @@ namespace EduWork.UI.States
             var claims = GetClaims(token);
             if (claims == null || claims.Identity.IsAuthenticated == false)
                 return new AuthenticationState(anonymous);
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             return new AuthenticationState(claims);
         }
@@ -74,11 +80,15 @@ namespace EduWork.UI.States
                     return;
 
                 await localStorageService.SetItemAsStringAsync(LocalStorageKey, jwtToken);
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
             }
             else
             {
                 await localStorageService.RemoveItemAsync(LocalStorageKey);
                 claims = anonymous;
+
+                httpClient.DefaultRequestHeaders.Authorization = null;
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claims)));

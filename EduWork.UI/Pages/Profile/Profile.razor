@@ -1,7 +1,10 @@
 ﻿@page "/profile/{username}"
 @using Common.DTO.Profile
+@using Microsoft.AspNetCore.Authorization
 
 @inject HttpClient Http
+
+@attribute [Authorize]
 
 @if (userProfile == null)
 {
