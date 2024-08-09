@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web.Resource;
 using EduWork.BusinessLayer.Services;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.WebApi.Authentication;

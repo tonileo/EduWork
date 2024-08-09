@@ -12,7 +12,6 @@ using Common.DTO.Profile;
 using EduWork.BusinessLayer.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web.Resource;
 using Common.DTO.ProjectTime;
 using EduWork.WebApi.Authentication;
 
