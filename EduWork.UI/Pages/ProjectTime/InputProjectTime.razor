@@ -216,7 +216,6 @@
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
         projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
-
         overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
 
         projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
@@ -224,8 +223,6 @@
 
     private async Task LoadData()
     {
-        editContext = new EditContext(projectTimeRequest);
-
         if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday && projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday && projectTimeRequest.DateWorkDay <= DateTime.Today)
         {
             nonWorkingDay = false;
@@ -236,6 +233,8 @@
 
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
                 overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
+
+                editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
                 StateHasChanged();
             }
