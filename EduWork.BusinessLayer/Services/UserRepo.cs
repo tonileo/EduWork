@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Common.DTO;
+using Common.DTO.Authentication;
 using Common.DTO.Contracts;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;

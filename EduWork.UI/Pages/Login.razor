@@ -1,8 +1,10 @@
 ﻿@page "/login"
 @using Common.DTO
+@using Common.DTO.Authentication
 @using EduWork.UI.States
 
 @inject NavigationManager NavManager
+@inject IAccount AccountService
 @inject AuthenticationStateProvider AuthStateProvider
 
 <h1>Login</h1>

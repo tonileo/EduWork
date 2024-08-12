@@ -33,6 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Common\Common.csproj" />
 	  <ProjectReference Include="..\EduWork.UI\EduWork.UI.csproj" />
 	</ItemGroup>
 

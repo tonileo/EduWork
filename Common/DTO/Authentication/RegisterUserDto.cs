@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.DTO
+namespace Common.DTO.Authentication
 {
-    public  record RegisterUserDto
+    public record RegisterUserDto
     {
         [Required]
         public string Username { get; set; } = string.Empty;

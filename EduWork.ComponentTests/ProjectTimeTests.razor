@@ -18,10 +18,18 @@
         return projects;
     }
 
+    private OvertimeDto GetOvertime()
+    {
+        var overtime = new OvertimeDto { OvertimeHours = 1, OvertimeMinutes = 1};
+
+        return overtime;
+    }
+
     private void SetupMockHttpClient()
     {
         var mock = Services.AddMockHttpClient();
         mock.When("http://localhost/api/ProjectTimes/projects").RespondJson(GetProjects());
+        mock.When("http://localhost/api/ProjectTimes/overtime").RespondJson(GetOvertime());
     }
 
     [Fact]
@@ -29,12 +37,14 @@
     {
         // Arrange
         SetupMockHttpClient();
+        const string INPUT_PROJECT_TIME_TITLE = "Unos projektnog vremena";
 
         // Act
         var cut = Render(@<InputProjectTime />);
 
         // Assert
-        cut.Find("h3").MarkupMatches(@<h3 class="mb-4">Unos projektnog vremena</h3>);
+        var pageTitleComponent = cut.FindComponent<PageTitle>();
+        pageTitleComponent.MarkupMatches(@<PageTitle>@INPUT_PROJECT_TIME_TITLE</PageTitle>);
     }
 
     [Fact]
@@ -60,7 +70,8 @@
         SetupMockHttpClient();
 
         // Act
-        var cut = RenderComponent<InputProjectTime>();
+        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, null));
+        cut.WaitForState(() => cut.Instance.date.HasValue);
 
         // Assert
         var inputDate = cut.Find("input[type='date']");
@@ -74,7 +85,8 @@
         // Arrange
         SetupMockHttpClient();
 
-        var cut = RenderComponent<InputProjectTime>();
+        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, null));
+        cut.WaitForState(() => cut.Instance.date.HasValue);
         var inputDate = cut.Find("input[type='date']");
 
         // Act
@@ -86,19 +98,20 @@
     }
 
     [Fact]
-    public void InputDateWhenClickedOnAddDateButtonShowsTomorrowDate()
+    public void InputDateOnLoadWhenClickedOnAddDateButtonItWontAddDate()
     {
         // Arrange
         SetupMockHttpClient();
 
-        var cut = RenderComponent<InputProjectTime>();
+        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, null));
+        cut.WaitForState(() => cut.Instance.date.HasValue);
         var inputDate = cut.Find("input[type='date']");
 
         // Act
         cut.Find("#addDateButton").Click();
 
         // Assert
-        var yesterday = DateTime.Today.AddDays(+1).ToString("yyyy-MM-dd");
-        Assert.Equal(yesterday, inputDate.GetAttribute("value"));
+        var today = DateTime.Today.ToString("yyyy-MM-dd");
+        Assert.Equal(today, inputDate.GetAttribute("value"));
     }
 }

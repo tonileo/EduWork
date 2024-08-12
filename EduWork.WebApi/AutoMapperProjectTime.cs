@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Common.DTO;
 using Common.DTO.Profile;
 using Common.DTO.ProjectTime;
 using EduWork.DataAccessLayer.Entites;

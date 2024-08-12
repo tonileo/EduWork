@@ -1,11 +1,9 @@
 ﻿@page "/{date:datetime?}"
 
-@using Blazored.LocalStorage
 @using Common.DTO.ProjectTime
 @using EduWork.UI.Components.ProjectTime
 @using Microsoft.AspNetCore.Authorization
 
-@inject ILocalStorageService localStorage
 @inject HttpClient Http
 
 @attribute [Authorize]

@@ -12,7 +12,6 @@ using EduWork.BusinessLayer.Services;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.WebApi.Authentication;
 using Common.DTO.ProjectTime;
-using Common.DTO;
 
 namespace EduWork.WebApi.Controllers
 {

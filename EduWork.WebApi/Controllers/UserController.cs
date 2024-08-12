@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Common.DTO;
+using Common.DTO.Authentication;
 using Common.DTO.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
