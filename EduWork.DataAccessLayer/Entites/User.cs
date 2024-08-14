@@ -34,7 +34,7 @@ namespace EduWork.DataAccessLayer.Entites
         public int AppRoleId { get; set; }
 
         [Required]
-        public virtual AppRole AppRole { get; set; }
+        public virtual AppRole? AppRole { get; set; }
 
 
         public virtual ICollection<AnnualLeave> AnnualLeaves { get; set; } = [];

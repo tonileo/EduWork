@@ -509,34 +509,29 @@ namespace EduWork.BusinessLayer.Services
                    .AsNoTracking()
                    .AsQueryable();
 
-                var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var startOfLastMonth = startOfThisMonth.AddMonths(-1);
-                var startOfNextMonth = startOfThisMonth.AddMonths(1);
-                var startOfThisQuarter = new DateTime(DateTime.Now.Year, (DateTime.Now.Month - 3), 1);
-                var startOfNextQuarter = startOfThisQuarter.AddMonths(3);
+                DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateOnly startOfLastMonth = startOfThisMonth.AddMonths(-1);
+                DateOnly startOfNextMonthDateOnly = startOfThisMonth.AddMonths(1);
 
-                DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
-                DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
-                DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
-                DateOnly startOfThisQuarterDateOnly = DateOnly.FromDateTime(startOfThisQuarter);
-                DateOnly startOfNextQuarterDateOnly = DateOnly.FromDateTime(startOfNextQuarter);
+                DateOnly startOfThisQuarter = new DateOnly(DateTime.Now.Year, (DateTime.Now.Month - 1) / 3 * 3 + 1, 1);
+                DateOnly startOfNextQuarter = startOfThisQuarter.AddMonths(3);
 
                 DateOnly startDate;
                 DateOnly endDate;
 
                 if (lastMonth == true)
                 {
-                    startDate = startOfLastMonthDateOnly;
-                    endDate = startOfThisMonthDateOnly;
+                    startDate = startOfLastMonth;
+                    endDate = startOfThisMonth;
                 }
                 else if (thisQuarter == true)
                 {
-                    startDate = startOfThisQuarterDateOnly;
-                    endDate = startOfNextQuarterDateOnly;
+                    startDate = startOfThisQuarter;
+                    endDate = startOfNextQuarter;
                 }
                 else
                 {
-                    startDate = startOfThisMonthDateOnly;
+                    startDate = startOfThisMonth;
                     endDate = startOfNextMonthDateOnly;
                 }
 
@@ -614,35 +609,30 @@ namespace EduWork.BusinessLayer.Services
                     }
                 }
 
-                var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var startOfLastMonth = startOfThisMonth.AddMonths(-1);
-                var startOfNextMonth = startOfThisMonth.AddMonths(1);
-                var startOfThisQuarter = new DateTime(DateTime.Now.Year, (DateTime.Now.Month - 3), 1);
-                var startOfNextQuarter = startOfThisQuarter.AddMonths(3);
+                DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateOnly startOfLastMonth = startOfThisMonth.AddMonths(-1);
+                DateOnly startOfNextMonth = startOfThisMonth.AddMonths(1);
 
-                DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
-                DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
-                DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
-                DateOnly startOfThisQuarterDateOnly = DateOnly.FromDateTime(startOfThisQuarter);
-                DateOnly startOfNextQuarterDateOnly = DateOnly.FromDateTime(startOfNextQuarter);
+                DateOnly startOfThisQuarter = new DateOnly(DateTime.Now.Year, (DateTime.Now.Month - 1) / 3 * 3 + 1, 1);
+                DateOnly startOfNextQuarter = startOfThisQuarter.AddMonths(3);
 
                 DateOnly startDate;
                 DateOnly endDate;
 
                 if (lastMonth == true)
                 {
-                    startDate = startOfLastMonthDateOnly;
-                    endDate = startOfThisMonthDateOnly;
+                    startDate = startOfLastMonth;
+                    endDate = startOfThisMonth;
                 }
                 else if (thisQuarter == true)
                 {
-                    startDate = startOfThisQuarterDateOnly;
-                    endDate = startOfNextQuarterDateOnly;
+                    startDate = startOfThisQuarter;
+                    endDate = startOfNextQuarter;
                 }
                 else
                 {
-                    startDate = startOfThisMonthDateOnly;
-                    endDate = startOfNextMonthDateOnly;
+                    startDate = startOfThisMonth;
+                    endDate = startOfNextMonth;
                 }
 
                 query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);

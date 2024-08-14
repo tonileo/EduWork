@@ -18,7 +18,7 @@ namespace EduWork.DataAccessLayer.Entites
         public int UserId { get; set; }
 
         [Required]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
 
         public virtual ICollection<ProjectTime> ProjectTimes { get; set; } = [];

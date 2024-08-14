@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using EduWork.BusinessLayer.Services;
+using EduWork.DataAccessLayer;
+using Moq;
 
 namespace EduWork.UnitTests
 {
@@ -12,7 +15,10 @@ namespace EduWork.UnitTests
         [Fact]
         public void Ctor_UserProjectTimeService_Succeeds()
         {
-            var sut = new UserProjectTimeService(null, null);
+            var context = new Mock<AppDbContext>().Object;
+            var mapper = new Mock<IMapper>().Object;
+
+            var sut = new UserProjectTimeService(context, mapper);
 
             Assert.NotNull(sut);
         }
@@ -20,7 +26,10 @@ namespace EduWork.UnitTests
         [Fact]
         public async Task Ctor_UserProjectTimeService_Fails()
         {
-            var sut = new UserProjectTimeService(null, null);
+            var context = new Mock<AppDbContext>().Object;
+            var mapper = new Mock<IMapper>().Object;
+
+            var sut = new UserProjectTimeService(context, mapper);
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.GetProjectTimesFilter(null, null, null, null));
         }

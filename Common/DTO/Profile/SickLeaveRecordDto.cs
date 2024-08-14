@@ -13,6 +13,6 @@ namespace Common.DTO.Profile
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
         public int TotalSickDays { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }
