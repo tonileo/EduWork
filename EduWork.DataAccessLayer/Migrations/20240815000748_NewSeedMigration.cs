@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduWork.DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class newauthentication : Migration
+    public partial class NewSeedMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

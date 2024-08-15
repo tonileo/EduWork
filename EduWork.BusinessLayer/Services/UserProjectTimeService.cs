@@ -19,180 +19,229 @@ namespace EduWork.BusinessLayer.Services
     {
         public async Task<List<ProjectSmallDto>> GetProjects(string? email)
         {
-            var projects = await context.Projects
+            try
+            {
+                var projects = await context.Projects
                 .Where(p => !p.IsFinished)
                 .AsNoTracking()
                 .ToListAsync();
 
-            var userProjectTime = await context.ProjectTimes
-                .Include(s => s.Project)
-                .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Email == email)
-                .OrderByDescending(pt => pt.WorkDay.WorkDate)
-                .ThenByDescending(pt => pt.Id)
-                .FirstAsync();
+                var userProjectTime = await context.ProjectTimes
+                    .Include(s => s.Project)
+                    .Include(a => a.WorkDay)
+                    .Where(g => g.WorkDay.User.Email == email)
+                    .OrderByDescending(pt => pt.WorkDay.WorkDate)
+                    .ThenByDescending(pt => pt.Id)
+                    .FirstAsync();
 
-            var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
+                var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
 
-            foreach (var projectDto in userProjects)
-            {
-                projectDto.LastChosenTitle = userProjectTime?.Project.Title;
+                foreach (var projectDto in userProjects)
+                {
+                    projectDto.LastChosenTitle = userProjectTime?.Project.Title;
+                }
+
+                return userProjects;
+
             }
-
-            return userProjects;
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with GetUserProfile" + ex.Message);
+            }
         }
 
         public async Task<List<UsernamesDto>> GetUsernames()
         {
-            var usernames = await context.Users.AsNoTracking().ToListAsync();
+            try
+            {
+                var usernames = await context.Users.AsNoTracking().ToListAsync();
 
-            var userprojects = mapper.Map<List<UsernamesDto>>(usernames);
+                var userprojects = mapper.Map<List<UsernamesDto>>(usernames);
 
-            return userprojects;
+                return userprojects;
+
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with GetUsernames" + ex.Message);
+            }
         }
 
         public async Task<InputProjectTimeResponseDto> GetMyInputProjectTimes(string? email, DateTime userWorkDay)
         {
-            if (userWorkDay > DateTime.Today)
+            try
             {
-                throw new ArgumentException("Work day date can't be in future");
-            }
-
-            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
-            {
-                throw new ArgumentException("Work day date can't be a weekend");
-            }
-
-            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
-
-            var userprojectTimes = await context.ProjectTimes
-                .Include(s => s.Project)
-                .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var userProfiles = new InputProjectTimeResponseDto
-            {
-                InputProjectTimeDto = new List<InputProjectTimeDto>()
-            };
-
-            int sumTimeSpent = 0;
-
-            foreach (var projectTime in userprojectTimes)
-            {
-                var inputProjectTimeDto = new InputProjectTimeDto
+                if (userWorkDay > DateTime.Today)
                 {
-                    Id = projectTime.Id,
-                    Comment = projectTime.Comment,
-                    TimeSpentMinutes = projectTime.TimeSpentMinutes,
-                    Hours = projectTime.TimeSpentMinutes / 60,
-                    Minutes = projectTime.TimeSpentMinutes % 60,
+                    throw new ArgumentException("Work day date can't be in future");
+                }
 
-                    DateWorkDay = projectTime.WorkDay.WorkDate,
-                    TitleProject = projectTime.Project.Title
+                if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    throw new ArgumentException("Work day date can't be a weekend");
+                }
+
+                DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+                var userprojectTimes = await context.ProjectTimes
+                    .Include(s => s.Project)
+                    .Include(a => a.WorkDay)
+                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var userProfiles = new InputProjectTimeResponseDto
+                {
+                    InputProjectTimeDto = new List<InputProjectTimeDto>()
                 };
 
-                userProfiles.InputProjectTimeDto.Add(inputProjectTimeDto);
+                int sumTimeSpent = 0;
 
-                sumTimeSpent += projectTime.TimeSpentMinutes;
+                foreach (var projectTime in userprojectTimes)
+                {
+                    var inputProjectTimeDto = new InputProjectTimeDto
+                    {
+                        Id = projectTime.Id,
+                        Comment = projectTime.Comment,
+                        TimeSpentMinutes = projectTime.TimeSpentMinutes,
+                        Hours = projectTime.TimeSpentMinutes / 60,
+                        Minutes = projectTime.TimeSpentMinutes % 60,
+
+                        DateWorkDay = projectTime.WorkDay.WorkDate,
+                        TitleProject = projectTime.Project.Title
+                    };
+
+                    userProfiles.InputProjectTimeDto.Add(inputProjectTimeDto);
+
+                    sumTimeSpent += projectTime.TimeSpentMinutes;
+                }
+
+                userProfiles.SumTimeSpentHours = sumTimeSpent / 60;
+                userProfiles.SumTimeSpentMinutes = sumTimeSpent % 60;
+
+                return userProfiles;
+
             }
-
-            userProfiles.SumTimeSpentHours = sumTimeSpent / 60;
-            userProfiles.SumTimeSpentMinutes = sumTimeSpent % 60;
-
-            return userProfiles;
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Problem with GetMyInputProjectTimes" + ex.Message);
+            }
         }
 
         public async Task<OvertimeDto> GetOverTime(string? email)
         {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
-
-            var workDays = await context.WorkDays
-                .Include(w => w.ProjectTimes)
-                .Include(u => u.User)
-                .Where(s => s.User.Email == email)
-                .Where(d => d.WorkDate < today && d.WorkDate >= firstDayOfMonth)
-                .AsNoTracking()
-                .ToListAsync();
-
-            int overtime = 0;
-
-            foreach (var day in workDays)
+            try
             {
-                int totalHoursWorked = day.ProjectTimes.Sum(pt => pt.TimeSpentMinutes);
 
-                overtime += (totalHoursWorked - 480);
+                var today = DateOnly.FromDateTime(DateTime.Today);
+                var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
+
+                var workDays = await context.WorkDays
+                    .Include(w => w.ProjectTimes)
+                    .Include(u => u.User)
+                    .Where(s => s.User.Email == email)
+                    .Where(d => d.WorkDate < today && d.WorkDate >= firstDayOfMonth)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                int overtime = 0;
+
+                foreach (var day in workDays)
+                {
+                    int totalHoursWorked = day.ProjectTimes.Sum(pt => pt.TimeSpentMinutes);
+
+                    overtime += (totalHoursWorked - 480);
+                }
+
+                int overtimeHours = overtime / 60;
+                int overtimeMinutes = overtime % 60;
+
+                if (overtime < 0 && overtimeMinutes != 0)
+                {
+                    overtimeMinutes *= (-1);
+                }
+
+                var result = new OvertimeDto
+                {
+                    OvertimeHours = overtimeHours,
+                    OvertimeMinutes = overtimeMinutes
+                };
+
+                return result;
+
             }
-
-            int overtimeHours = overtime / 60;
-            int overtimeMinutes = overtime % 60;
-
-            if (overtime < 0 && overtimeMinutes != 0)
+            catch (Exception ex)
             {
-                overtimeMinutes *= (-1);
+                throw new InvalidOperationException("Problem with GetOverTime" + ex.Message);
             }
-
-            var result = new OvertimeDto
-            {
-                OvertimeHours = overtimeHours,
-                OvertimeMinutes = overtimeMinutes
-            };
-
-            return result;
         }
 
         public async Task<List<InputProjectTimeDto>> GetMyProjectTimes(string? email, DateTime userWorkDay)
         {
-            if (userWorkDay > DateTime.Today)
+            try
             {
-                throw new ArgumentException("Work day date can't be in future");
-            }
+                if (userWorkDay > DateTime.Today)
+                {
+                    throw new ArgumentException("Work day date can't be in future");
+                }
 
-            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+                if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    throw new ArgumentException("Work day date can't be a weekend");
+                }
+
+                DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+                var userprojectTimes = await context.ProjectTimes
+                    .Include(s => s.Project)
+                    .Include(a => a.WorkDay)
+                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
+
+                return userProfiles;
+
+            }
+            catch (Exception ex)
             {
-                throw new ArgumentException("Work day date can't be a weekend");
+                throw new InvalidOperationException("Problem with GetMyProjectTimes" + ex.Message);
             }
-
-            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
-
-            var userprojectTimes = await context.ProjectTimes
-                .Include(s => s.Project)
-                .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
-
-            return userProfiles;
         }
 
         public async Task<List<InputProjectTimeDto>> GetProjectTimes(string? username, DateTime userWorkDay)
         {
-            if (userWorkDay > DateTime.Today)
+            try
             {
-                throw new ArgumentException("Work day date can't be in future");
-            }
+                if (userWorkDay > DateTime.Today)
+                {
+                    throw new ArgumentException("Work day date can't be in future");
+                }
 
-            if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+                if (userWorkDay.DayOfWeek == DayOfWeek.Saturday || userWorkDay.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    throw new ArgumentException("Work day date can't be a weekend");
+                }
+
+                DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
+
+                var userprojectTimes = await context.ProjectTimes
+                    .Include(s => s.Project)
+                    .Include(a => a.WorkDay)
+                    .Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
+
+                return userProfiles;
+
+            }
+            catch (Exception ex)
             {
-                throw new ArgumentException("Work day date can't be a weekend");
+                throw new InvalidOperationException("Problem with GetProjectTimes" + ex.Message);
             }
-
-            DateOnly userWorkDayDateOnly = DateOnly.FromDateTime(userWorkDay);
-
-            var userprojectTimes = await context.ProjectTimes
-                .Include(s => s.Project)
-                .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var userProfiles = mapper.Map<List<InputProjectTimeDto>>(userprojectTimes);
-
-            return userProfiles;
         }
 
         public async Task InputProjectTime(string? email, ProjectTimeRequestDto projectTime)

@@ -53,8 +53,6 @@ namespace EduWork.DataAccessLayer.Seed
                 AddProjectTimes(context);
             }
 
-
-
             if (!context.AnnualLeaves.Any())
             {
                 AddAnnualLeaves(context);
@@ -256,7 +254,67 @@ namespace EduWork.DataAccessLayer.Seed
                 },
                 new UserProjectRole()
                 {
+                    UserId = 1,
+                    ProjectId = 2,
+                    ProjectRoleId = 2
+                },
+                new UserProjectRole()
+                {
+                    UserId = 1,
+                    ProjectId = 3,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 1,
+                    ProjectId = 4,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 1,
+                    ProjectId = 5,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
                     UserId = 2,
+                    ProjectId = 1,
+                    ProjectRoleId = 1
+                },
+                new UserProjectRole()
+                {
+                    UserId = 2,
+                    ProjectId = 2,
+                    ProjectRoleId = 2
+                },
+                new UserProjectRole()
+                {
+                    UserId = 2,
+                    ProjectId = 3,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 2,
+                    ProjectId = 4,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 2,
+                    ProjectId = 5,
+                    ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 3,
+                    ProjectId = 1,
+                    ProjectRoleId = 1
+                },
+                new UserProjectRole()
+                {
+                    UserId = 3,
                     ProjectId = 2,
                     ProjectRoleId = 2
                 },
