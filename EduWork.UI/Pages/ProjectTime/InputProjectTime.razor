@@ -43,7 +43,6 @@
                         }
                         else
                         {
-                            <option value="" disabled selected>@CHOOSE_PROJECT_SELECT_OPTION</option>
                             @foreach (var project in projects)
                             {
                                 <option value="@project.Title">@project.Title</option>
@@ -213,9 +212,13 @@
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
-        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
         overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
+        await GetProjects();
+    }
 
+    private async Task GetProjects()
+    {
+        projects = await Http.GetFromJsonAsync<List<ProjectSmallDto>>(GET_PROJECTS_ENDPOINT);
         projectTimeRequest.TitleProject = projects?[0].LastChosenTitle;
     }
 
@@ -324,6 +327,7 @@
         hours = 7;
         minutes = 30;
 
+        await GetProjects();
         await LoadData();
     }
 
