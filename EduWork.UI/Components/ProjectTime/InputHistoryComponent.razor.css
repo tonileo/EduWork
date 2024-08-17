@@ -1,5 +1,12 @@
-﻿.flex-container {
+﻿.smallGrid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 10px;
+}
+
+.flex-container {
     display: flex;
+    flex: 1;
     align-items: center;
     gap: 10px;
     justify-content: center;
@@ -31,6 +38,36 @@
 .btn {
     flex: 0 0 auto;
 }
+
+.legendItem {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.legend-circle {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+    .legend-circle.red {
+        background-color: red;
+    }
+
+    .legend-circle.lightyellow {
+        background-color: lightgoldenrodyellow;
+    }
+
+    .legend-circle.forestgreen {
+        background-color: forestgreen;
+    }
+
+    .legend-circle.gray {
+        background-color: #757575;
+    }
 
 .form-control {
     max-width: 200px;

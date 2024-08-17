@@ -6,111 +6,139 @@
 
 <PageTitle>Povijest unosa</PageTitle>
 
-<div class="divClass">
-@if (isAdmin)
-{
-    <div class="flex-container">
-        <h3>@INPUT_HISTORY_OF_USER_TITLE</h3>
+<div class="smallGrid">
+    <div class="divClass">
+        @if (isAdmin)
+        {
+            <div class="flex-container">
+                <h3>@INPUT_HISTORY_OF_USER_TITLE</h3>
 
-        @if (usernames == null)
-        {
-            <option>@LOADING_LABEL</option>
-        }
-        else
-        {
-            <InputSelect class="form-control fixed-size" @bind-Value="filterUsername" id="username" @oninput="FilterUser">
-                @foreach (var user in usernames)
+                @if (usernames == null)
                 {
-                    <option value="@user.Username">@user.Username</option>
+                    <option>@LOADING_LABEL</option>
                 }
-            </InputSelect>
+                else
+                {
+                    <InputSelect class="form-control fixed-size" @bind-Value="filterUsername" id="username" @oninput="FilterUser">
+                        @foreach (var user in usernames)
+                        {
+                            <option value="@user.Username">@user.Username</option>
+                        }
+                    </InputSelect>
+                }
+            </div>
         }
-    </div>
-}
 
-<div class="filter">
-    <button type="button" class="btn @(selectedDateFilter == 1 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(1)">@LAST_MONTH_BUTTON_TEXT</button>
-    <button type="button" class="btn @(selectedDateFilter == 2 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(2)">@CURRENT_MONTH_BUTTON_TEXT</button>
-    <button type="button" class="btn @(selectedDateFilter == 3 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(3)">@CURRENT_QUARTER_BUTTON_TEXT</button>
-</div>
+        <div class="filter">
+            <button type="button" class="btn @(selectedDateFilter == 1 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(1)">@LAST_MONTH_BUTTON_TEXT</button>
+            <button type="button" class="btn @(selectedDateFilter == 2 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(2)">@CURRENT_MONTH_BUTTON_TEXT</button>
+            <button type="button" class="btn @(selectedDateFilter == 3 ? "btn-primary" : "btn-secondary")" @onclick="() => FilterDate(3)">@CURRENT_QUARTER_BUTTON_TEXT</button>
+        </div>
+    </div>
+
+    <div class="divClass">
+        <div class="flex-container">
+            <ul class="filter">
+                <li class="legendItem">
+                    <span class="legend-circle red"></span>
+                    <span>@ZERO_HOURS_TEXT</span>
+                </li>
+
+                <li class="legendItem">
+                    <span class="legend-circle lightyellow"></span>
+                    <span>@BETWEEN_ZERO_AND_EIGHT_HOURS_TEXT</span>
+                </li>
+
+                <li class="legendItem">
+                    <span class="legend-circle forestgreen"></span>
+                    <span>@MORE_THEN_EIGHT_HOURS_TEXT</span>
+                </li>
+
+                <li class="legendItem">
+                    <span class="legend-circle gray"></span>
+                    <span>@NON_WORKING_DAY_OR_HOLIDAY_TEXT</span>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <br />
 <div class="divClass">
-<div class="row">
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th class="text-center">@WORKDAY_TABLE_LABEL</th>
-                <th class="text-center">@SUM_OF_TIME_SPENT_TABLE_LABEL</th>
-                <th class="text-center">@PROJECTS_TABLE_LABEL</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (projectTimeHistoryDto == null)
-            {
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
                 <tr>
-                    <td class="text-center"><em>@LOADING_LABEL</em></td>
+                    <th class="text-center">@WORKDAY_TABLE_LABEL</th>
+                    <th class="text-center">@SUM_OF_TIME_SPENT_TABLE_LABEL</th>
+                    <th class="text-center">@PROJECTS_TABLE_LABEL</th>
                 </tr>
-            }
-            else
-            {
-                @foreach (var projectTimeLog in projectTimeHistoryDto)
+            </thead>
+            <tbody>
+                @if (projectTimeHistoryDto == null)
                 {
-                    var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
-                    <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog)">
-                        <td class="text-center">
-                            @if (projectTimeLog.IsNonWorkingDay)
-                            {
-                                @projectTimeLog.DateWorkDay
-                            }
-                            else
-                            {
-                                if (!isAdmin && projectTimeLog.DateWorkDay <= DateOnly.FromDateTime(DateTime.Today))
+                    <tr>
+                        <td class="text-center"><em>@LOADING_LABEL</em></td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var projectTimeLog in projectTimeHistoryDto)
+                    {
+                        var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
+                        <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog)">
+                            <td class="text-center">
+                                @if (projectTimeLog.IsNonWorkingDay)
                                 {
-                                    <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
-                                        @projectTimeLog.DateWorkDay
-                                    </a>
+                                    @projectTimeLog.DateWorkDay
                                 }
                                 else
                                 {
-                                       @projectTimeLog.DateWorkDay
+                                    if (!isAdmin && projectTimeLog.DateWorkDay <= DateOnly.FromDateTime(DateTime.Today))
+                                    {
+                                        <a href="@(@INPUT_PROJECT_TIME_NAVIGATION + projectTimeLog.DateWorkDay.ToString("MM-dd-yyyy"))">
+                                            @projectTimeLog.DateWorkDay
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @projectTimeLog.DateWorkDay
+                                    }
                                 }
+                            </td>
+
+                            <td class="text-center">
+                                <span>@projectTimeLog.SumTimeSpentHours</span> h :
+                                <span>@projectTimeLog.SumTimeSpentMinutes</span> min
+                            </td>
+
+                            @if (projectTimeLog?.ProjectTitles == null)
+                            {
+                                <td class="text-center"></td>
                             }
-                        </td>
+                            else
+                            {
+                                <td class="text-center">@string.Join(", ", projectTimeLog.ProjectTitles)</td>
+                            }
+                        </tr>
 
-                        <td class="text-center">
-                            <span>@projectTimeLog.SumTimeSpentHours</span> h :
-                            <span>@projectTimeLog.SumTimeSpentMinutes</span> min
-                        </td>
+                        @if (expandedRow == projectTimeLog)
+                        {
+                            if (isAdmin)
+                            {
+                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor SelectUsername=@filterUsername></InputHistoryDetailsTable>
+                            }
+                            else
+                            {
+                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor></InputHistoryDetailsTable>
+                            }
 
-                        @if (projectTimeLog?.ProjectTitles == null)
-                        {
-                            <td class="text-center"></td>
                         }
-                        else
-                        {
-                            <td class="text-center">@string.Join(", ", projectTimeLog.ProjectTitles)</td>
-                        }
-                    </tr>
-
-                    @if (expandedRow == projectTimeLog)
-                    {
-                        if (isAdmin)
-                        {
-                            <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor SelectUsername=@filterUsername></InputHistoryDetailsTable>
-                        }
-                        else
-                        {
-                            <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor></InputHistoryDetailsTable>
-                        }
-                        
                     }
                 }
-            }
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {
@@ -119,6 +147,10 @@
     private const string LAST_MONTH_BUTTON_TEXT = "Prošli mjesec";
     private const string CURRENT_MONTH_BUTTON_TEXT = "Trenutni mjesec";
     private const string CURRENT_QUARTER_BUTTON_TEXT = "Trenutno tromjesečje";
+    private const string ZERO_HOURS_TEXT = "0h";
+    private const string BETWEEN_ZERO_AND_EIGHT_HOURS_TEXT = "Između 0h i 8h";
+    private const string MORE_THEN_EIGHT_HOURS_TEXT = "Više od 8h";
+    private const string NON_WORKING_DAY_OR_HOLIDAY_TEXT = "Neradni dan / blagdan";
     private const string WORKDAY_TABLE_LABEL = "Radni dan";
     private const string PROJECT_TABLE_LABEL = "Projekt";
     private const string TIME_SPENT_TABLE_LABEL = "Provedno vrijeme";
@@ -227,7 +259,7 @@
         {
             expandedRow = null;
         }
-        else if (projectTimeLog.IsNonWorkingDay == true || projectTimeLog.DateWorkDay.DayOfWeek == DayOfWeek.Saturday 
+        else if (projectTimeLog.IsNonWorkingDay == true || projectTimeLog.DateWorkDay.DayOfWeek == DayOfWeek.Saturday
             || projectTimeLog.DateWorkDay.DayOfWeek == DayOfWeek.Sunday || projectTimeLog.SumTimeSpentMinutes == 0 && projectTimeLog.SumTimeSpentHours == 0)
         {
             expandedRow = null;
