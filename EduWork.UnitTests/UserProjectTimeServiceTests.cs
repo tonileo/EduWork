@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace EduWork.UnitTests
@@ -15,7 +17,11 @@ namespace EduWork.UnitTests
         [Fact]
         public void Ctor_UserProjectTimeService_Succeeds()
         {
-            var context = new Mock<AppDbContext>().Object;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "EduWorkTestDb")
+                .Options;
+
+            var context = new AppDbContext(options);
             var mapper = new Mock<IMapper>().Object;
 
             var sut = new UserProjectTimeService(context, mapper);
@@ -26,7 +32,11 @@ namespace EduWork.UnitTests
         [Fact]
         public async Task Ctor_UserProjectTimeService_Fails()
         {
-            var context = new Mock<AppDbContext>().Object;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "EduWorkTestDb")
+                .Options;
+
+            var context = new AppDbContext(options);
             var mapper = new Mock<IMapper>().Object;
 
             var sut = new UserProjectTimeService(context, mapper);

@@ -323,325 +323,50 @@ namespace EduWork.DataAccessLayer.Seed
                     UserId = 3,
                     ProjectId = 3,
                     ProjectRoleId = 3
+                },
+                new UserProjectRole()
+                {
+                    UserId = 3,
+                    ProjectId = 4,
+                    ProjectRoleId = 2
+                },
+                new UserProjectRole()
+                {
+                    UserId = 3,
+                    ProjectId = 5,
+                    ProjectRoleId = 3
                 }
             );
             context.SaveChanges();
         }
+
         private static void AddWorkDays(AppDbContext context)
         {
-            context.WorkDays.AddRange(
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 1),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 2),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 3),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 4),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 5),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 6),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 7),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 8),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 9),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 10),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 11),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 12),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 13),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 14),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 15),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 16),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 17),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 18),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 19),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 20),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 21),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 22),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 23),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 24),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 25),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 26),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 27),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 28),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 29),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 30),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 7, 31),
-                    UserId = 2
-                },
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            int currentMonth = today.Month;
+            int currentYear = today.Year;
 
-                new WorkDay()
+            int lastMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+
+            void AddWorkDaysForMonth(int year, int month)
+            {
+                DateOnly startDate = new DateOnly(year, month, 1);
+                DateOnly endDate = startDate.AddMonths(1).AddDays(-1);
+
+                for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
                 {
-                    WorkDate = new DateOnly(2024, 8, 1),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 2),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 3),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 4),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 5),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 6),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 7),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 8),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 9),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 10),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 11),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 12),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 13),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 14),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 15),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 16),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 17),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 18),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 19),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 20),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 21),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 22),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 23),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 24),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 25),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 26),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 27),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 28),
-                    UserId = 3
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 29),
-                    UserId = 2
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 30),
-                    UserId = 1
-                },
-                new WorkDay()
-                {
-                    WorkDate = new DateOnly(2024, 8, 31),
-                    UserId = 2
+                    int userId = (date.Day % 3) + 1;
+                    context.WorkDays.Add(new WorkDay
+                    {
+                        WorkDate = date,
+                        UserId = userId
+                    });
                 }
-            );
+            }
+
+            AddWorkDaysForMonth(currentYear, lastMonth);
+            AddWorkDaysForMonth(currentYear, currentMonth);
+
             context.SaveChanges();
         }
 
@@ -787,6 +512,265 @@ namespace EduWork.DataAccessLayer.Seed
                     TimeSpentMinutes = 465,
                     WorkDayId = 20,
                     ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Initial planning",
+                    TimeSpentMinutes = 120,
+                    WorkDayId = 21,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Database design",
+                    TimeSpentMinutes = 150,
+                    WorkDayId = 22,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Front-end development",
+                    TimeSpentMinutes = 240,
+                    WorkDayId = 23,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Bug fixing",
+                    TimeSpentMinutes = 300,
+                    WorkDayId = 24,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "User feedback analysis",
+                    TimeSpentMinutes = 200,
+                    WorkDayId = 25,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Performance optimization",
+                    TimeSpentMinutes = 350,
+                    WorkDayId = 26,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Documentation",
+                    TimeSpentMinutes = 180,
+                    WorkDayId = 27,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Server maintenance",
+                    TimeSpentMinutes = 230,
+                    WorkDayId = 28,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Design mockups",
+                    TimeSpentMinutes = 140,
+                    WorkDayId = 29,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "API integration",
+                    TimeSpentMinutes = 260,
+                    WorkDayId = 30,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Usability testing",
+                    TimeSpentMinutes = 320,
+                    WorkDayId = 31,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Client meeting",
+                    TimeSpentMinutes = 90,
+                    WorkDayId = 32,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Feature implementation",
+                    TimeSpentMinutes = 220,
+                    WorkDayId = 33,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Deployment",
+                    TimeSpentMinutes = 400,
+                    WorkDayId = 34,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Backend development",
+                    TimeSpentMinutes = 150,
+                    WorkDayId = 35,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Security review",
+                    TimeSpentMinutes = 190,
+                    WorkDayId = 36,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Integration testing",
+                    TimeSpentMinutes = 270,
+                    WorkDayId = 37,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Onboarding new team members",
+                    TimeSpentMinutes = 200,
+                    WorkDayId = 38,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Code refactoring",
+                    TimeSpentMinutes = 250,
+                    WorkDayId = 39,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "API documentation",
+                    TimeSpentMinutes = 300,
+                    WorkDayId = 40,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Prototyping",
+                    TimeSpentMinutes = 110,
+                    WorkDayId = 41,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Load testing",
+                    TimeSpentMinutes = 220,
+                    WorkDayId = 42,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Client feedback review",
+                    TimeSpentMinutes = 180,
+                    WorkDayId = 43,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "User interface design",
+                    TimeSpentMinutes = 250,
+                    WorkDayId = 44,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Database migration",
+                    TimeSpentMinutes = 310,
+                    WorkDayId = 45,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "System monitoring",
+                    TimeSpentMinutes = 130,
+                    WorkDayId = 46,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Bug tracking",
+                    TimeSpentMinutes = 160,
+                    WorkDayId = 47,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Feature testing",
+                    TimeSpentMinutes = 210,
+                    WorkDayId = 48,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Database optimization",
+                    TimeSpentMinutes = 280,
+                    WorkDayId = 49,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "System diagnostics",
+                    TimeSpentMinutes = 190,
+                    WorkDayId = 50,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Technical debt reduction",
+                    TimeSpentMinutes = 230,
+                    WorkDayId = 51,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Stakeholder meeting",
+                    TimeSpentMinutes = 140,
+                    WorkDayId = 52,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Knowledge sharing",
+                    TimeSpentMinutes = 170,
+                    WorkDayId = 53,
+                    ProjectId = 1
+                },
+                new ProjectTime()
+                {
+                    Comment = "Code documentation",
+                    TimeSpentMinutes = 240,
+                    WorkDayId = 54,
+                    ProjectId = 2
+                },
+                new ProjectTime()
+                {
+                    Comment = "Infrastructure setup",
+                    TimeSpentMinutes = 250,
+                    WorkDayId = 55,
+                    ProjectId = 3
+                },
+                new ProjectTime()
+                {
+                    Comment = "Project review",
+                    TimeSpentMinutes = 200,
+                    WorkDayId = 56,
+                    ProjectId = 4
+                },
+                new ProjectTime()
+                {
+                    Comment = "Testing automation",
+                    TimeSpentMinutes = 300,
+                    WorkDayId = 57,
+                    ProjectId = 1
                 }
             );
             context.SaveChanges();

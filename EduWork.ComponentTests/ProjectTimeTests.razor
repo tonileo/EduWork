@@ -114,4 +114,85 @@
         var today = DateTime.Today.ToString("yyyy-MM-dd");
         Assert.Equal(today, inputDate.GetAttribute("value"));
     }
+
+    [Fact]
+    public void InputDateIfNotTodayDateWhenClickedOnAddDateButtonItWillAddDate()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, DateTime.Today));
+        cut.WaitForState(() => cut.Instance.date.HasValue);
+        var inputDate = cut.Find("input[type='date']");
+
+        // Act
+        cut.Find("#addDateButton").Click();
+
+        // Assert
+        var today = DateTime.Today.ToString("yyyy-MM-dd");
+        Assert.Equal(today, inputDate.GetAttribute("value"));
+    }
+
+    [Fact]
+    public void InputDateSetCorrectlyBasedOnParameters()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        var yesterdayDay = DateTime.Today.AddDays(-1);
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, yesterdayDay));
+        cut.WaitForState(() => cut.Instance.date.HasValue);
+        var inputDate = cut.Instance.date;
+
+        // Assert
+        var yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+        Assert.Equal(yesterday, inputDate.Value.ToString("yyyy-MM-dd"));
+    }
+
+    [Fact]
+    public void InputHoursSetToDeafultOnLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>();
+        var inputHours = cut.Find("input#timeSpentHours");
+        var inputHourDeafult = "7";
+
+        // Assert
+        Assert.Equal(inputHourDeafult, inputHours.GetAttribute("value"));
+    }
+
+    [Fact]
+    public void InputMinutesSetToDeafultOnLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>();
+        var inputMinutes = cut.Find("input#timeSpentMinutes");
+        var inputMinutesDeafult = "30";
+
+        // Assert
+        Assert.Equal(inputMinutesDeafult, inputMinutes.GetAttribute("value"));
+    }
+
+    [Fact]
+    public void InputTimeRangeSetToDeafultOnLoad()
+    {
+        // Arrange
+        SetupMockHttpClient();
+
+        // Act
+        var cut = RenderComponent<InputProjectTime>();
+        var inputRange = cut.Find("input[type='range']");
+        var inputRangeDeafult = "450";
+
+        // Assert
+        Assert.Equal(inputRangeDeafult, inputRange.GetAttribute("value"));
+    }
 }

@@ -20,10 +20,12 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
                 var userProjectTime = await context.ProjectTimes
                 .Include(s => s.Project)
                 .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Id == id)
+                .Where(g => g.WorkDay.User.Id == id && g.WorkDay.WorkDate <= today)
                 .OrderByDescending(pt => pt.WorkDay.WorkDate)
                 .ThenByDescending(pt => pt.Id)
                 .FirstAsync();

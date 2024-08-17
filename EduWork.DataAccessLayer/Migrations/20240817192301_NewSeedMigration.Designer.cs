@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduWork.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240815000748_NewSeedMigration")]
+    [Migration("20240817192301_NewSeedMigration")]
     partial class NewSeedMigration
     {
         /// <inheritdoc />

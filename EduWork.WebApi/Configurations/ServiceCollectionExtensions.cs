@@ -86,16 +86,6 @@ namespace EduWork.WebApi.Configuration
 
             services.AddScoped<SeedData>();
 
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(policy =>
-                {
-                    policy.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                });
-            });
-
             return services;
         }
     }

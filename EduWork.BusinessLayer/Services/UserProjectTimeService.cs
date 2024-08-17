@@ -551,16 +551,18 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
                 IQueryable<ProjectTime> query = context.ProjectTimes
                    .Include(k => k.Project)
-                   .Where(pt => pt.WorkDay.User.Email == email)
+                   .Where(pt => pt.WorkDay.User.Email == email && pt.WorkDay.WorkDate <= today)
                    .Include(w => w.WorkDay)
                    .AsNoTracking()
                    .AsQueryable();
 
                 DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
                 DateOnly startOfLastMonth = startOfThisMonth.AddMonths(-1);
-                DateOnly startOfNextMonthDateOnly = startOfThisMonth.AddMonths(1);
+                DateOnly todayPlusOneDay = today.AddDays(+1);
 
                 DateOnly startOfThisQuarter = new DateOnly(DateTime.Now.Year, (DateTime.Now.Month - 1) / 3 * 3 + 1, 1);
                 DateOnly startOfNextQuarter = startOfThisQuarter.AddMonths(3);
@@ -581,7 +583,7 @@ namespace EduWork.BusinessLayer.Services
                 else
                 {
                     startDate = startOfThisMonth;
-                    endDate = startOfNextMonthDateOnly;
+                    endDate = todayPlusOneDay;
                 }
 
                 query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
@@ -642,9 +644,12 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
                 IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
                 .Include(w => w.WorkDay)
                 .Include(s => s.WorkDay.User)
+                .Where(a => a.WorkDay.WorkDate <= today)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -660,7 +665,7 @@ namespace EduWork.BusinessLayer.Services
 
                 DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
                 DateOnly startOfLastMonth = startOfThisMonth.AddMonths(-1);
-                DateOnly startOfNextMonth = startOfThisMonth.AddMonths(1);
+                DateOnly todayPlusOneDay = today.AddDays(+1);
 
                 DateOnly startOfThisQuarter = new DateOnly(DateTime.Now.Year, (DateTime.Now.Month - 1) / 3 * 3 + 1, 1);
                 DateOnly startOfNextQuarter = startOfThisQuarter.AddMonths(3);
@@ -681,7 +686,7 @@ namespace EduWork.BusinessLayer.Services
                 else
                 {
                     startDate = startOfThisMonth;
-                    endDate = startOfNextMonth;
+                    endDate = todayPlusOneDay;
                 }
 
                 query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
