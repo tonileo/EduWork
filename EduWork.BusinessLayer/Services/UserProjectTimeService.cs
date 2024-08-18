@@ -9,9 +9,6 @@ using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EduWork.BusinessLayer.Services
 {

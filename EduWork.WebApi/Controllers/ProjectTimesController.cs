@@ -18,15 +18,8 @@ namespace EduWork.WebApi.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectTimesController : ControllerBase
+    public class ProjectTimesController(IUserProjectTimeService _userProjectTimeService) : ControllerBase
     {
-        private readonly UserProjectTimeService _userProjectTimeService;
-
-        public ProjectTimesController(UserProjectTimeService userProjectTimeService)
-        {
-            _userProjectTimeService = userProjectTimeService;
-        }
-
         [HttpGet("projects")]
         public async Task<ActionResult<IEnumerable<ProjectSmallDto>>> GetProjects([FromServices] IIdentityClaim currentUser)
         {

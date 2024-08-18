@@ -27,7 +27,7 @@ namespace EduWork.UI.States
                 return new AuthenticationState(anonymous);
 
             var claims = GetClaims(token);
-            if (claims == null || claims.Identity.IsAuthenticated == false)
+            if (claims == null || !claims.Identity.IsAuthenticated)
                 return new AuthenticationState(anonymous);
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -76,7 +76,7 @@ namespace EduWork.UI.States
             if (!string.IsNullOrEmpty(jwtToken))
             {
                 claims = GetClaims(jwtToken);
-                if (claims == null || claims.Identity.IsAuthenticated == false)
+                if (claims == null || !claims.Identity.IsAuthenticated)
                     return;
 
                 await localStorageService.SetItemAsStringAsync(LocalStorageKey, jwtToken);

@@ -5,12 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.DTO.Profile;
-using Common.DTO.ProjectTime;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EduWork.BusinessLayer.Services
 {
@@ -221,7 +219,7 @@ namespace EduWork.BusinessLayer.Services
                 {
                     Id = user.Id,
                     Username = user.Username,
-                    AppRoleTitle = user.AppRole.Title,
+                    AppRoleTitle = user.AppRole!.Title,
                     Email = user.Email,
                     Project = projects,
                     AnnualLeave = annualLeaves,
@@ -241,36 +239,31 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
-
                 IQueryable<ProjectTime> query = context.ProjectTimes
                 .Include(k => k.Project)
-                .Where(pt => pt.WorkDay.User.Username == username)
+                .Where(pt => pt.WorkDay!.User!.Username == username)
                 .AsNoTracking()
                 .AsQueryable();
 
-                var startOfThisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var startOfLastMonth = startOfThisMonth.AddMonths(-1);
-                var startOfNextMonth = startOfThisMonth.AddMonths(1);
-
-                DateOnly startOfThisMonthDateOnly = DateOnly.FromDateTime(startOfThisMonth);
-                DateOnly startOfLastMonthDateOnly = DateOnly.FromDateTime(startOfLastMonth);
-                DateOnly startOfNextMonthDateOnly = DateOnly.FromDateTime(startOfNextMonth);
+                DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateOnly startOfLastMonth = startOfThisMonth.AddMonths(-1);
+                DateOnly startOfNextMonth = startOfThisMonth.AddMonths(1);
 
                 DateOnly startDate;
                 DateOnly endDate;
 
                 if (lastMonth)
                 {
-                    startDate = startOfLastMonthDateOnly;
-                    endDate = startOfThisMonthDateOnly;
+                    startDate = startOfLastMonth;
+                    endDate = startOfThisMonth;
                 }
                 else
                 {
-                    startDate = startOfThisMonthDateOnly;
-                    endDate = startOfNextMonthDateOnly;
+                    startDate = startOfThisMonth;
+                    endDate = startOfNextMonth;
                 }
 
-                query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
+                query = query.Where(pt => pt.WorkDay!.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
 
                 var projectTimes = await query.ToListAsync();
 

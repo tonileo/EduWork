@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.DTO.Profile;
+﻿using Common.DTO.Profile;
 
 namespace EduWork.BusinessLayer.Contracts
 {
@@ -15,8 +10,8 @@ namespace EduWork.BusinessLayer.Contracts
         public Task<List<SickLeaveRecordDto>> GetUserSickLeaveRecords(int id);
         public Task<AnnualLeaveDto> GetUserAnnualLeaves(int id);
         public Task<List<AnnualLeaveRecordDto>> GetUserAnnualLeaveRecords(int id);
-        public Task<MyProfileDto> GetUserProfile(string? email);
-        public Task<MyProfileStatsDto> GetMyProfileStats(string? email, bool thisMonth, bool lastMonth);
+        public Task<MyProfileDto> GetUserProfile(string? username);
+        public Task<MyProfileStatsDto> GetMyProfileStats(string? username, bool thisMonth, bool lastMonth);
         public Task AddAnnualLeave(string? username, ProfileAnnualRequestDto annualLeave);
         public Task AddSickDay(string? username, ProfileAnnualRequestDto annualLeave);
     }

@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
-                <InputDate class="form-control" @bind-Value="FilterModel.FromDate" id="fromDate" />
+                <InputDate class="form-control" @bind-Value="FilterModel!.FromDate" id="fromDate" />
                 <ValidationMessage For="() => FilterModel.FromDate" />
             </div>
         </div>

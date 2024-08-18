@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Text;
 using Common.DTO.Contracts;
+using EduWork.BusinessLayer.Contracts;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
@@ -74,17 +75,17 @@ namespace EduWork.WebApi.Configuration
                 });
             });
 
+            services.AddDbContext<AppDbContext>();
+
+            services.AddScoped<SeedData>();
+
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddHttpContextAccessor();
             services.AddTransient<IIdentityClaim, IdentityClaim>();
 
-            services.AddScoped<UserProfileService>();
-            services.AddScoped<UserProjectTimeService>();
-
-            services.AddDbContext<AppDbContext>();
-
-            services.AddScoped<SeedData>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IUserProjectTimeService, UserProjectTimeService>();
 
             return services;
         }

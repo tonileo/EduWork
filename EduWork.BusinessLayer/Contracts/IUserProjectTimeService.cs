@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.DTO.ProjectTime;
-using EduWork.DataAccessLayer.Entites;
+﻿using Common.DTO.ProjectTime;
 
 namespace EduWork.BusinessLayer.Contracts
 {

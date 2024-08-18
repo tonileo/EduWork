@@ -20,15 +20,8 @@ namespace EduWork.WebApi.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserProfilesController : ControllerBase
+    public class UserProfilesController(IUserProfileService _userProfileService) : ControllerBase
     {
-        private readonly UserProfileService _userProfileService;
-
-        public UserProfilesController(UserProfileService userProfileService)
-        {
-            _userProfileService = userProfileService;
-        }
-
         [HttpGet("projects")]
         public async Task<ActionResult<IEnumerable<ProjectsProfileDto>>> GetProjects()
         {

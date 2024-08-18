@@ -86,7 +86,7 @@
                     @foreach (var projectTimeLog in projectTimeHistoryDto)
                     {
                         var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
-                        <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog)">
+                        <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog!)">
                             <td class="text-center">
                                 @if (projectTimeLog.IsNonWorkingDay)
                                 {
@@ -127,11 +127,11 @@
                         {
                             if (isAdmin)
                             {
-                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor SelectUsername=@filterUsername></InputHistoryDetailsTable>
+                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog!.DateWorkDay" RowColor=@rowColor SelectUsername=@filterUsername></InputHistoryDetailsTable>
                             }
                             else
                             {
-                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog.DateWorkDay" RowColor=@rowColor></InputHistoryDetailsTable>
+                                <InputHistoryDetailsTable ProjectTimeDate="@projectTimeLog!.DateWorkDay" RowColor=@rowColor></InputHistoryDetailsTable>
                             }
 
                         }
@@ -191,7 +191,7 @@
         {
             usernames = await Http.GetFromJsonAsync<List<UsernamesDto>>(GET_USERNAMES_ENDPOINT);
 
-            filterUsername = usernames.First().Username;
+            filterUsername = usernames!.First().Username!;
 
             parameters = $"?username={filterUsername}";
         }
