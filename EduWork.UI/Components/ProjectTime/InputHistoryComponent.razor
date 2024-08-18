@@ -107,17 +107,18 @@
                                 }
                             </td>
 
-                            <td class="text-center">
-                                <span>@projectTimeLog.SumTimeSpentHours</span> h :
-                                <span>@projectTimeLog.SumTimeSpentMinutes</span> min
-                            </td>
-
-                            @if (projectTimeLog?.ProjectTitles == null)
+                            @if (projectTimeLog?.ProjectTitles == null || projectTimeLog.IsNonWorkingDay == true)
                             {
+                                <td class="text-center"></td>
                                 <td class="text-center"></td>
                             }
                             else
                             {
+                                <td class="text-center">
+                                    <span>@projectTimeLog.SumTimeSpentHours</span> h :
+                                    <span>@projectTimeLog.SumTimeSpentMinutes</span> min
+                                </td>
+
                                 <td class="text-center">@string.Join(", ", projectTimeLog.ProjectTitles)</td>
                             }
                         </tr>
