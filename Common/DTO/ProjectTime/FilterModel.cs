@@ -10,15 +10,15 @@ namespace Common.DTO.ProjectTime
 {
     public record FilterModel
     {
-        [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti")]
+        [DateNotInFuture(ErrorMessage = "Workday cannot be in the future")]
         public DateTime? FromDate { get; set; } = DateTime.Today.AddMonths(-1);
 
-        [DateNotInFuture(ErrorMessage = "Radni dan ne može biti u budućnosti")]
+        [DateNotInFuture(ErrorMessage = "Workday cannot be in the future")]
         public DateTime? ToDate { get; set; } = DateTime.Today;
 
         public string? Username { get; set; }
 
-        [StringLength(100, ErrorMessage = "Projekt ne smije biti duži od 100 znakova")]
+        [StringLength(100, ErrorMessage = "Project title cannot be longer than 100 characters")]
         public string? ProjectTitle { get; set; }
     }
 }
