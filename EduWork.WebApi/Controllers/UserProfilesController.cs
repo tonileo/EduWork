@@ -37,7 +37,7 @@ namespace EduWork.WebApi.Controllers
         }
 
         [HttpGet("profile/{username}")]
-        public async Task<ActionResult<MyProfileDto>> GetUserProfile(string username)
+        public async Task<ActionResult<MyProfileDto>> GetUserProfile(string? username)
         {
             var result = await _userProfileService.GetUserProfile(username);
             return Ok(result);

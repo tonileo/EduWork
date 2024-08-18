@@ -127,7 +127,7 @@ namespace EduWork.DataAccessLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

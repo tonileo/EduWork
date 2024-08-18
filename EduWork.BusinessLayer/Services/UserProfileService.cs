@@ -24,6 +24,7 @@ namespace EduWork.BusinessLayer.Services
                 .Include(s => s.Project)
                 .Include(a => a.WorkDay)
                 .Where(g => g.WorkDay.User.Id == id && g.WorkDay.WorkDate <= today)
+                .AsNoTracking()
                 .OrderByDescending(pt => pt.WorkDay.WorkDate)
                 .ThenByDescending(pt => pt.Id)
                 .FirstAsync();
@@ -31,6 +32,7 @@ namespace EduWork.BusinessLayer.Services
                 var userProjectTimeRole = await context.UserProjectRoles
                     .Include(s => s.User)
                     .Include(u => u.ProjectRole)
+                    .AsNoTracking()
                     .Where(g => g.User.Id == id && g.Project.Title == userProjectTime.Project.Title)
                     .Select(m => m.ProjectRole.Title)
                     .FirstOrDefaultAsync();

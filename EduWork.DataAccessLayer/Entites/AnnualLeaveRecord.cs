@@ -16,7 +16,6 @@ namespace EduWork.DataAccessLayer.Entites
         [Required]
         public DateOnly EndDate { get; set; }
 
-        [Required]
         [StringLength(200)]
         public string? Comment { get; set; }
 

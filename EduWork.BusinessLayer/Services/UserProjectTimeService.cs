@@ -18,6 +18,8 @@ namespace EduWork.BusinessLayer.Services
         {
             try
             {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
                 var projects = await context.Projects
                 .Where(p => !p.IsFinished)
                 .AsNoTracking()
@@ -26,7 +28,7 @@ namespace EduWork.BusinessLayer.Services
                 var userProjectTime = await context.ProjectTimes
                     .Include(s => s.Project)
                     .Include(a => a.WorkDay)
-                    .Where(g => g.WorkDay.User.Email == email)
+                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate <= today)
                     .OrderByDescending(pt => pt.WorkDay.WorkDate)
                     .ThenByDescending(pt => pt.Id)
                     .FirstAsync();
