@@ -76,11 +76,11 @@ namespace EduWork.WebApi.Configuration
             });
 
             services.AddDbContext<AppDbContext>();
-
             services.AddScoped<SeedData>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+            services.AddCors();
             services.AddHttpContextAccessor();
             services.AddTransient<IIdentityClaim, IdentityClaim>();
 
