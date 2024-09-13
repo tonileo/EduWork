@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EduWork.DataAccessLayer.Entites;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using EduWork.DataAccessLayer.Entites;
 
 namespace EduWork.DataAccessLayer.Seed
 {

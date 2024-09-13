@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using EduWork.DataAccessLayer;
-using EduWork.DataAccessLayer.Entites;
-using EduWork.BusinessLayer.Services;
+﻿using Microsoft.AspNetCore.Mvc;
 using Common.DTO.Profile;
 using EduWork.BusinessLayer.Contracts;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
-using Common.DTO.ProjectTime;
-using EduWork.WebApi.Authentication;
 
 namespace EduWork.WebApi.Controllers
 {

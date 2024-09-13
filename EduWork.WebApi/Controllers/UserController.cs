@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Common.DTO.Authentication;
-using Common.DTO.Contracts;
-using Microsoft.AspNetCore.Http;
+﻿using Common.DTO.Authentication;
+using EduWork.BusinessLayer.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduWork.WebApi.Controllers

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Common.DTO.Profile;
-using Common.DTO.ProjectTime;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;

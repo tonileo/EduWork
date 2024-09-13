@@ -3,7 +3,7 @@ using EduWork.DataAccessLayer.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 
-namespace EduWork.WebApi.Configuration
+namespace EduWork.WebApi.Configurations
 {
     public static class WebAppExtensions
     {
@@ -38,7 +38,7 @@ namespace EduWork.WebApi.Configuration
             using var scope = app.Services.CreateScope();
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
+
             context.Database.Migrate();
 
             return app;

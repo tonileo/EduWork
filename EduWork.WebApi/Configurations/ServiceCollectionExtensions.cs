@@ -1,18 +1,15 @@
 ﻿using System.Reflection;
-using System.Security.Principal;
 using System.Text;
-using Common.DTO.Contracts;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.BusinessLayer.Services;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
 using EduWork.WebApi.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace EduWork.WebApi.Configuration
+namespace EduWork.WebApi.Configurations
 {
     public static class ServiceCollectionExtensions
     {

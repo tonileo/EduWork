@@ -1,6 +1,4 @@
-﻿using Bunit;
-using Microsoft.Extensions.DependencyInjection;
-using RichardSzalay.MockHttp;
+﻿using RichardSzalay.MockHttp;
 using System;
 using System.Net;
 using System.Net.Http;

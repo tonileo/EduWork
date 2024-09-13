@@ -1,4 +1,4 @@
-using EduWork.WebApi.Configuration;
+using EduWork.WebApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 

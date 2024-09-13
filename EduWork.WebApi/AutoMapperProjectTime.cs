@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Common.DTO.Profile;
 using Common.DTO.ProjectTime;
 using EduWork.DataAccessLayer.Entites;
 
-namespace EduWork.BusinessLayer
+namespace EduWork.WebApi
 {
     public class AutoMapperProjectTime : Profile
     {
-        public AutoMapperProjectTime() 
+        public AutoMapperProjectTime()
         {
             CreateMap<Project, ProjectSmallDto>()
                 .ForMember(dest => dest.LastChosenTitle, opt => opt.MapFrom(src => ""));

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EduWork.DataAccessLayer.Entites.Abstractions
+﻿namespace EduWork.DataAccessLayer.Entites.Abstractions
 {
     public static class EntityConstants
     {

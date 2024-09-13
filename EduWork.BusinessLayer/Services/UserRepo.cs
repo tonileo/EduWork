@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Common.DTO.Authentication;
-using Common.DTO.Contracts;
+using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore;

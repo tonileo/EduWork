@@ -1,6 +1,6 @@
 ﻿using Common.DTO.Authentication;
 
-namespace Common.DTO.Contracts
+namespace EduWork.BusinessLayer.Contracts
 {
     public interface IUser
     {
