@@ -5,15 +5,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>b349d7dc-8c90-48bf-8e9e-bb5ceb34678a</UserSecretsId>
+	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Remove="Pages\DateInput.razor" />
   </ItemGroup>
+	
+	<ItemGroup>
+		<None Update="web.config" CopyToPublishDirectory="Never" />
+	</ItemGroup>
 
-  <ItemGroup>
+
+	<ItemGroup>
     <None Remove="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-    <None Remove="Components\Interop\ChartJsInterop.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,10 +46,6 @@
 
   <ItemGroup>
     <Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-    <Content Include="Components\Interop\ChartComponent.razor.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,7 @@
 
   <ItemGroup>
     <None Include="wwwroot\css\bootstrap\fonts\bootstrap-icons.woff2" />
+    <None Include="wwwroot\js\ChartComponent.js" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,6 +6,7 @@ using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
 using EduWork.WebApi.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -72,7 +73,8 @@ namespace EduWork.WebApi.Configurations
                 });
             });
 
-            services.AddDbContext<AppDbContext>();
+            services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("EduWorkConnectionString")));
             services.AddScoped<SeedData>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

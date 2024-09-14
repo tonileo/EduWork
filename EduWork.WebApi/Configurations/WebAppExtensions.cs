@@ -25,6 +25,11 @@ namespace EduWork.WebApi.Configurations
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+            app.UseBlazorFrameworkFiles();
+            app.UseRouting();
+            app.MapFallbackToFile("index.html");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
