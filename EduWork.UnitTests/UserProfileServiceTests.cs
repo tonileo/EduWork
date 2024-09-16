@@ -119,7 +119,7 @@ namespace EduWork.UnitTests
         [Fact]
         public void Ctor_UserProfileService_Succeeds()
         {
-            var contextTest = new Mock<AppDbContext>().Object;
+            var contextTest = new Mock<AppDbContext>(options).Object;
             var mapperTest = new Mock<IMapper>().Object;
 
             var sut = new UserProfileService(contextTest, mapperTest);
@@ -130,7 +130,7 @@ namespace EduWork.UnitTests
         [Fact]
         public async Task Ctor_UserProfileService_Fails()
         {
-            var contextTest = new Mock<AppDbContext>().Object;
+            var contextTest = new Mock<AppDbContext>(options).Object;
             var mapperTest = new Mock<IMapper>().Object;
 
             var sut = new UserProfileService(contextTest, mapperTest);
