@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/eduwork2024/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsEduWorkConnectionString_EDB3DDD1D5",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/eduwork/databases/EduWorkDb",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:EduWorkConnectionString",
+      "dynamicId": null
+    }
+  }
+}

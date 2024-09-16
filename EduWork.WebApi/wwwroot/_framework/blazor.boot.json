@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "EduWork.UI",
   "resources": {
-    "hash": "sha256-kB4G64DKmzVkQ/diJxJViiPcZQnc75MG0sHKSL8ZgQc=",
+    "hash": "sha256-qpNG/BdnyuDev51GXnWoEx28kx+54Hw6BQNa9/Zf90Q=",
     "jsModuleNative": {
       "dotnet.native.8.0.8.exficwgliq.js": "sha256-juC5sA7gHTLXFEhAKgdM2/RavswpwCtDfjYGsAz2FXg="
     },
@@ -19,7 +19,7 @@
     "assembly": {
       "Blazored.LocalStorage.wasm": "sha256-OaMAAd5n7ORfyur5e3QIyEVKJ76MKIvwbg7/icnnYcU=",
       "Common.wasm": "sha256-uxHrZCzq2umENF3zOhWLB+ZnltM/Cz5+d4CW7zHQY6o=",
-      "EduWork.UI.wasm": "sha256-bjnumKiN6DI17OJI0O+eKQJxKfbLCQWg2TsRQUnekh0=",
+      "EduWork.UI.wasm": "sha256-enwX8ebi6yFSbkiKZU78MJyNXS0vpk9EfmLMtlBlX+I=",
       "Microsoft.AspNetCore.Authorization.wasm": "sha256-1mcVLANaQh89kBISnaZEkHKQukYc72t3YYpmcdrKuMc=",
       "Microsoft.AspNetCore.Components.Authorization.wasm": "sha256-86wwukDTEf80tkjSz6RjBoAzn0nZ+8yP+4XdYt0ccbo=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-jjIn27gEDSPMSUzx3ObnRehwF1yS+5ia0VDRnPUQ9Yw=",
