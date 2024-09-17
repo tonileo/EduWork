@@ -34,13 +34,13 @@ jobs:
           cd EduWork.UI
           dotnet publish ${{env.CLIENT_PATH}} -c Release -o ../EduWork.WebApi
 
-      - name: Build with dotnet
+      - name: Build EduWork.WebApi
         run: dotnet build --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --verbosity normal
 
-      - name: dotnet publish
+      - name: Publish EduWork.WebApi
         run: dotnet publish ${{env.PROJECT_PATH}} -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
