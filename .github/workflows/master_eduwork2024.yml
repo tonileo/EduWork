@@ -13,19 +13,32 @@ jobs:
   build:
     runs-on: windows-latest
 
+    env:
+      PROJECT_PATH: ./EduWork.WebApi
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '3.1'
+          dotnet-version: '8.x'
+
+      - name: Build EduWork.UI
+        run: | 
+          cd EduWork.UI
+          dotnet build --configuration Release
+
+      - name: Publish EduWork.UI
+        run: | 
+          cd EduWork.UI
+          dotnet publish ${{env.CLIENT_PATH}} -c Release -o ../EduWork.WebApi
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ${{env.PROJECT_PATH}} -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
