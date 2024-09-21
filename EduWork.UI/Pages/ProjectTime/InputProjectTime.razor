@@ -154,6 +154,7 @@
     private const string GET_ENDPOINT = "api/ProjectTimes?";
     private const string POST_ENDPOINT = "api/ProjectTimes";
     private const string GET_PROJECTS_ENDPOINT = "api/ProjectTimes/projects";
+    private const string GET_OVERTIME_ENDPOINT = "api/ProjectTimes/overtime";
     private const string PUT_ENDPOINT = "api/ProjectTimes/";
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ss";
     private const string ZERO_HOURS_COLOR = "lightcoral";
@@ -211,8 +212,7 @@
         hours = projectTimeRequest.TimeSpentMinutes / 60;
         minutes = projectTimeRequest.TimeSpentMinutes % 60;
 
-        overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
-        await GetProjects();
+        await LoadData();
     }
 
     private async Task GetProjects()
@@ -229,10 +229,12 @@
 
             try
             {
+                await GetProjects();
+
                 string parameters = $"userWorkDay={projectTimeRequest.DateWorkDay.ToString(DATE_FORMAT)}";
 
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
-                overtime = await Http.GetFromJsonAsync<OvertimeDto>("api/ProjectTimes/overtime");
+                overtime = await Http.GetFromJsonAsync<OvertimeDto>(GET_OVERTIME_ENDPOINT);
 
                 editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
