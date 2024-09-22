@@ -15,13 +15,13 @@ namespace EduWork.WebApi
             CreateMap<User, UsernamesDto>();
 
             CreateMap<ProjectTime, InputProjectTimeDto>()
-                .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title))
-                .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay.WorkDate))
+                .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project!.Title))
+                .ForMember(dest => dest.DateWorkDay, opt => opt.MapFrom(src => src.WorkDay!.WorkDate))
                 .ForMember(dest => dest.Hours, opt => opt.MapFrom(src => src.TimeSpentMinutes / 60))
                 .ForMember(dest => dest.Minutes, opt => opt.MapFrom(src => src.TimeSpentMinutes % 60));
 
             CreateMap<ProjectTime, ProjectTimeDto>()
-                .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project.Title));
+                .ForMember(dest => dest.TitleProject, opt => opt.MapFrom(src => src.Project!.Title));
 
             CreateMap<List<ProjectTime>, ProjectTimeResponseDto>()
                 .ForMember(dest => dest.ProjectTimes, opt => opt.MapFrom(src => src))

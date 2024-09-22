@@ -2,14 +2,9 @@
 
 namespace EduWork.WebApi.Authentication
 {
-    internal class IdentityClaim : IIdentityClaim
+    internal class IdentityClaim(IHttpContextAccessor httpContextAccessor) : IIdentityClaim
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public IdentityClaim(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public string? Email
         {
