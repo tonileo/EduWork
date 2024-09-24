@@ -3,7 +3,7 @@
 @using EduWork.UI.Components.ProjectTime
 @using Microsoft.AspNetCore.Authorization
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>@ADMIN_PROJECT_STATS_TITLE</PageTitle>
 

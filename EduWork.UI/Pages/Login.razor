@@ -20,6 +20,7 @@
 
         <label for="email">Email:</label>
         <InputText id="email" type="email" @bind-Value="loginDto.Email" placeholder="john.doe@example.com" autocomplete="email" />
+
         <label for="password">Password:</label>
         <InputText id="password" type="password" @bind-Value="loginDto.Password" placeholder="admin123" autocomplete="current-password" />
 
@@ -44,7 +45,9 @@
             NavManager.NavigateTo("/", forceLoad: true);
         }
         else
+        {
             message = result.Message;
+        }
     }
 
     private async Task LoginUser()
