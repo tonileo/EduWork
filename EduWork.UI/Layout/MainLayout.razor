@@ -12,6 +12,11 @@
                     <span>Hello, @context.User.Identity?.Name!</span>
                     @* <span>[@context.User.Claims.FirstOrDefault(s=> s.Type == ClaimTypes.Role)!.Value]</span> *@
 
+                    @if(context.User.IsInRole("Admin"))
+                    {
+                        <a href="register">Register user</a>
+                    }
+
                     <a href="logout">Logout</a>
                 </Authorized>
                 <NotAuthorized>

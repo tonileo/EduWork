@@ -1,0 +1,59 @@
+﻿@page "/register"
+@using Common.DTO
+@using Common.DTO.Authentication
+@using EduWork.UI.States
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager NavManager
+@inject IAccount AccountService
+
+@attribute [Authorize(Roles = "Admin")]
+
+<h1>Register</h1>
+
+<div class="registerForm">
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info mb-3">@message</div>
+    }
+    <EditForm Model="@registerUserDto" OnValidSubmit="@HandleRegistration">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <label for="username">Username:</label>
+        <InputText id="username" type="text" @bind-Value="registerUserDto.Username" placeholder="john.doe@example.com" required />
+
+        <label for="email">Email:</label>
+        <InputText id="email" type="email" @bind-Value="registerUserDto.Email" placeholder="john.doe@example.com" required />
+
+        <label for="password">Password:</label>
+        <InputText id="password" type="password" @bind-Value="registerUserDto.Password" placeholder="admin123" required />
+
+        <label for="confirmPassword">Confirm password:</label>
+        <InputText id="confirmPassword" type="password" @bind-Value="registerUserDto.ConfirmPassword" placeholder="admin123" required/>
+
+        <label for="typeOfUser">Type of user:</label>
+        <InputNumber id="typeOfUser" type="number" @bind-Value="registerUserDto.AppRoleId" min="1" max="2" required />
+
+        <button type="submit" class="btn btn-primary">Register user</button>
+    </EditForm>
+</div>
+
+@code {
+    RegisterUserDto registerUserDto = new();
+
+    string? message = string.Empty;
+
+    private async Task HandleRegistration()
+    {
+        var result = await AccountService.RegisterAccountAsync(registerUserDto);
+        if (result.Flag)
+        {
+            NavManager.NavigateTo("/login", forceLoad: true);
+        }
+        else
+        {
+            message = result.Message;
+        }
+    }
+}

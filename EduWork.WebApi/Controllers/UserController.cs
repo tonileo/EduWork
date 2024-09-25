@@ -1,5 +1,6 @@
 ﻿using Common.DTO.Authentication;
 using EduWork.BusinessLayer.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduWork.WebApi.Controllers
@@ -21,6 +22,7 @@ namespace EduWork.WebApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponse>> RegisterUser(RegisterUserDto registerUserDto)
         {
