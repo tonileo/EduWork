@@ -4,15 +4,8 @@ using Common.DTO.Authentication;
 
 namespace Common.Services
 {
-    public class AccountService : IAccount
+    public class AccountService(HttpClient httpClient) : IAccount
     {
-        private readonly HttpClient httpClient;
-
-        public AccountService(HttpClient httpClient)
-        {
-            this.httpClient = httpClient;
-        }
-
         public async Task<RegistrationResponse> RegisterAccountAsync(RegisterUserDto model)
         {
             var response = await httpClient.PostAsJsonAsync("api/User/register", model);

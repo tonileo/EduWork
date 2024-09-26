@@ -78,7 +78,7 @@ else
 
     private async void InputChanged(ChangeEventArgs args)
     {
-        inputUsername = (args.Value).ToString();
+        inputUsername = (args.Value!).ToString();
 
         await LoadData();
     }

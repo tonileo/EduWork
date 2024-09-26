@@ -13,7 +13,7 @@
 
                 @if (usernames == null)
                 {
-                    <option>@LOADING_LABEL</option>
+                    <p>@LOADING_LABEL</p>
                 }
                 else
                 {
@@ -84,7 +84,7 @@
                     @foreach (var projectTimeLog in projectTimeHistoryDto)
                     {
                         var rowColor = GetRowColor(projectTimeLog.SumTimeSpentHours, projectTimeLog.SumTimeSpentMinutes, projectTimeLog.IsNonWorkingDay);
-                        <tr style="background-color:@rowColor" @onclick="() => ToggleRow(projectTimeLog!)">
+                        <tr style="background-color:@(rowColor)" @onclick="() => ToggleRow(projectTimeLog!)">
                             <td class="text-center">
                                 @if (projectTimeLog.IsNonWorkingDay)
                                 {

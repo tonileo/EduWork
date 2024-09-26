@@ -10,7 +10,7 @@ namespace EduWork.UI.States
     {
         private const string LocalStorageKey = "auth";
         private readonly ILocalStorageService localStorageService;
-        private readonly ClaimsPrincipal anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+        private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
 
         private readonly HttpClient httpClient;
 
@@ -24,11 +24,15 @@ namespace EduWork.UI.States
         {
             string token = await localStorageService.GetItemAsStringAsync(LocalStorageKey)!;
             if (string.IsNullOrEmpty(token) || await IsTokenExpired(token))
+            {
                 return new AuthenticationState(anonymous);
+            }
 
             var claims = GetClaims(token);
             if (claims == null || !claims.Identity.IsAuthenticated)
+            {
                 return new AuthenticationState(anonymous);
+            }
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -76,8 +80,7 @@ namespace EduWork.UI.States
             if (!string.IsNullOrEmpty(jwtToken))
             {
                 claims = GetClaims(jwtToken);
-                if (claims == null || !claims.Identity.IsAuthenticated)
-                    return;
+                if (claims == null || !claims.Identity.IsAuthenticated) return;
 
                 await localStorageService.SetItemAsStringAsync(LocalStorageKey, jwtToken);
 

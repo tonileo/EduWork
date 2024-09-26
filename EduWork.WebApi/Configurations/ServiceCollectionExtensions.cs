@@ -31,7 +31,7 @@ namespace EduWork.WebApi.Configurations
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                    (Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
                 };
             });
 

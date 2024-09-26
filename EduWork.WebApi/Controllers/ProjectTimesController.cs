@@ -58,14 +58,14 @@ namespace EduWork.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> InputProjectTime([FromServices] IIdentityClaim currentUser, ProjectTimeRequestDto projectTime)
         {
-            await _userProjectTimeService.InputProjectTime(currentUser.Email, projectTime);
+            await _userProjectTimeService.InputProjectTime(currentUser.Email!, projectTime);
             return Ok();
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProjectTime([FromServices] IIdentityClaim currentUser, int id, ProjectTimeRequestDto projectTime)
         {
-            await _userProjectTimeService.UpdateProjectTime(currentUser.Email, id, projectTime);
+            await _userProjectTimeService.UpdateProjectTime(currentUser.Email!, id, projectTime);
             return Ok();
         }
 
