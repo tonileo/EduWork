@@ -22,7 +22,16 @@ namespace EduWork.BusinessLayer.Services
                 .AsNoTracking()
                 .OrderByDescending(pt => pt.WorkDay.WorkDate)
                 .ThenByDescending(pt => pt.Id)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
+
+                if (userProjectTime == null)
+                {
+                    return new CurrentUserProjectDto
+                    {
+                        Title = "No projects",
+                        Role = "No roles"
+                    };
+                }
 
                 var userProjectTimeRole = await context.UserProjectRoles
                     .Include(s => s.User)
@@ -31,6 +40,11 @@ namespace EduWork.BusinessLayer.Services
                     .Where(g => g.User.Id == id && g.Project.Title == userProjectTime.Project.Title)
                     .Select(m => m.ProjectRole.Title)
                     .FirstOrDefaultAsync();
+
+                if (userProjectTimeRole == null)
+                {
+                    userProjectTimeRole = "No roles";
+                }
 
                 var userProjects = new CurrentUserProjectDto
                 {
