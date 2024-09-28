@@ -1,5 +1,6 @@
 ﻿using EduWork.DataAccessLayer;
 using EduWork.DataAccessLayer.Seed;
+using EduWork.WebApi.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 
@@ -13,14 +14,6 @@ namespace EduWork.WebApi.Configurations
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                app.UseCors(policy =>
-                {
-                    policy.WithOrigins("https://localhost:7041")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .WithHeaders(HeaderNames.ContentType);
-                });
             }
 
             app.UseHttpsRedirection();
@@ -32,6 +25,16 @@ namespace EduWork.WebApi.Configurations
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            app.UseCors(policy =>
+            {
+                policy.WithOrigins("https://localhost:7041")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithHeaders(HeaderNames.ContentType);
+            });
 
             app.MapControllers();
 
