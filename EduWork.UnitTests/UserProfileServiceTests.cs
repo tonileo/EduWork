@@ -50,7 +50,6 @@ namespace EduWork.UnitTests
 
             mapper = mapperConfig.CreateMapper();
 
-
             service = new UserProfileService(context, mapper);
 
             SeedDatabase();
