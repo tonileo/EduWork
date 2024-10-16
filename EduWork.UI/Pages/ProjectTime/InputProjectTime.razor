@@ -196,7 +196,7 @@
     {
         if (!date.HasValue)
         {
-            date = DateTime.Today;
+            date = DateTime.UtcNow.Date;
         }
 
         projectTimeRequest.DateWorkDay = date.Value;
