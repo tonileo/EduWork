@@ -1,8 +1,8 @@
 # EduWork
 
-You can see this app live in production [here](https://eduwork2024.azurewebsites.net/) (Please wait ~20 seconds for the initial load).
-
 **EduWork** is a web application developed to track employee working hours across multiple projects, as well as manage annual leave days and sick days. The system provides insightful analysis to managers, aiming to enhance productivity and streamline project management.
+
+You can see this app live in production [here](https://eduwork2024.azurewebsites.net/) (Please wait ~20 seconds for the initial load).
 
 ## Technologies
 
@@ -47,7 +47,7 @@ b) **JWT Authentication**: Employees can register and log in through the app.
 - **Admin Input History**: Admins can see and filter history of all employees' work hour entries.
 - **Admin Statistics**: Provides in-depth, color-coded statistics on project work categorized by project type. Admins can also filter results by employee for more granular data.
 
-## CI/CD Pipeline
+### 7. **CI/CD Pipeline**
 
 EduWork uses GitHub Actions to automate the build, test, and deploy the application on Azure. The CI/CD pipeline is triggered on push and pull requests to ensure code integrity and facilitate continuous integration.
 
