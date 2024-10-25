@@ -89,7 +89,7 @@
         {
             <div id="nonWorkingDayDiv">@ITS_NON_WORKING_DAY</div>
         }
-        else if (isLoading)
+        else if (isLoading || InputProjectTimeResponseDto == null)
         {
             <div class="d-flex justify-content-center">
                 <div class="spinner-border" role="status">
