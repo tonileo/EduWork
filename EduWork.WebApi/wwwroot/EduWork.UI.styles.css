@@ -640,3 +640,48 @@ body[b-r4ciju9v1y] {
     font-size: 1.2rem;
     font-weight:bold;
 }
+/* /Pages/Register.razor.rz.scp.css */
+.registerForm[b-z4e4nm2w0v] {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+[b-z4e4nm2w0v] input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+h1[b-z4e4nm2w0v] {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label[b-z4e4nm2w0v] {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+
+button[b-z4e4nm2w0v] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+}
+
+.alert[b-z4e4nm2w0v] {
+    color: red;
+    margin-bottom: 10px;
+}
