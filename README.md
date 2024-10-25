@@ -2,11 +2,11 @@
 
 **EduWork** is a web application developed to track employee working hours across multiple projects, as well as manage annual leave days and sick days. The system provides insightful analysis to managers, aiming to enhance productivity and streamline project management.
 
-You can see this app live in production [here](https://eduwork2024.azurewebsites.net/) (Please wait ~20 seconds for the initial load).
+[Access the live app here](https://eduwork2024.azurewebsites.net/) (Please wait ~20 seconds for the initial load).
 
 ## Technologies
 
-- **Back-end**: ASP.NET Core Web API
+- **Back-end**: ASP.NET Core Web API (.Net 8)
 - **Front-end**: Blazor WebAssembly
 - **Database**: Microsoft SQL Server
 - **Authentication**: Azure Entra and JWT
@@ -94,5 +94,5 @@ EduWork uses GitHub Actions to automate the build, test, and deploy the applicat
    ~~~ 
 
 7. **Access the app**:
-   - Open your browser and navigate to https://localhost:7041/login.
-   - Also you can navigate to https://localhost:7104/swagger/index.html for Swagger backend.
+   - Open your browser and navigate to https://localhost:7041.
+   - Also you can navigate to https://localhost:7104/swagger for Swagger.
