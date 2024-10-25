@@ -24,8 +24,4 @@
     <ProjectReference Include="..\EduWork.DataAccessLayer\EduWork.DataAccessLayer.csproj" />
   </ItemGroup>
 
-    <Target Name="DeleteWebConfig" AfterTargets="Publish">
-		<Delete Files="$(PublishDir)web.config" />
-	</Target>
-
 </Project>

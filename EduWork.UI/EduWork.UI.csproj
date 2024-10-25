@@ -1,68 +1,72 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>b349d7dc-8c90-48bf-8e9e-bb5ceb34678a</UserSecretsId>
-	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>b349d7dc-8c90-48bf-8e9e-bb5ceb34678a</UserSecretsId>
+		<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="Pages\DateInput.razor" />
-  </ItemGroup>
-	
+	<ItemGroup>
+		<Content Remove="Pages\DateInput.razor" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Update="web.config" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-    <None Remove="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-  </ItemGroup>
+		<None Remove="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.10" PrivateAssets="all" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.10" PrivateAssets="all" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\DateInput.razor" />
-  </ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Pages\DateInput.razor" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
-    <_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
-    <_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Profile\Users.razor" />
-  </ItemGroup>
+	<ItemGroup>
+		<_ContentIncludedByDefault Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
+		<_ContentIncludedByDefault Remove="Pages\AdminInputHistory.razor" />
+		<_ContentIncludedByDefault Remove="Pages\DateInput.razor" />
+		<_ContentIncludedByDefault Remove="Pages\Profile\Users.razor" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Components\ProjectTime\ProjectTimeStatsComponent.razor.css" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\AdminInputHistory.razor" />
-  </ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Pages\AdminInputHistory.razor" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\Profile\Users.razor" />
-  </ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Pages\Profile\Users.razor" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="wwwroot\css\bootstrap\fonts\bootstrap-icons.woff2" />
-    <None Include="wwwroot\js\ChartComponent.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="wwwroot\css\bootstrap\fonts\bootstrap-icons.woff2" />
+		<None Include="wwwroot\js\ChartComponent.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
-  </ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Components\ProjectTime\ProjectTimeStatsFormComponent.razor" />
+	</ItemGroup>
+
+	<Target Name="DeleteWebConfig" AfterTargets="Publish">
+		<Delete Files="$(PublishDir)web.config" />
+	</Target>
 
 </Project>
