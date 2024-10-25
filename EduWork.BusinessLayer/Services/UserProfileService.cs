@@ -180,6 +180,13 @@ namespace EduWork.BusinessLayer.Services
                 }
 
                 var userAnnualLeave = mapper.Map<AnnualLeaveDto>(annualLeave);
+                if (userAnnualLeave == null)
+                {
+                    userAnnualLeave.LeftLeaveDays = 0;
+                    userAnnualLeave.LeftLeaveDaysLastYear = 0;
+                    userAnnualLeave.PlannedLeaveDays = 0;
+                }
+
                 userAnnualLeave.LeftLeaveDays += leftLeaveDaysLastYear;
                 userAnnualLeave.LeftLeaveDaysLastYear = leftLeaveDaysLastYear;
                 userAnnualLeave.PlannedLeaveDays = plannedLeaveDays;

@@ -85,13 +85,18 @@
     </div>
 
     <div class="table-section">
-        @if (InputProjectTimeResponseDto == null)
-        {
-            <span>@LOADING_LABEL</span>
-        }
-        else if (nonWorkingDay)
+        @if (nonWorkingDay)
         {
             <div id="nonWorkingDayDiv">@ITS_NON_WORKING_DAY</div>
+        }
+        else if (isLoading)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>@LOADING_LABEL</p>
+            </div>
         }
         else
         {
@@ -182,6 +187,8 @@
     private int hours;
     private int minutes;
 
+    private bool isLoading = false;
+
     private int rangeValue
     {
         get => (hours * 60) + minutes;
@@ -223,6 +230,7 @@
 
     private async Task LoadData()
     {
+        isLoading = true;
         if (projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Saturday && projectTimeRequest.DateWorkDay.DayOfWeek != DayOfWeek.Sunday && projectTimeRequest.DateWorkDay <= DateTime.Today)
         {
             nonWorkingDay = false;
@@ -235,6 +243,7 @@
 
                 InputProjectTimeResponseDto = await Http.GetFromJsonAsync<InputProjectTimeResponseDto>(GET_ENDPOINT + parameters);
                 overtime = await Http.GetFromJsonAsync<OvertimeDto>(GET_OVERTIME_ENDPOINT);
+                isLoading = false;
 
                 editContext?.NotifyFieldChanged(FieldIdentifier.Create(() => projectTimeRequest.DateWorkDay));
 
@@ -243,6 +252,10 @@
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Error fetching projectTime: {ex.Message}");
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
         else
