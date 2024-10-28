@@ -2,7 +2,7 @@
 
 **EduWork** is a web application developed to track employee working hours across multiple projects, as well as manage annual leave days and sick days. The system provides insightful analysis to managers, aiming to enhance productivity and streamline project management.
 
-[Access the live app here](https://eduwork2024.azurewebsites.net/) (Please wait ~20 seconds for the initial load).
+[Access the live app here](https://eduwork2024.azurewebsites.net/) (Please wait ~40 seconds for the initial load).
 
 ## Technologies
 
