@@ -19,7 +19,7 @@
         }
         else
         {
-            <table class="table @(isAdmin ? string.Empty : "table-striped")">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>@PROJECT_TABLE_LABEL </th>
@@ -97,7 +97,6 @@
     </div>
 
     <div id = "graphicDiv" class="col-md-6">
-
         @if (projectTimeResponse?.ProjectTimeSums != null)
         {
             <canvas id="myChart">

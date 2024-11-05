@@ -12,7 +12,7 @@
 
 <div class="flex-container">
 
-    <div class="form-section">
+    <div class="form-section glass">
         <EditForm EditContext="@editContext" OnValidSubmit="@Submit" class="@(updateForm ? "edit-mode" : "")">
             <DataAnnotationsValidator />
             <ValidationSummary class="alert alert-danger" />
@@ -69,7 +69,6 @@
                 </div>
 
                 <div class="range-container">
-                    <label for="timeSpentMinutesRange"></label>
                     <input type="range" id="timeSpentMinutesRange" @bind="rangeValue" @oninput="UpdateTimeFromRange" class="form-range" min="1" max="480" step="1" />
                 </div>
 
@@ -84,7 +83,7 @@
         </EditForm>
     </div>
 
-    <div class="table-section">
+    <div class="table-section glass">
         @if (nonWorkingDay)
         {
             <div id="nonWorkingDayDiv">@ITS_NON_WORKING_DAY</div>

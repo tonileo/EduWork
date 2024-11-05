@@ -1,8 +1,4 @@
-﻿body {
-    background: #f9f9f9;
-}
-
-::deep .edit-mode {
+﻿::deep .edit-mode {
     background-color: #f0f8ff;
     border: 1px solid #0000ff;
     padding: 15px;
@@ -14,21 +10,25 @@
     gap: 50px;
 }
 
+.glass {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+}
+
 .form-section {
     flex: 1;
     align-items: center;
     padding: 20px;
-    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    background: white;
 }
 
 .table-section {
     flex: 2;
     padding: 20px;
-    border: 1px solid #ddd;
     border-radius: 5px;
-    background: white;
 }
 
 .horizontal-flex {
@@ -51,6 +51,7 @@
 
 ::deep .range-container {
     flex: 1;
+    margin-top: auto;
 }
 
 ::deep .workdayFlex {
@@ -69,8 +70,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin-top: 15px;
-    max-width: 150px;
+    margin-top: auto;
+    max-width: 120px;
+
 }
 
 ::deep .timeSpentField {

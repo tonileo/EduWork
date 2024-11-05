@@ -1,10 +1,21 @@
-﻿.registerForm {
+﻿h1 {
+    color: white;
+    font-weight: bold;
+}
+
+.registerForm {
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
-    border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 ::deep input {
@@ -25,7 +36,6 @@ label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
-    color: #555;
 }
 
 
@@ -35,7 +45,6 @@ button {
     margin-top: 10px;
     border-radius: 5px;
     border: none;
-    color: white;
 }
 
 .alert {

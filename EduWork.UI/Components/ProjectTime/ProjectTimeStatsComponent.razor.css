@@ -1,9 +1,15 @@
 ﻿.divClass {
-    background: white;
     align-items: center;
     padding: 20px;
-    border: 1px solid #ddd;
     border-radius: 5px;
+
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+}
+
+table td, tr{
+    color: white;
 }
 
 .legend-circle {
@@ -23,7 +29,7 @@
     }
 
     .legend-circle.blue {
-        background-color: #2196F3;
+        background-color: #0073bd;
     }
 
     .legend-circle.gray {
@@ -35,16 +41,13 @@
     }
 
 .education-row {
-    background-color: #E0F7FA;
+    background-color: #0073bd;
 }
 
 .finished-row {
     color: gray;
 }
 
-.table-striped tbody tr:nth-child(odd) {
-    background-color: lightcyan;
-}
 
 .alignRight {
     text-align: right;
@@ -52,6 +55,8 @@
 
 #legendDiv {
     margin-top: 20px;
+    margin-left: 10px;
+    color:white;
 }
 
 #legendList {
@@ -65,7 +70,7 @@
 }
 
 #graphicDiv {
-    background-color: lightcyan;
+    background-color: #E0F7FA;
     padding: 20px;
     border-radius: 8px;
     display: flex;

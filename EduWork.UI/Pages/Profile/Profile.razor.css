@@ -20,7 +20,7 @@
 }
 
 #smallicon {
-    color:deepskyblue;
+    color: #0073bd;
     font-size: 40px;
     margin-right: 5px;
 }
@@ -30,12 +30,23 @@
     font-weight: bold;
 }
 
+.card {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+}
+
+.card.m-1 {
+    padding: 10px;
+}
+
 .card-header {
-    background-color: #D9EDF8;
+    background-color: #0073bd;
 }
 
 .card-footer {
-    background-color: #E4F1EE;
+    background-color: #0073bd;
 }
 
 .userStatP {
