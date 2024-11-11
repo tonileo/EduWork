@@ -88,7 +88,11 @@
         {
             <div id="nonWorkingDayDiv">@ITS_NON_WORKING_DAY</div>
         }
-        else if (isLoading || InputProjectTimeResponseDto == null)
+        else if (InputProjectTimeResponseDto == null)
+        {
+            <div id="nonWorkingDayDiv">@NO_INPUTS</div>
+        }
+        else if (isLoading)
         {
             <div class="d-flex justify-content-center">
                 <div class="spinner-border" role="status">
@@ -154,6 +158,8 @@
     private const string LABEL_OVERTIME = " Overtime: ";
     private const string LOADING_LABEL = "Loading data...";
     private const string ITS_NON_WORKING_DAY = "This is a non-working day!";
+    private const string NO_INPUTS = "You don't have any inputs on this day!";
+
 
     private const string GET_ENDPOINT = "api/ProjectTimes?";
     private const string POST_ENDPOINT = "api/ProjectTimes";

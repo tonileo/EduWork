@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection.Metadata.Ecma335;
+using AutoMapper;
 using Common.DTO.ProjectTime;
 using EduWork.BusinessLayer.Contracts;
 using EduWork.DataAccessLayer;
@@ -23,19 +24,25 @@ namespace EduWork.BusinessLayer.Services
                 var userProjectTime = await context.ProjectTimes
                     .Include(s => s.Project)
                     .Include(a => a.WorkDay)
-                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate <= today)
-                    .OrderByDescending(pt => pt.WorkDay.WorkDate)
+                    .Where(g => g.WorkDay != null && g.Project != null && g.WorkDay.User != null && g.WorkDay.User.Email == email 
+                        && g.WorkDay.WorkDate <= today)
+                    .OrderByDescending(pt => pt.WorkDay!.WorkDate)
                     .ThenByDescending(pt => pt.Id)
-                    .FirstAsync();
+                    .FirstOrDefaultAsync();
 
-                var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
-
-                foreach (var projectDto in userProjects)
+                if (userProjectTime != null)
                 {
-                    projectDto.LastChosenTitle = userProjectTime?.Project.Title;
+                    var userProjects = mapper.Map<List<ProjectSmallDto>>(projects);
+                    foreach (var projectDto in userProjects)
+                    {
+                        projectDto.LastChosenTitle = userProjectTime.Project?.Title;
+                    }
+                    return userProjects;
                 }
-
-                return userProjects;
+                else
+                {
+                    return new List<ProjectSmallDto>();
+                }
 
             }
             catch (Exception ex)
@@ -80,7 +87,8 @@ namespace EduWork.BusinessLayer.Services
                 var userprojectTimes = await context.ProjectTimes
                     .Include(s => s.Project)
                     .Include(a => a.WorkDay)
-                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .Where(g => g.WorkDay != null && g.WorkDay.User != null && g.Project != null &&
+                        g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -91,29 +99,39 @@ namespace EduWork.BusinessLayer.Services
 
                 int sumTimeSpent = 0;
 
-                foreach (var projectTime in userprojectTimes)
+                if (userprojectTimes != null)
                 {
-                    var inputProjectTimeDto = new InputProjectTimeDto
+                    foreach (var projectTime in userprojectTimes)
                     {
-                        Id = projectTime.Id,
-                        Comment = projectTime.Comment,
-                        TimeSpentMinutes = projectTime.TimeSpentMinutes,
-                        Hours = projectTime.TimeSpentMinutes / 60,
-                        Minutes = projectTime.TimeSpentMinutes % 60,
+                        var inputProjectTimeDto = new InputProjectTimeDto
+                        {
+                            Id = projectTime.Id,
+                            Comment = projectTime.Comment,
+                            TimeSpentMinutes = projectTime.TimeSpentMinutes,
+                            Hours = projectTime.TimeSpentMinutes / 60,
+                            Minutes = projectTime.TimeSpentMinutes % 60,
 
-                        DateWorkDay = projectTime.WorkDay.WorkDate,
-                        TitleProject = projectTime.Project.Title
-                    };
+                            DateWorkDay = projectTime.WorkDay!.WorkDate,
+                            TitleProject = projectTime.Project?.Title ?? "No Projects"
+                        };
 
-                    userProfiles.InputProjectTimeDto.Add(inputProjectTimeDto);
+                        userProfiles.InputProjectTimeDto.Add(inputProjectTimeDto);
 
-                    sumTimeSpent += projectTime.TimeSpentMinutes;
+                        sumTimeSpent += projectTime.TimeSpentMinutes;
+                    }
+
+                    userProfiles.SumTimeSpentHours = sumTimeSpent / 60;
+                    userProfiles.SumTimeSpentMinutes = sumTimeSpent % 60;
+
+                    return userProfiles;
                 }
-
-                userProfiles.SumTimeSpentHours = sumTimeSpent / 60;
-                userProfiles.SumTimeSpentMinutes = sumTimeSpent % 60;
-
-                return userProfiles;
+                else
+                {
+                    return new InputProjectTimeResponseDto
+                    {
+                        InputProjectTimeDto = new List<InputProjectTimeDto>()
+                    };
+                }
 
             }
             catch (Exception ex)
@@ -133,7 +151,7 @@ namespace EduWork.BusinessLayer.Services
                 var workDays = await context.WorkDays
                     .Include(w => w.ProjectTimes)
                     .Include(u => u.User)
-                    .Where(s => s.User.Email == email)
+                    .Where(s => s.User != null && s.User.Email == email)
                     .Where(d => d.WorkDate < today && d.WorkDate >= firstDayOfMonth)
                     .AsNoTracking()
                     .ToListAsync();
@@ -189,7 +207,8 @@ namespace EduWork.BusinessLayer.Services
                 var userprojectTimes = await context.ProjectTimes
                     .Include(s => s.Project)
                     .Include(a => a.WorkDay)
-                    .Where(g => g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .Where(g => g.WorkDay != null && g.WorkDay.User != null 
+                        && g.WorkDay.User.Email == email && g.WorkDay.WorkDate == userWorkDayDateOnly)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -223,7 +242,8 @@ namespace EduWork.BusinessLayer.Services
                 var userprojectTimes = await context.ProjectTimes
                     .Include(s => s.Project)
                     .Include(a => a.WorkDay)
-                    .Where(g => g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly)
+                    .Where(g => g.WorkDay != null && g.WorkDay.User != null 
+                        && g.WorkDay.User.Username == username && g.WorkDay.WorkDate == userWorkDayDateOnly)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -256,7 +276,7 @@ namespace EduWork.BusinessLayer.Services
 
                 var userWorkDayId = await context.WorkDays
                     .Include(g => g.User)
-                    .Where(d => d.WorkDate == projectTimeDateOnly && d.User.Email == email)
+                    .Where(d => d.User != null && d.WorkDate == projectTimeDateOnly && d.User.Email == email)
                     .Select(s => s.Id)
                     .SingleOrDefaultAsync();
 
@@ -264,17 +284,20 @@ namespace EduWork.BusinessLayer.Services
                 {
                     var user = await context.Users.SingleOrDefaultAsync(u => u.Email == email);
 
-                    var newWorkDay = new WorkDay
+                    if (user != null)
                     {
-                        WorkDate = projectTimeDateOnly,
-                        UserId = user.Id,
-                        User = user
-                    };
+                        var newWorkDay = new WorkDay
+                        {
+                            WorkDate = projectTimeDateOnly,
+                            UserId = user.Id,
+                            User = user
+                        };
 
-                    await context.WorkDays.AddAsync(newWorkDay);
-                    await context.SaveChangesAsync();
+                        await context.WorkDays.AddAsync(newWorkDay);
+                        await context.SaveChangesAsync();
 
-                    userWorkDayId = newWorkDay.Id;
+                        userWorkDayId = newWorkDay.Id;
+                    }
                 }
 
                 var projectExist = await context.Projects
@@ -390,36 +413,36 @@ namespace EduWork.BusinessLayer.Services
                     DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
                     DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
                 }
                 else if (fromDate != null)
                 {
                     DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= fromDateOnly);
                 }
                 else if (toDate != null)
                 {
                     DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate <= toDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate <= toDateOnly);
                 }
 
                 if (!string.IsNullOrEmpty(username))
                 {
-                    query = query.Where(pt => pt.WorkDay.User.Username == username);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.User != null && pt.WorkDay.User.Username == username);
                 }
 
                 if (!string.IsNullOrEmpty(projectTitle))
                 {
-                    query = query.Where(pt => pt.Project.Title.Contains(projectTitle));
+                    query = query.Where(pt => pt.Project != null && pt.Project.Title.Contains(projectTitle));
                 }
 
                 var projectTimes = await query.ToListAsync();
 
                 var totalTimeSpentMinutes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
 
-                var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
+                var projectTitles = projectTimes.Select(pt => pt.Project?.Title).Distinct().ToList();
                 var projectProperties = await context.Projects
                     .Where(p => projectTitles.Contains(p.Title))
                     .Select(p => new
@@ -433,7 +456,7 @@ namespace EduWork.BusinessLayer.Services
                     .ToDictionaryAsync(p => p.Title);
 
                 var projectTimeSums = projectTimes
-                    .GroupBy(pt => pt.Project.Title)
+                    .GroupBy(pt => pt.Project!.Title)
                      .Select(g =>
                      {
                          var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
@@ -468,38 +491,39 @@ namespace EduWork.BusinessLayer.Services
             try
             {
                 IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
-                .Where(pt => pt.WorkDay.User.Email == email).AsNoTracking().AsQueryable();
+                .Where(pt => pt.WorkDay != null && pt.WorkDay.User != null 
+                    && pt.WorkDay.User.Email == email).AsNoTracking().AsQueryable();
 
                 if (fromDate != null && toDate != null)
                 {
                     DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
                     DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= fromDateOnly && pt.WorkDay.WorkDate <= toDateOnly);
                 }
                 else if (fromDate != null)
                 {
                     DateOnly fromDateOnly = DateOnly.FromDateTime((DateTime)fromDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate >= fromDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= fromDateOnly);
                 }
                 else if (toDate != null)
                 {
                     DateOnly toDateOnly = DateOnly.FromDateTime((DateTime)toDate);
 
-                    query = query.Where(pt => pt.WorkDay.WorkDate <= toDateOnly);
+                    query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate <= toDateOnly);
                 }
 
                 if (!string.IsNullOrEmpty(projectTitle))
                 {
-                    query = query.Where(pt => pt.Project.Title.Contains(projectTitle));
+                    query = query.Where(pt => pt.Project != null && pt.Project.Title.Contains(projectTitle));
                 }
 
                 var projectTimes = await query.ToListAsync();
 
                 var totalTimeSpentMinutes = projectTimes.Sum(pt => pt.TimeSpentMinutes);
 
-                var projectTitles = projectTimes.Select(pt => pt.Project.Title).Distinct().ToList();
+                var projectTitles = projectTimes.Select(pt => pt.Project?.Title).Distinct().ToList();
                 var projectProperties = await context.Projects
                     .Where(p => projectTitles.Contains(p.Title))
                     .Select(p => new
@@ -513,7 +537,7 @@ namespace EduWork.BusinessLayer.Services
                     .ToDictionaryAsync(p => p.Title);
 
                 var projectTimeSums = projectTimes
-                     .GroupBy(pt => pt.Project.Title)
+                     .GroupBy(pt => pt.Project!.Title)
                       .Select(g =>
                       {
                           var sumTimeSpent = g.Sum(pt => pt.TimeSpentMinutes);
@@ -549,7 +573,8 @@ namespace EduWork.BusinessLayer.Services
 
                 IQueryable<ProjectTime> query = context.ProjectTimes
                    .Include(k => k.Project)
-                   .Where(pt => pt.WorkDay.User.Email == email && pt.WorkDay.WorkDate <= today)
+                   .Where(pt => pt.WorkDay != null && pt.WorkDay.User != null && pt.Project != null && pt.WorkDay.User.Email == email 
+                        && pt.WorkDay.WorkDate <= today)
                    .Include(w => w.WorkDay)
                    .AsNoTracking()
                    .AsQueryable();
@@ -580,7 +605,7 @@ namespace EduWork.BusinessLayer.Services
                     endDate = todayPlusOneDay;
                 }
 
-                query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
+                query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
 
                 var projectTimes = await query.ToListAsync();
 
@@ -592,12 +617,12 @@ namespace EduWork.BusinessLayer.Services
                 }
 
                 var groupedProjectTimes = projectTimes
-                .GroupBy(pt => pt.WorkDay.WorkDate)
+                .GroupBy(pt => pt.WorkDay?.WorkDate)
                 .Select(g => new
                 {
                     WorkDate = g.Key,
                     TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
-                    ProjectTitles = g.Select(s => s.Project.Title).Distinct().ToList()
+                    ProjectTitles = g.Select(s => s.Project!.Title).Distinct().ToList()
                 });
 
                 var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();
@@ -640,21 +665,19 @@ namespace EduWork.BusinessLayer.Services
             {
                 var today = DateOnly.FromDateTime(DateTime.Today);
 
-                IQueryable<ProjectTime> query = context.ProjectTimes.Include(k => k.Project)
-                .Include(w => w.WorkDay)
-                .Include(s => s.WorkDay.User)
-                .Where(a => a.WorkDay.WorkDate <= today)
-                .AsNoTracking()
-                .AsQueryable();
+                IQueryable<ProjectTime> query = context.ProjectTimes
+                    .Where(a => a.WorkDay != null && a.WorkDay.User != null && a.Project != null 
+                        && a.WorkDay.WorkDate <= today)
+                    .Include(k => k.Project)
+                    .Include(w => w.WorkDay)
+                    .Include(s => s.WorkDay!.User)
+                    .AsNoTracking()
+                    .AsQueryable();
 
                 if (!string.IsNullOrEmpty(username))
                 {
-                    query = query.Where(a => a.WorkDay.User.Username == username);
-
-                    if (query.Count() == 0)
-                    {
-                        throw new ArgumentException("There is no users with that username");
-                    }
+                    query = query.Where(a => a.WorkDay != null && a.WorkDay.User != null 
+                        && a.WorkDay.User.Username == username);
                 }
 
                 DateOnly startOfThisMonth = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
@@ -683,7 +706,7 @@ namespace EduWork.BusinessLayer.Services
                     endDate = todayPlusOneDay;
                 }
 
-                query = query.Where(pt => pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
+                query = query.Where(pt => pt.WorkDay != null && pt.WorkDay.WorkDate >= startDate && pt.WorkDay.WorkDate < endDate);
 
                 var projectTimes = await query.ToListAsync();
 
@@ -695,12 +718,12 @@ namespace EduWork.BusinessLayer.Services
                 }
 
                 var groupedProjectTimes = projectTimes
-                .GroupBy(pt => pt.WorkDay.WorkDate)
+                .GroupBy(pt => pt.WorkDay?.WorkDate)
                 .Select(g => new
                 {
                     WorkDate = g.Key,
                     TotalTimeSpentMinutes = g.Sum(pt => pt.TimeSpentMinutes),
-                    ProjectTitles = g.Select(s => s.Project.Title).Distinct().ToList()
+                    ProjectTitles = g.Select(s => s.Project!.Title).Distinct().ToList()
                 });
 
                 var projectTimeHistoryDtos = new List<ProjectTimeHistoryDto>();

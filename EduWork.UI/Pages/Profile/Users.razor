@@ -55,7 +55,8 @@ else
     {
         try
         {
-            projects = await Http.GetFromJsonAsync<List<ProjectsProfileDto>>(ENDPOINT_GET_PROJECTS);
+            projects = await Http.GetFromJsonAsync<List<ProjectsProfileDto>>(ENDPOINT_GET_PROJECTS)
+                ?? new List<ProjectsProfileDto>();
 
             await LoadData();
         }

@@ -148,6 +148,7 @@
 
         // Assert
         var yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+        Assert.True(inputDate.HasValue, "The input date should have a value.");
         Assert.Equal(yesterday, inputDate.Value.ToString("yyyy-MM-dd"));
     }
 

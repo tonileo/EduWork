@@ -22,14 +22,14 @@ namespace EduWork.UI.States
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string token = await localStorageService.GetItemAsStringAsync(LocalStorageKey)!;
+            string token = await localStorageService.GetItemAsStringAsync(LocalStorageKey) ?? string.Empty;
             if (string.IsNullOrEmpty(token) || await IsTokenExpired(token))
             {
                 return new AuthenticationState(anonymous);
             }
 
             var claims = GetClaims(token);
-            if (claims == null || !claims.Identity.IsAuthenticated)
+            if (claims == null || claims.Identity?.IsAuthenticated != true)
             {
                 return new AuthenticationState(anonymous);
             }
@@ -53,7 +53,7 @@ namespace EduWork.UI.States
             return false;
         }
 
-        public static ClaimsPrincipal GetClaims(string jwtToken)
+        public static ClaimsPrincipal? GetClaims(string jwtToken)
         {
             if (string.IsNullOrEmpty(jwtToken)) return null;
 
@@ -61,8 +61,8 @@ namespace EduWork.UI.States
             var token = handler.ReadJwtToken(jwtToken);
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)?.Value),
-                new Claim(ClaimTypes.Email, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)?.Value)
+                new Claim(ClaimTypes.Name, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)?.Value ?? string.Empty),
+                new Claim(ClaimTypes.Email, token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)?.Value ?? string.Empty)
             };
 
             var roles = token.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
@@ -76,11 +76,11 @@ namespace EduWork.UI.States
 
         public async Task UpdateAuthenticationState(string jwtToken)
         {
-            ClaimsPrincipal claims;
+            ClaimsPrincipal? claims;
             if (!string.IsNullOrEmpty(jwtToken))
             {
                 claims = GetClaims(jwtToken);
-                if (claims == null || !claims.Identity.IsAuthenticated) return;
+                if (claims == null || claims.Identity?.IsAuthenticated != true) return;
 
                 await localStorageService.SetItemAsStringAsync(LocalStorageKey, jwtToken);
 

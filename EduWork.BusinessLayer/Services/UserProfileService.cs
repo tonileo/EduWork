@@ -18,13 +18,14 @@ namespace EduWork.BusinessLayer.Services
                 var userProjectTime = await context.ProjectTimes
                 .Include(s => s.Project)
                 .Include(a => a.WorkDay)
-                .Where(g => g.WorkDay.User.Id == id && g.WorkDay.WorkDate <= today)
+                .Where(g => g.WorkDay != null && g.WorkDay.User != null 
+                    && g.WorkDay.User.Id == id && g.WorkDay.WorkDate <= today)
                 .AsNoTracking()
-                .OrderByDescending(pt => pt.WorkDay.WorkDate)
+                .OrderByDescending(pt => pt.WorkDay!.WorkDate)
                 .ThenByDescending(pt => pt.Id)
                 .FirstOrDefaultAsync();
 
-                if (userProjectTime == null)
+                if (userProjectTime == null || userProjectTime.Project == null)
                 {
                     return new CurrentUserProjectDto
                     {
@@ -34,17 +35,13 @@ namespace EduWork.BusinessLayer.Services
                 }
 
                 var userProjectTimeRole = await context.UserProjectRoles
-                    .Include(s => s.User)
-                    .Include(u => u.ProjectRole)
-                    .AsNoTracking()
-                    .Where(g => g.User.Id == id && g.Project.Title == userProjectTime.Project.Title)
-                    .Select(m => m.ProjectRole.Title)
-                    .FirstOrDefaultAsync();
-
-                if (userProjectTimeRole == null)
-                {
-                    userProjectTimeRole = "No roles";
-                }
+                .Include(s => s.User)
+                .Include(u => u.ProjectRole)
+                .AsNoTracking()
+                .Where(g => g.User != null && g.Project != null && g.User.Id == id 
+                    && g.Project.Title == userProjectTime.Project.Title)
+                .Select(m => m.ProjectRole == null ? "No roles" : m.ProjectRole.Title)
+                .FirstOrDefaultAsync() ?? "No roles";
 
                 var userProjects = new CurrentUserProjectDto
                 {
@@ -182,9 +179,12 @@ namespace EduWork.BusinessLayer.Services
                 var userAnnualLeave = mapper.Map<AnnualLeaveDto>(annualLeave);
                 if (userAnnualLeave == null)
                 {
-                    userAnnualLeave.LeftLeaveDays = 0;
-                    userAnnualLeave.LeftLeaveDaysLastYear = 0;
-                    userAnnualLeave.PlannedLeaveDays = 0;
+                    userAnnualLeave = new AnnualLeaveDto
+                    {
+                        LeftLeaveDays = 0,
+                        LeftLeaveDaysLastYear = 0,
+                        PlannedLeaveDays = 0
+                    };
                 }
 
                 userAnnualLeave.LeftLeaveDays += leftLeaveDaysLastYear;
@@ -259,7 +259,7 @@ namespace EduWork.BusinessLayer.Services
             {
                 IQueryable<ProjectTime> query = context.ProjectTimes
                 .Include(k => k.Project)
-                .Where(pt => pt.WorkDay!.User!.Username == username)
+                .Where(pt => pt.Project != null && pt.WorkDay!.User!.Username == username)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -286,7 +286,7 @@ namespace EduWork.BusinessLayer.Services
                 var projectTimes = await query.ToListAsync();
 
                 var sumProjectTimes = projectTimes.Sum(s => s.TimeSpentMinutes);
-                var countProjectTimes = projectTimes.Select(pt => pt.Project.Id).Distinct().Count();
+                var countProjectTimes = projectTimes.Select(pt => pt.Project?.Id).Distinct().Count();
 
                 var userProfileStats = new MyProfileStatsDto()
                 {
