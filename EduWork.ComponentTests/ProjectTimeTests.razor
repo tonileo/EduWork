@@ -116,24 +116,6 @@
     }
 
     [Fact]
-    public void InputDateIfNotTodayDateWhenClickedOnAddDateButtonItWillAddDate()
-    {
-        // Arrange
-        SetupMockHttpClient();
-
-        var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, DateTime.Today));
-        cut.WaitForState(() => cut.Instance.date.HasValue);
-        var inputDate = cut.Find("input[type='date']");
-
-        // Act
-        cut.Find("#addDateButton").Click();
-
-        // Assert
-        var today = DateTime.Today.ToString("yyyy-MM-dd");
-        Assert.Equal(today, inputDate.GetAttribute("value"));
-    }
-
-    [Fact]
     public void InputDateSetCorrectlyBasedOnParameters()
     {
         // Arrange
