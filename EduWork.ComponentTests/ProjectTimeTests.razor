@@ -88,9 +88,11 @@
         var cut = RenderComponent<InputProjectTime>(parameters => parameters.Add(p => p.date, null));
         cut.WaitForState(() => cut.Instance.date.HasValue);
         var inputDate = cut.Find("input[type='date']");
+        var initialDate = inputDate.GetAttribute("value");
 
         // Act
         cut.Find("#subtractDateButton").Click();
+        cut.WaitForState(() => inputDate.GetAttribute("value") != initialDate);
 
         // Assert
         var yesterday = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
