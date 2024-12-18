@@ -18,10 +18,14 @@
 a) **Microsoft Account Integration**: Employees can register and log in using their Microsoft accounts, authenticated via Azure Entra.
 
 b) **JWT Authentication**: Employees can register and log in through the app.
+
+![Login page](https://github.com/tonileo/EduWork/blob/docs/assets/userLogin.png)
   
 ### 2. **Main Page**
 - **Work Time Management**: Employees can input, update, and delete their working hours with a focus on an optimized employee experience (UX).
 - **Daily Overview**: Employees can view all entered working hours for a selected date in an intuitive display.
+
+![Main page](https://github.com/tonileo/EduWork/blob/docs/assets/userInputProjectTime.png)
 
 ### 3. **Input History**
 - **Monthly Overview**: Displays all work entries for the current month, with color-coded representation of completed and pending work hours for each day.
@@ -32,18 +36,33 @@ b) **JWT Authentication**: Employees can register and log in through the app.
   - Current month
   - Current quarter
 
+![Input History page](https://github.com/tonileo/EduWork/blob/docs/assets/userHistory.png)
+
 ### 4. **Project Statistics**
 - **Data Visualization**: Employees can filter their work time entries and view them through interop chart generated with Chart.js.
 
-### 5. **Profile Page**
+![Project Statistics page](https://github.com/tonileo/EduWork/blob/docs/assets/userStats.png)
+
+### 5. **Profile**
 - **Employee Role & Project Info**: Displays the employee’s current role and projects they are involved in, with short statistics.
 - **Leave Management**: Employees can view and add their annual leave and sick leave days.
 
+![Profile page](https://github.com/tonileo/EduWork/blob/docs/assets/userProfile.png)
+
 ### 6. **Admin Features**
-- **Employee Management**: Admins can view all employees, including their roles and current project.
-- **Employee Profiles**: Admins can access and view all employee profiles.
-- **Admin Input History**: Admins can see and filter history of all employees' work hour entries.
+- **Employee Management**: Admins can view all employees, including their roles and current project they are working on.
+
+![Employee Management page](https://github.com/tonileo/EduWork/blob/docs/assets/adminUsers.png)
+  
+- **Employee Profiles**: Admins can access and view all employees profiles.
+
+- **Admin Input History**: Admins can see and filter history of every employees work hour entries.
+
+![Admin Input History page](https://github.com/tonileo/EduWork/blob/docs/assets/adminHistory.png)
+
 - **Admin Statistics**: Provides in-depth, color-coded statistics on project work categorized by project type. Admins can also filter results by employee for more granular data.
+
+![Admin Statistics page](https://github.com/tonileo/EduWork/blob/docs/assets/adminStats.png)
 
 ### 7. **CI/CD Pipeline**
 
@@ -71,7 +90,7 @@ EduWork uses GitHub Actions to automate the build, test, and deploy the applicat
 4. **Set up the database and run the backend side**:
    - Update the connection string in appsettings.json (inside EduWork.WebApi) to point to your SQL Server instance.
    - Apply migrations to set up the database schema:
-
+  
    ~~~ bash
    cd EduWork.WebApi
    ~~~
