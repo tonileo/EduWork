@@ -17,6 +17,10 @@ namespace EduWork.DataAccessLayer.Configurations
                 .WithMany(w => w.WorkDays)
                 .HasForeignKey(u => u.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Property(x => x.WorkDate)
+                .IsRequired();
         }
     }
 }

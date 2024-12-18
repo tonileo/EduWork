@@ -29,10 +29,14 @@ namespace EduWork.BusinessLayer.Services
             if (getUser == null) return new LoginResponse(false, "User not found");
 
             bool checkPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, getUser.Password);
-            if (checkPassword) 
+            if (checkPassword)
+            {
                 return new LoginResponse(true, "Login succes", GenerateJWTToken(getUser));
-            else 
+            }
+            else
+            {
                 return new LoginResponse(false, "Invalid credentials");
+            }
         }
 
         private string GenerateJWTToken(User user)
@@ -72,7 +76,9 @@ namespace EduWork.BusinessLayer.Services
         {
             var getUser = await FindUserByEmail(registrationUserDto.Email!);
             if(getUser != null)
+            {
                 return new RegistrationResponse(false, "user exist");
+            }
 
             var newUser = new User()
             {

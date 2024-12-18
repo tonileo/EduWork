@@ -1,6 +1,7 @@
 ﻿using EduWork.DataAccessLayer.Entites;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Configurations
 {
@@ -19,6 +20,14 @@ namespace EduWork.DataAccessLayer.Configurations
                 .WithMany(s => s.ProjectTimes)
                 .HasForeignKey(c => c.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .Property(x => x.Comment)
+                .HasMaxLength(EntityConstants.LONG_LENGTH_TEXT);
+
+            builder
+                .Property(x => x.TimeSpentMinutes)
+                .IsRequired();
         }
     }
 }

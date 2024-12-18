@@ -1,38 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
-using EduWork.DataAccessLayer.Entites.Abstractions;
+﻿using EduWork.DataAccessLayer.Entites.Abstractions;
 
 namespace EduWork.DataAccessLayer.Entites
 {
     public class Project : BaseEntity
     {
-        [Required]
-        [StringLength(EntityConstants.SHORT_LENGTH_TEXT)]
-        public string Title { get; set; } = string.Empty;
+        public required string Title { get; set; } = string.Empty;
 
-        [Required]
-        public DateOnly StartDate { get; set; }
+        public required DateOnly StartDate { get; set; }
 
-        [Required]
-        public DateOnly EndDate { get; set; }
+        public required DateOnly EndDate { get; set; }
 
-        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
         public string? Description { get; set; } = string.Empty;
 
-        [Required]
-        public bool IsFinished { get; set; }
+        public required bool IsFinished { get; set; } = false;
 
-        [Required]
-        public bool IsPrivate { get; set; }
+        public required bool IsPrivate { get; set; }
 
-        [Required]
-        public bool IsEducation { get; set; }
+        public required bool IsEducation { get; set; }
 
-        [Required]
-        public bool IsPayable { get; set; }
+        public required bool IsPayable { get; set; }
 
-        [Required]
-        [StringLength(EntityConstants.LONG_LENGTH_TEXT)]
-        public string DevOpsProjectId { get; set; } = string.Empty;
+        public required string DevOpsProjectId { get; set; } = string.Empty;
 
 
         public virtual ICollection<UserProjectRole> UserProjectRoles { get; set; } = [];

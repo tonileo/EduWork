@@ -17,6 +17,15 @@ namespace EduWork.DataAccessLayer.Configurations
                 .WithMany(s => s.AnnualLeaves)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.Year)
+                .IsRequired();
+
+            builder.Property(x => x.TotalLeaveDays)
+                .IsRequired();
+
+            builder.Property(x => x.LeftLeaveDays)
+                .IsRequired();
         }
     }
 }
